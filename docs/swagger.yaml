@@ -1,0 +1,170 @@
+basePath: /
+definitions:
+  types_admin.UserCreatePayload:
+    properties:
+      firstName:
+        type: string
+      lastName:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  types_admin.UserLoginPayload:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  types_admin.UserUpdatePayload:
+    properties:
+      firstName:
+        type: string
+      lastName:
+        type: string
+      username:
+        type: string
+    type: object
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server Petstore server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Swagger Example API
+  version: "1.0"
+paths:
+  /user/create:
+    post:
+      consumes:
+      - application/json
+      description: Create User
+      parameters:
+      - description: user create payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types_admin.UserCreatePayload'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: Create User
+      tags:
+      - admin-user
+  /user/delete/{userId}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: user Id
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: Delete user
+      tags:
+      - admin-user
+  /user/detail/{userId}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: user Id
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: Get user
+      tags:
+      - admin-user
+  /user/list:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: List users
+      tags:
+      - admin-user
+  /user/login:
+    post:
+      consumes:
+      - application/json
+      description: Login a user with username and password
+      parameters:
+      - description: Login User Payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types_admin.UserLoginPayload'
+      produces:
+      - application/json
+      responses: {}
+      summary: Login a user
+      tags:
+      - admin-user
+  /user/profile:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: Get user profile
+      tags:
+      - admin-user
+  /user/update/{userId}:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: user Id
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: Update User Payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types_admin.UserUpdatePayload'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: Update user
+      tags:
+      - admin-user
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
