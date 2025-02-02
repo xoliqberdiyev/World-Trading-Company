@@ -39,7 +39,7 @@ func main() {
 	if err != nil {
 		log.Println(err)
 	}
-	server := api.NewServer(psqlConn.DB, utils.GetString("SERVER_PORT", "localhost:8000"))
+	server := api.NewServer(psqlConn.DB, utils.GetString("SERVER_PORT", ":8000"))
 	if err := server.Run(); err != nil {
 		log.Fatal(err)
 	}
