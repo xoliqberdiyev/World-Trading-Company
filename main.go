@@ -37,6 +37,8 @@ func main() {
 	psqlConn, err := sqlx.Connect("postgres", psqlUrl)
 	if err != nil {
 		log.Println(err)
+	} else {
+		log.Println("DB: connection successfully")
 	}
 	server := api.NewServer(psqlConn.DB, ":8000")
 	if err := server.Run(); err != nil {
