@@ -55,7 +55,6 @@ func (s *APIServer) Run() error {
 	// command
 	if len(os.Args) > 1 && os.Args[1] == "createsuperuser" {
 		command.CreateSuperUser(userStore)
-		return nil
 	}
 
 	handler := corsHandler.Handler(r)
