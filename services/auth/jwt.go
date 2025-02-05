@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	types_admin "github.com/XoliqberdiyevBehruz/wtc_backend/types/admin"
+	types_admin "github.com/XoliqberdiyevBehruz/wtc_backend/types/user_admin"
 	"github.com/XoliqberdiyevBehruz/wtc_backend/utils"
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -58,7 +58,7 @@ func AuthWithJWT(HandleFunc http.HandlerFunc, store types_admin.UserStore) http.
 		// permissionDenidet(w)
 		// return
 		// }
-
+		log.Println(userId)
 		u, err := store.GetUserById(userId)
 		if err != nil {
 			log.Printf("failed to user get: %v", err)

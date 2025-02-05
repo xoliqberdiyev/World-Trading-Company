@@ -1,4 +1,4 @@
-package types_admin
+package types_user_admin
 
 type UserStore interface {
 	CreateUser(user *UserCreatePayload) error

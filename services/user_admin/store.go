@@ -1,9 +1,9 @@
-package admin
+package user_admin
 
 import (
 	"database/sql"
 
-	types_admin "github.com/XoliqberdiyevBehruz/wtc_backend/types/admin"
+	types_admin "github.com/XoliqberdiyevBehruz/wtc_backend/types/user_admin"
 )
 
 type Store struct {

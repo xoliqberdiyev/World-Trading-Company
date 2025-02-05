@@ -1,6 +1,82 @@
 basePath: /
 definitions:
-  types_admin.UserCreatePayload:
+  types_common.ContactCreatePayload:
+    properties:
+      comment:
+        type: string
+      email:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+    required:
+    - email
+    type: object
+  types_common_admin.ContactUpdatePayload:
+    properties:
+      isContacted:
+        type: boolean
+    type: object
+  types_common_admin.SettingsCreatePayload:
+    properties:
+      addressEn:
+        type: string
+      addressRu:
+        type: string
+      addressUz:
+        type: string
+      email:
+        type: string
+      facebookUrl:
+        type: string
+      firstPhone:
+        type: string
+      instagramUrl:
+        type: string
+      secondPhone:
+        type: string
+      telegramUrl:
+        type: string
+      workingDays:
+        type: string
+      youtubeUrl:
+        type: string
+    required:
+    - email
+    - firstPhone
+    - secondPhone
+    type: object
+  types_common_admin.SettingsUpdatePayload:
+    properties:
+      addressEn:
+        type: string
+      addressRu:
+        type: string
+      addressUz:
+        type: string
+      email:
+        type: string
+      facebookUrl:
+        type: string
+      firstPhone:
+        type: string
+      instagramUrl:
+        type: string
+      secondPhone:
+        type: string
+      telegramUrl:
+        type: string
+      workingDays:
+        type: string
+      youtubeUrl:
+        type: string
+    required:
+    - email
+    - firstPhone
+    - secondPhone
+    type: object
+  types_user_admin.UserCreatePayload:
     properties:
       firstName:
         type: string
@@ -11,14 +87,14 @@ definitions:
       username:
         type: string
     type: object
-  types_admin.UserLoginPayload:
+  types_user_admin.UserLoginPayload:
     properties:
       password:
         type: string
       username:
         type: string
     type: object
-  types_admin.UserUpdatePayload:
+  types_user_admin.UserUpdatePayload:
     properties:
       firstName:
         type: string
@@ -40,6 +116,188 @@ info:
   title: Swagger Example API
   version: "1.0"
 paths:
+  /admin/common/contact_us/{contactId}:
+    get:
+      consumes:
+      - application/json
+      description: get contact us
+      parameters:
+      - description: contact Id
+        in: path
+        name: contactId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: get contact us
+      tags:
+      - common-admin
+  /admin/common/contact_us/{contactId}/delete:
+    delete:
+      consumes:
+      - application/json
+      description: delete contact us
+      parameters:
+      - description: contact Id
+        in: path
+        name: contactId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: delete contact us
+      tags:
+      - common-admin
+  /admin/common/contact_us/{contactId}/update:
+    put:
+      consumes:
+      - application/json
+      description: update contact us
+      parameters:
+      - description: contact Id
+        in: path
+        name: contactId
+        required: true
+        type: string
+      - description: Update Contact Payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types_common_admin.ContactUpdatePayload'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: update contact us
+      tags:
+      - common-admin
+  /admin/common/contact_us/list:
+    get:
+      consumes:
+      - application/json
+      description: get contact us
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: get contact us
+      tags:
+      - common-admin
+  /admin/common/settings/{settingsId}:
+    get:
+      consumes:
+      - application/json
+      description: settings get with setting id
+      parameters:
+      - description: settings Id
+        in: path
+        name: settingsId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: settings get
+      tags:
+      - common-admin
+  /admin/common/settings/{settingsId}/update:
+    put:
+      consumes:
+      - application/json
+      description: settings update by id
+      parameters:
+      - description: settings Id
+        in: path
+        name: settingsId
+        required: true
+        type: string
+      - description: settings update payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types_common_admin.SettingsUpdatePayload'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: settings update
+      tags:
+      - common-admin
+  /admin/common/settings/create:
+    post:
+      consumes:
+      - application/json
+      description: create settings
+      parameters:
+      - description: Create Settings Payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types_common_admin.SettingsCreatePayload'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: create settings
+      tags:
+      - common-admin
+  /admin/common/settings/list:
+    get:
+      consumes:
+      - application/json
+      description: get settings
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: get settings
+      tags:
+      - common-admin
+  /contact_us/create:
+    post:
+      consumes:
+      - application/json
+      description: create contact us
+      parameters:
+      - description: Contact Us Payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types_common.ContactCreatePayload'
+      produces:
+      - application/json
+      responses: {}
+      summary: create contact us
+      tags:
+      - common
+  /settings:
+    get:
+      consumes:
+      - application/json
+      description: get settings list
+      produces:
+      - application/json
+      responses: {}
+      summary: get settings
+      tags:
+      - common
   /user/create:
     post:
       consumes:
@@ -51,7 +309,7 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/types_admin.UserCreatePayload'
+          $ref: '#/definitions/types_user_admin.UserCreatePayload'
       produces:
       - application/json
       responses: {}
@@ -59,7 +317,7 @@ paths:
       - BearerAuth: []
       summary: Create User
       tags:
-      - admin-user
+      - user-admin
   /user/delete/{userId}:
     delete:
       consumes:
@@ -77,7 +335,7 @@ paths:
       - BearerAuth: []
       summary: Delete user
       tags:
-      - admin-user
+      - user-admin
   /user/detail/{userId}:
     get:
       consumes:
@@ -95,7 +353,7 @@ paths:
       - BearerAuth: []
       summary: Get user
       tags:
-      - admin-user
+      - user-admin
   /user/list:
     get:
       consumes:
@@ -107,7 +365,7 @@ paths:
       - BearerAuth: []
       summary: List users
       tags:
-      - admin-user
+      - user-admin
   /user/login:
     post:
       consumes:
@@ -119,13 +377,13 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/types_admin.UserLoginPayload'
+          $ref: '#/definitions/types_user_admin.UserLoginPayload'
       produces:
       - application/json
       responses: {}
       summary: Login a user
       tags:
-      - admin-user
+      - user-admin
   /user/profile:
     get:
       consumes:
@@ -137,7 +395,7 @@ paths:
       - BearerAuth: []
       summary: Get user profile
       tags:
-      - admin-user
+      - user-admin
   /user/update/{userId}:
     put:
       consumes:
@@ -153,7 +411,7 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/types_admin.UserUpdatePayload'
+          $ref: '#/definitions/types_user_admin.UserUpdatePayload'
       produces:
       - application/json
       responses: {}
@@ -161,7 +419,7 @@ paths:
       - BearerAuth: []
       summary: Update user
       tags:
-      - admin-user
+      - user-admin
 securityDefinitions:
   BearerAuth:
     in: header

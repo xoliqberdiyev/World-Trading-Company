@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/XoliqberdiyevBehruz/wtc_backend/services/auth"
-	types_admin "github.com/XoliqberdiyevBehruz/wtc_backend/types/admin"
+	types_admin "github.com/XoliqberdiyevBehruz/wtc_backend/types/user_admin"
 )
 
 func CreateSuperUser(store types_admin.UserStore) {

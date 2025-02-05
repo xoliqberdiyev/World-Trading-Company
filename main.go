@@ -6,6 +6,7 @@ import (
 
 	"github.com/XoliqberdiyevBehruz/wtc_backend/api"
 	"github.com/XoliqberdiyevBehruz/wtc_backend/config"
+	"github.com/XoliqberdiyevBehruz/wtc_backend/utils"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 )
@@ -40,7 +41,7 @@ func main() {
 	} else {
 		log.Println("DB: connection successfully")
 	}
-	server := api.NewServer(psqlConn.DB, ":8000")
+	server := api.NewServer(psqlConn.DB, utils.GetString("SERVER_PORT", ":8080"))
 	if err := server.Run(); err != nil {
 		log.Fatal(err)
 	}

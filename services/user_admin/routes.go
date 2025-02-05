@@ -1,11 +1,11 @@
-package admin
+package user_admin
 
 import (
 	"fmt"
 	"net/http"
 
 	"github.com/XoliqberdiyevBehruz/wtc_backend/services/auth"
-	types_admin "github.com/XoliqberdiyevBehruz/wtc_backend/types/admin"
+	types_admin "github.com/XoliqberdiyevBehruz/wtc_backend/types/user_admin"
 	"github.com/XoliqberdiyevBehruz/wtc_backend/utils"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator"
@@ -33,7 +33,7 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 
 // @Summary Create User
 // @Description Create User
-// @Tags admin-user
+// @Tags user-admin
 // @Accept  json
 // @Produce  json
 // @Param payload body types_admin.UserCreatePayload true "user create payload"
@@ -88,7 +88,7 @@ func (h *Handler) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 
 // @Summary Login a user
 // @Description Login a user with username and password
-// @Tags admin-user
+// @Tags user-admin
 // @Accept  json
 // @Produce  json
 // @Param payload body types_admin.UserLoginPayload true "Login User Payload"
@@ -113,6 +113,11 @@ func (h *Handler) handleLoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if user == nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("user not found"))
+		return
+	}
+
 	err = auth.CompareHashPassword(payload.Password, user.Password)
 	if err != nil {
 		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("user not found"))
@@ -129,7 +134,7 @@ func (h *Handler) handleLoginUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // @Summary Get user profile
-// @Tags admin-user
+// @Tags user-admin
 // @Accept  json
 // @Produce  json
 // @Router /user/profile [get]
@@ -146,7 +151,7 @@ func (h *Handler) handleProfileUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // @Summary Update user
-// @Tags admin-user
+// @Tags user-admin
 // @Accept  json
 // @Produce  json
 // @Router /user/update/{userId} [put]
@@ -193,7 +198,7 @@ func (h *Handler) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // @Summary Delete user
-// @Tags admin-user
+// @Tags user-admin
 // @Accept  json
 // @Produce  json
 // @Router /user/delete/{userId} [delete]
@@ -223,7 +228,7 @@ func (h *Handler) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // @Summary Get user
-// @Tags admin-user
+// @Tags user-admin
 // @Accept  json
 // @Produce  json
 // @Router /user/detail/{userId} [get]
@@ -246,7 +251,7 @@ func (h *Handler) handleDetailUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // @Summary List users
-// @Tags admin-user
+// @Tags user-admin
 // @Accept  json
 // @Produce  json
 // @Router /user/list [get]

@@ -24,6 +24,291 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/admin/common/contact_us/list": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get contact us",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "summary": "get contact us",
+                "responses": {}
+            }
+        },
+        "/admin/common/contact_us/{contactId}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get contact us",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "summary": "get contact us",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "contact Id",
+                        "name": "contactId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/common/contact_us/{contactId}/delete": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "delete contact us",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "summary": "delete contact us",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "contact Id",
+                        "name": "contactId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/common/contact_us/{contactId}/update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "update contact us",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "summary": "update contact us",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "contact Id",
+                        "name": "contactId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update Contact Payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types_common_admin.ContactUpdatePayload"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/common/settings/create": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "create settings",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "summary": "create settings",
+                "parameters": [
+                    {
+                        "description": "Create Settings Payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types_common_admin.SettingsCreatePayload"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/common/settings/list": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get settings",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "summary": "get settings",
+                "responses": {}
+            }
+        },
+        "/admin/common/settings/{settingsId}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "settings get with setting id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "summary": "settings get",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "settings Id",
+                        "name": "settingsId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/common/settings/{settingsId}/update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "settings update by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "summary": "settings update",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "settings Id",
+                        "name": "settingsId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "settings update payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types_common_admin.SettingsUpdatePayload"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/contact_us/create": {
+            "post": {
+                "description": "create contact us",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common"
+                ],
+                "summary": "create contact us",
+                "parameters": [
+                    {
+                        "description": "Contact Us Payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types_common.ContactCreatePayload"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/settings": {
+            "get": {
+                "description": "get settings list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common"
+                ],
+                "summary": "get settings",
+                "responses": {}
+            }
+        },
         "/user/create": {
             "post": {
                 "security": [
@@ -39,7 +324,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "admin-user"
+                    "user-admin"
                 ],
                 "summary": "Create User",
                 "parameters": [
@@ -49,7 +334,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/types_admin.UserCreatePayload"
+                            "$ref": "#/definitions/types_user_admin.UserCreatePayload"
                         }
                     }
                 ],
@@ -70,7 +355,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "admin-user"
+                    "user-admin"
                 ],
                 "summary": "Delete user",
                 "parameters": [
@@ -99,7 +384,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "admin-user"
+                    "user-admin"
                 ],
                 "summary": "Get user",
                 "parameters": [
@@ -128,7 +413,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "admin-user"
+                    "user-admin"
                 ],
                 "summary": "List users",
                 "responses": {}
@@ -144,7 +429,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "admin-user"
+                    "user-admin"
                 ],
                 "summary": "Login a user",
                 "parameters": [
@@ -154,7 +439,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/types_admin.UserLoginPayload"
+                            "$ref": "#/definitions/types_user_admin.UserLoginPayload"
                         }
                     }
                 ],
@@ -175,7 +460,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "admin-user"
+                    "user-admin"
                 ],
                 "summary": "Get user profile",
                 "responses": {}
@@ -195,7 +480,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "admin-user"
+                    "user-admin"
                 ],
                 "summary": "Update user",
                 "parameters": [
@@ -212,7 +497,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/types_admin.UserUpdatePayload"
+                            "$ref": "#/definitions/types_user_admin.UserUpdatePayload"
                         }
                     }
                 ],
@@ -221,7 +506,121 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "types_admin.UserCreatePayload": {
+        "types_common.ContactCreatePayload": {
+            "type": "object",
+            "required": [
+                "email"
+            ],
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                }
+            }
+        },
+        "types_common_admin.ContactUpdatePayload": {
+            "type": "object",
+            "properties": {
+                "isContacted": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "types_common_admin.SettingsCreatePayload": {
+            "type": "object",
+            "required": [
+                "email",
+                "firstPhone",
+                "secondPhone"
+            ],
+            "properties": {
+                "addressEn": {
+                    "type": "string"
+                },
+                "addressRu": {
+                    "type": "string"
+                },
+                "addressUz": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "facebookUrl": {
+                    "type": "string"
+                },
+                "firstPhone": {
+                    "type": "string"
+                },
+                "instagramUrl": {
+                    "type": "string"
+                },
+                "secondPhone": {
+                    "type": "string"
+                },
+                "telegramUrl": {
+                    "type": "string"
+                },
+                "workingDays": {
+                    "type": "string"
+                },
+                "youtubeUrl": {
+                    "type": "string"
+                }
+            }
+        },
+        "types_common_admin.SettingsUpdatePayload": {
+            "type": "object",
+            "required": [
+                "email",
+                "firstPhone",
+                "secondPhone"
+            ],
+            "properties": {
+                "addressEn": {
+                    "type": "string"
+                },
+                "addressRu": {
+                    "type": "string"
+                },
+                "addressUz": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "facebookUrl": {
+                    "type": "string"
+                },
+                "firstPhone": {
+                    "type": "string"
+                },
+                "instagramUrl": {
+                    "type": "string"
+                },
+                "secondPhone": {
+                    "type": "string"
+                },
+                "telegramUrl": {
+                    "type": "string"
+                },
+                "workingDays": {
+                    "type": "string"
+                },
+                "youtubeUrl": {
+                    "type": "string"
+                }
+            }
+        },
+        "types_user_admin.UserCreatePayload": {
             "type": "object",
             "properties": {
                 "firstName": {
@@ -238,7 +637,7 @@ const docTemplate = `{
                 }
             }
         },
-        "types_admin.UserLoginPayload": {
+        "types_user_admin.UserLoginPayload": {
             "type": "object",
             "properties": {
                 "password": {
@@ -249,7 +648,7 @@ const docTemplate = `{
                 }
             }
         },
-        "types_admin.UserUpdatePayload": {
+        "types_user_admin.UserUpdatePayload": {
             "type": "object",
             "properties": {
                 "firstName": {
