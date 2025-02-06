@@ -21,6 +21,8 @@ func NewHandler(store types_common.CommonStore) *Handler {
 func (h *Handler) RegisterRoutes(r chi.Router) {
 	r.Post("/contact_us/create", h.handleContactUsCreate)
 	r.Get("/settings", h.handleGetSettings)
+	r.Post("/contact_us_footer/create", h.handleContactUsFooterCreate)
+	r.Get("/media/list", h.handleGetMediasList)
 }
 
 // @Summary create contact us
@@ -60,7 +62,6 @@ func (h *Handler) handleContactUsCreate(w http.ResponseWriter, r *http.Request) 
 	utils.WriteJson(w, http.StatusCreated, map[string]string{"message": "successfully created"})
 }
 
-
 // <==SETTINGS==> //
 // @Summary get settings
 // @Description get settings list
@@ -72,8 +73,60 @@ func (h *Handler) handleGetSettings(w http.ResponseWriter, r *http.Request) {
 	settings, err := h.store.GetAllSettings()
 	if err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
-		return 
+		return
 	}
 
 	utils.WriteJson(w, http.StatusOK, settings)
+}
+
+// @Summary create contact footer
+// @Description create contact footer
+// @Tags common
+// @Accept json
+// @Produce json
+// @Param payload body types_common.ContactUsFooterPayload true "contact us footer create payload"
+// @Router /contact_us_footer/create [post]
+func (h *Handler) handleContactUsFooterCreate(w http.ResponseWriter, r *http.Request) {
+	var payload types_common.ContactUsFooterPayload
+
+	if err := utils.ParseJson(r, &payload); err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if err := utils.Validate.Struct(payload); err != nil {
+		errors := err.(validator.ValidationErrors)
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid payload: %v", errors))
+		return
+	}
+
+	contactUs := types_common.ContactUsFooterPayload{
+		FullName: payload.FullName,
+		Phone:    payload.Phone,
+		Email:    payload.Email,
+	}
+
+	err := h.store.CreateContactUsFooter(contactUs)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusCreated, map[string]string{"message": "successfully created"})
+}
+
+// @Summary get all media
+// @Description get all media
+// @Tags common
+// @Accept json
+// @Produce json
+// @Router /media/list [get]
+func (h *Handler) handleGetMediasList(w http.ResponseWriter, r *http.Request) {
+	list, err := h.store.GetAllMedia()
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, list)
 }

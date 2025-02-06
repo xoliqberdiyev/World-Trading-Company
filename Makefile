@@ -25,4 +25,6 @@ tidy:
 
 createsuperuser:
 	@go run main.go createsuperuser
-	
+
+createfiles:
+	@mkdir uploads/ && mkdir uploads/medias/ && mkdir uploads/medias/files/

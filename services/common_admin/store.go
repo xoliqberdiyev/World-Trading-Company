@@ -74,6 +74,7 @@ func (s *Store) CreateSettings(settings *types_common_admin.SettingsCreatePayloa
 	}
 	return nil
 }
+
 // ========== settings ==========
 func (s *Store) GetSettings() ([]*types_common_admin.SettingsPayload, error) {
 	var settings []*types_common_admin.SettingsPayload
@@ -96,7 +97,7 @@ func (s *Store) GetSettings() ([]*types_common_admin.SettingsPayload, error) {
 func (s *Store) GetSettingsById(id string) (*types_common_admin.SettingsPayload, error) {
 	var settings types_common_admin.SettingsPayload
 	query := `SELECT * FROM settings WHERE id = $1`
-	err := s.db.QueryRow(query, id).Scan(&settings.Id, &settings.FirstPhone, &settings.SecondPhone, &settings.Email, &settings.Telegram, &settings.Instagram, &settings.Youtube, &settings.Facebook, &settings.AddressUz, &settings.AddressRu, &settings.AddressEn,  &settings.WorkingDays, &settings.CreatedAt)
+	err := s.db.QueryRow(query, id).Scan(&settings.Id, &settings.FirstPhone, &settings.SecondPhone, &settings.Email, &settings.Telegram, &settings.Instagram, &settings.Youtube, &settings.Facebook, &settings.AddressUz, &settings.AddressRu, &settings.AddressEn, &settings.WorkingDays, &settings.CreatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -122,3 +123,114 @@ func (s *Store) UpdateSettingsById(id string, settings *types_common_admin.Setti
 	}
 	return nil
 }
+
+func (s *Store) GetAllContactUsFooter() ([]*types_common_admin.ContactUsFooterPayload, error) {
+	var contacts []*types_common_admin.ContactUsFooterPayload
+	query := `SELECT * FROM contact_us_footer`
+	rows, err := s.db.Query(query)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	for rows.Next() {
+		var contactUs types_common_admin.ContactUsFooterPayload
+		if err := rows.Scan(&contactUs.Id, &contactUs.FullName, &contactUs.Phone, &contactUs.Email, &contactUs.IsContacted, &contactUs.CreatedAt); err != nil {
+			return nil, err
+		}
+		contacts = append(contacts, &contactUs)
+	}
+	return contacts, nil
+}
+
+func (s *Store) UpdateContactUsFooter(id string, contactUs *types_common_admin.ContactUsFooterUpdatePayload) error {
+	query := `UPDATE contact_us_footer SET is_contacted = $1 WHERE id = $2`
+	_, err := s.db.Query(query, &contactUs.IsContacted, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) GetContactUsFooterById(id string) (*types_common_admin.ContactUsFooterPayload, error) {
+	var contactUs types_common_admin.ContactUsFooterPayload
+	query := `SELECT * FROM contact_us_footer WHERE id = $1`
+	err := s.db.QueryRow(query, id).Scan(&contactUs.Id, &contactUs.FullName, &contactUs.Phone, &contactUs.Email, &contactUs.IsContacted, &contactUs.CreatedAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &contactUs, err
+}
+
+func (s *Store) DeleteContactUsFooterById(id string) error {
+	query := `DELETE FROM contact_us_footer WHERE id = $1`
+	_, err := s.db.Query(query, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) CreateMedia(media *types_common_admin.MediaPayload) error {
+	query := `INSERT INTO medias(file_uz, file_ru, file_en) VALUES($1, $2, $3)`
+	_, err := s.db.Exec(query, &media.FileUz, &media.FileRu, &media.FileEn)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) GetMediaById(id string) (*types_common_admin.MediaListPayload, error) {
+	var media types_common_admin.MediaListPayload
+	query := `SELECT * FROM medias WHERE id = $1`
+	err := s.db.QueryRow(query, id).Scan(&media.Id, &media.FileUz, &media.FileRu, &media.FileEn, &media.CreatedAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &media, err
+}
+
+func (s *Store) GetAllMedias() ([]*types_common_admin.MediaListPayload, error) {
+	var medias []*types_common_admin.MediaListPayload
+	query := `SELECT * FROM medias`
+	rows, err := s.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var media types_common_admin.MediaListPayload
+		if err := rows.Scan(&media.Id, &media.FileUz, &media.FileRu, &media.FileEn, &media.CreatedAt); err != nil {
+			return nil, err
+		}
+		medias = append(medias, &media)
+	}
+	return medias, nil
+}
+
+func (s *Store) DeleteMediaById(id string) error {
+	query := `DELETE FROM medias WHERE id = $1`
+	_, err := s.db.Query(query, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) UpdateMedia(id string, media *types_common_admin.MediaPayload) error {
+	query := `UPDATE medias SET file_uz = $1, file_ru = $2, file_en = $3 WHERE id = $4`
+	_, err := s.db.Query(query, &media.FileUz, &media.FileRu, &media.FileEn, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+

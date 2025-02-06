@@ -40,3 +40,30 @@ func (s *Store) GetAllSettings() ([]*types_common.SettingsPayload, error) {
 	}
 	return settings, nil
 }
+
+func (s *Store) CreateContactUsFooter(contactUs types_common.ContactUsFooterPayload) error {
+	query := `INSERT INTO contact_us_footer(full_name, phone_number, email) VALUES($1, $2, $3)`
+	_, err := s.db.Exec(query, &contactUs.FullName, &contactUs.Phone, &contactUs.Email)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) GetAllMedia() ([]*types_common.MediaPayload, error) {
+	var medias []*types_common.MediaPayload
+	query := `SELECT * FROM medias`
+	rows, err := s.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var media types_common.MediaPayload
+		if err := rows.Scan(&media.Id, &media.FileUz, &media.FileRu, &media.FileEn, &media.CreatedAt); err != nil {
+			return nil, err
+		}
+		medias = append(medias, &media)
+	}
+	return medias, nil
+} 
+

@@ -3,6 +3,8 @@ package types_common
 type CommonStore interface {
 	CreateContactUs(contact *ContactCreatePayload) error
 	GetAllSettings() ([]*SettingsPayload, error)
+	CreateContactUsFooter(contactUs ContactUsFooterPayload) error
+	GetAllMedia() ([]*MediaPayload, error)
 }
 
 type ContactCreatePayload struct {
@@ -24,4 +26,18 @@ type SettingsPayload struct {
 	AddressRu   string `json:"addressRu"`
 	AddressEn   string `json:"addressEn"`
 	WorkingDays string `json:"workingDays"`
+}
+
+type ContactUsFooterPayload struct {
+	FullName string `json:"fullName"`
+	Phone    string `json:"phone" validate:"required,e164"`
+	Email    string `json:"email" validate:"required,email"`
+}
+
+type MediaPayload struct {
+	Id string `json:"id"`
+	FileUz string `json:"fileUz"`
+	FileRu string `json:"fileRu"`
+	FileEn string `json:"fileEn"`
+	CreatedAt string `json:"createdAt"`
 }

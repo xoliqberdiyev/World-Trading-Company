@@ -13,7 +13,24 @@ definitions:
     required:
     - email
     type: object
+  types_common.ContactUsFooterPayload:
+    properties:
+      email:
+        type: string
+      fullName:
+        type: string
+      phone:
+        type: string
+    required:
+    - email
+    - phone
+    type: object
   types_common_admin.ContactUpdatePayload:
+    properties:
+      isContacted:
+        type: boolean
+    type: object
+  types_common_admin.ContactUsFooterUpdatePayload:
     properties:
       isContacted:
         type: boolean
@@ -192,6 +209,172 @@ paths:
       summary: get contact us
       tags:
       - common-admin
+  /admin/common/contact_us_footer/{contactId}:
+    get:
+      consumes:
+      - application/json
+      description: Get contactUs by id
+      parameters:
+      - description: contact id
+        in: path
+        name: contactId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: Get contactUs by id
+      tags:
+      - common-admin
+  /admin/common/contact_us_footer/{contactId}/delete:
+    delete:
+      consumes:
+      - application/json
+      description: delete contact us
+      parameters:
+      - description: contact id
+        in: path
+        name: contactId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: delete contact us
+      tags:
+      - common-admin
+  /admin/common/contact_us_footer/{contactId}/update:
+    put:
+      consumes:
+      - application/json
+      description: update contact us
+      parameters:
+      - description: contact Id
+        in: path
+        name: contactId
+        required: true
+        type: string
+      - description: contact us update payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types_common_admin.ContactUsFooterUpdatePayload'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: update contact us
+      tags:
+      - common-admin
+  /admin/common/contact_us_footer/list:
+    get:
+      consumes:
+      - application/json
+      description: ContactUsFooter list
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: ContactUsFooter list
+      tags:
+      - common-admin
+  /admin/common/media/{mediaId}/delete:
+    delete:
+      consumes:
+      - application/json
+      description: delete media
+      parameters:
+      - description: media id
+        in: path
+        name: mediaId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: delete media
+      tags:
+      - common-admin
+  /admin/common/media/{mediaId}/update:
+    put:
+      consumes:
+      - multipart/data
+      description: update media
+      parameters:
+      - description: media id
+        in: path
+        name: mediaId
+        required: true
+        type: string
+      - description: file uz
+        in: formData
+        name: fileUz
+        required: true
+        type: file
+      - description: file ru
+        in: formData
+        name: fileRu
+        type: file
+      - description: file en
+        in: formData
+        name: fileEn
+        type: file
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: update media
+      tags:
+      - common-admin
+  /admin/common/media/create:
+    post:
+      consumes:
+      - multipart/data
+      description: create media
+      parameters:
+      - description: file uz
+        in: formData
+        name: fileUz
+        required: true
+        type: file
+      - description: file ru
+        in: formData
+        name: fileRu
+        type: file
+      - description: file en
+        in: formData
+        name: fileEn
+        type: file
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      tags:
+      - common-admin
+  /admin/common/media/list:
+    get:
+      consumes:
+      - application/json
+      description: get medias
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: get medias
+      tags:
+      - common-admin
   /admin/common/settings/{settingsId}:
     get:
       consumes:
@@ -285,6 +468,35 @@ paths:
       - application/json
       responses: {}
       summary: create contact us
+      tags:
+      - common
+  /contact_us_footer/create:
+    post:
+      consumes:
+      - application/json
+      description: create contact footer
+      parameters:
+      - description: contact us footer create payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types_common.ContactUsFooterPayload'
+      produces:
+      - application/json
+      responses: {}
+      summary: create contact footer
+      tags:
+      - common
+  /media/list:
+    get:
+      consumes:
+      - application/json
+      description: get all media
+      produces:
+      - application/json
+      responses: {}
+      summary: get all media
       tags:
       - common
   /settings:

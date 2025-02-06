@@ -137,6 +137,267 @@
                 "responses": {}
             }
         },
+        "/admin/common/contact_us_footer/list": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "ContactUsFooter list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "summary": "ContactUsFooter list",
+                "responses": {}
+            }
+        },
+        "/admin/common/contact_us_footer/{contactId}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get contactUs by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "summary": "Get contactUs by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "contact id",
+                        "name": "contactId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/common/contact_us_footer/{contactId}/delete": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "delete contact us",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "summary": "delete contact us",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "contact id",
+                        "name": "contactId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/common/contact_us_footer/{contactId}/update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "update contact us",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "summary": "update contact us",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "contact Id",
+                        "name": "contactId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "contact us update payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types_common_admin.ContactUsFooterUpdatePayload"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/common/media/create": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "create media",
+                "consumes": [
+                    "multipart/data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "file uz",
+                        "name": "fileUz",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "file ru",
+                        "name": "fileRu",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "file en",
+                        "name": "fileEn",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/common/media/list": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get medias",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "summary": "get medias",
+                "responses": {}
+            }
+        },
+        "/admin/common/media/{mediaId}/delete": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "delete media",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "summary": "delete media",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "media id",
+                        "name": "mediaId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/common/media/{mediaId}/update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "update media",
+                "consumes": [
+                    "multipart/data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "summary": "update media",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "media id",
+                        "name": "mediaId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "file uz",
+                        "name": "fileUz",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "file ru",
+                        "name": "fileRu",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "file en",
+                        "name": "fileEn",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/admin/common/settings/create": {
             "post": {
                 "security": [
@@ -283,6 +544,49 @@
                         }
                     }
                 ],
+                "responses": {}
+            }
+        },
+        "/contact_us_footer/create": {
+            "post": {
+                "description": "create contact footer",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common"
+                ],
+                "summary": "create contact footer",
+                "parameters": [
+                    {
+                        "description": "contact us footer create payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types_common.ContactUsFooterPayload"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/media/list": {
+            "get": {
+                "description": "get all media",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common"
+                ],
+                "summary": "get all media",
                 "responses": {}
             }
         },
@@ -519,7 +823,33 @@
                 }
             }
         },
+        "types_common.ContactUsFooterPayload": {
+            "type": "object",
+            "required": [
+                "email",
+                "phone"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "fullName": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
         "types_common_admin.ContactUpdatePayload": {
+            "type": "object",
+            "properties": {
+                "isContacted": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "types_common_admin.ContactUsFooterUpdatePayload": {
             "type": "object",
             "properties": {
                 "isContacted": {

@@ -11,6 +11,15 @@ type CommonStore interface {
 	GetSettings() ([]*SettingsPayload, error)
 	GetSettingsById(id string) (*SettingsPayload, error)
 	UpdateSettingsById(id string, settings *SettingsUpdatePayload) error
+	GetAllContactUsFooter() ([]*ContactUsFooterPayload, error)
+	UpdateContactUsFooter(id string, contactUs *ContactUsFooterUpdatePayload) error
+	GetContactUsFooterById(id string) (*ContactUsFooterPayload, error)
+	DeleteContactUsFooterById(id string) error
+	CreateMedia(media *MediaPayload) error
+	GetMediaById(id string) (*MediaListPayload, error)
+	GetAllMedias() ([]*MediaListPayload, error)
+	DeleteMediaById(id string) error
+	UpdateMedia(id string, media *MediaPayload) error
 }
 
 type ContactListPayload struct {
@@ -70,4 +79,31 @@ type SettingsUpdatePayload struct {
 	AddressRu   string `json:"addressRu"`
 	AddressEn   string `json:"addressEn"`
 	WorkingDays string `json:"workingDays"`
+}
+
+type ContactUsFooterPayload struct {
+	Id          string    `json:"id"`
+	FullName    string    `json:"fullName"`
+	Phone       string    `json:"phoneNumber"`
+	Email       string    `json:"email"`
+	IsContacted bool      `json:"isContacted"`
+	CreatedAt   time.Time `json:"createdAt"`
+}
+
+type ContactUsFooterUpdatePayload struct {
+	IsContacted bool `json:"isContacted"`
+}
+
+type MediaPayload struct {
+	FileUz string `json:"fileUz"`
+	FileRu string `json:"fileRu"`
+	FileEn string `json:"fileEn"`
+}
+
+type MediaListPayload struct {
+	Id        string `json:"id"`
+	FileUz    string `json:"fileUz"`
+	FileRu    string `json:"fileRu"`
+	FileEn    string `json:"fileEn"`
+	CreatedAt string `json:"createdAt"`
 }
