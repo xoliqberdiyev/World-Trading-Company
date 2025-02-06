@@ -9,3 +9,4 @@ vendor/
 go.work
 .env
 bin/
+uploads
