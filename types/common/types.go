@@ -5,6 +5,7 @@ type CommonStore interface {
 	GetAllSettings() ([]*SettingsPayload, error)
 	CreateContactUsFooter(contactUs ContactUsFooterPayload) error
 	GetAllMedia() ([]*MediaPayload, error)
+	ListPartner() ([]*PartnerListPayload, error)
 }
 
 type ContactCreatePayload struct {
@@ -35,9 +36,14 @@ type ContactUsFooterPayload struct {
 }
 
 type MediaPayload struct {
-	Id string `json:"id"`
-	FileUz string `json:"fileUz"`
-	FileRu string `json:"fileRu"`
-	FileEn string `json:"fileEn"`
+	Id        string `json:"id"`
+	FileUz    string `json:"fileUz"`
+	FileRu    string `json:"fileRu"`
+	FileEn    string `json:"fileEn"`
 	CreatedAt string `json:"createdAt"`
+}
+
+type PartnerListPayload struct {
+	Id    string `json:"id"`
+	Image string `json:"image"`
 }

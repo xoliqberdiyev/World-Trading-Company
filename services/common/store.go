@@ -65,5 +65,22 @@ func (s *Store) GetAllMedia() ([]*types_common.MediaPayload, error) {
 		medias = append(medias, &media)
 	}
 	return medias, nil
-} 
+}
 
+func (s *Store) ListPartner() ([]*types_common.PartnerListPayload, error) {
+	var partners []*types_common.PartnerListPayload
+
+	query := `SELECT * FROM partners`
+	rows, err := s.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var partner types_common.PartnerListPayload
+		if err := rows.Scan(&partner.Id, &partner.Image); err != nil {
+			return nil, err
+		}
+		partners = append(partners, &partner)
+	}
+	return partners, nil
+}

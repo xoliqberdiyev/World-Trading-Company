@@ -1,5 +1,16 @@
 basePath: /
 definitions:
+  types_about_company.CapasityPayload:
+    properties:
+      nameEn:
+        type: string
+      nameRu:
+        type: string
+      nameUz:
+        type: string
+      quantity:
+        type: integer
+    type: object
   types_common.ContactCreatePayload:
     properties:
       comment:
@@ -375,6 +386,98 @@ paths:
       summary: get medias
       tags:
       - common-admin
+  /admin/common/partner/{partnerId}:
+    get:
+      consumes:
+      - application/json
+      description: get partner
+      parameters:
+      - description: partnerId
+        in: path
+        name: partnerId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      tags:
+      - common-admin
+  /admin/common/partner/{partnerId}/delete:
+    delete:
+      consumes:
+      - application/json
+      description: delete partner
+      parameters:
+      - description: partner id
+        in: path
+        name: partnerId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: delete partner
+      tags:
+      - common-admin
+  /admin/common/partner/{partnerId}/update:
+    put:
+      consumes:
+      - multipart/json
+      description: update partner
+      parameters:
+      - description: partner id
+        in: path
+        name: partnerId
+        required: true
+        type: string
+      - description: image
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      tags:
+      - common-admin
+  /admin/common/partner/create:
+    post:
+      consumes:
+      - multipart/data
+      description: create partner
+      parameters:
+      - description: image
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: create partner
+      tags:
+      - common-admin
+  /admin/common/partner/list:
+    get:
+      consumes:
+      - application/json
+      description: list partners
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: list partners
+      tags:
+      - common-admin
   /admin/common/settings/{settingsId}:
     get:
       consumes:
@@ -452,6 +555,102 @@ paths:
       summary: get settings
       tags:
       - common-admin
+  /admin/company/capasity/{capasityId}:
+    get:
+      consumes:
+      - application/json
+      description: get capasity
+      parameters:
+      - description: capasity id
+        in: path
+        name: capasityId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: get capasity
+      tags:
+      - company-admin
+  /admin/company/capasity/{capasityId}/delete:
+    delete:
+      consumes:
+      - application/json
+      description: delete capasity
+      parameters:
+      - description: capasity id
+        in: path
+        name: capasityId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: delete capasity
+      tags:
+      - company-admin
+  /admin/company/capasity/{capasityId}/update:
+    put:
+      consumes:
+      - application/json
+      description: update capasity
+      parameters:
+      - description: capasity id
+        in: path
+        name: capasityId
+        required: true
+        type: string
+      - description: update capasity payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types_about_company.CapasityPayload'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: update capasity
+      tags:
+      - company-admin
+  /admin/company/capasity/create:
+    post:
+      consumes:
+      - application/json
+      description: create capasity
+      parameters:
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types_about_company.CapasityPayload'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: create capasity
+      tags:
+      - company-admin
+  /admin/company/capasity/list:
+    get:
+      consumes:
+      - application/json
+      description: list capasity
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: list capasity
+      tags:
+      - company-admin
   /contact_us/create:
     post:
       consumes:
@@ -497,6 +696,17 @@ paths:
       - application/json
       responses: {}
       summary: get all media
+      tags:
+      - common
+  /partner/list:
+    get:
+      consumes:
+      - application/json
+      description: list partner
+      produces:
+      - application/json
+      responses: {}
+      summary: list partner
       tags:
       - common
   /settings:

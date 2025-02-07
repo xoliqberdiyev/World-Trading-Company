@@ -405,6 +405,152 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/admin/common/partner/create": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "create partner",
+                "consumes": [
+                    "multipart/data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "summary": "create partner",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "image",
+                        "name": "image",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/common/partner/list": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "list partners",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "summary": "list partners",
+                "responses": {}
+            }
+        },
+        "/admin/common/partner/{partnerId}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get partner",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "partnerId",
+                        "name": "partnerId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/common/partner/{partnerId}/delete": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "delete partner",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "summary": "delete partner",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "partner id",
+                        "name": "partnerId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/common/partner/{partnerId}/update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "update partner",
+                "consumes": [
+                    "multipart/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "partner id",
+                        "name": "partnerId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "image",
+                        "name": "image",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/admin/common/settings/create": {
             "post": {
                 "security": [
@@ -527,6 +673,158 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/admin/company/capasity/create": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "create capasity",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "company-admin"
+                ],
+                "summary": "create capasity",
+                "parameters": [
+                    {
+                        "description": "payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types_about_company.CapasityPayload"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/company/capasity/list": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "list capasity",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "company-admin"
+                ],
+                "summary": "list capasity",
+                "responses": {}
+            }
+        },
+        "/admin/company/capasity/{capasityId}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get capasity",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "company-admin"
+                ],
+                "summary": "get capasity",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "capasity id",
+                        "name": "capasityId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/company/capasity/{capasityId}/delete": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "delete capasity",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "company-admin"
+                ],
+                "summary": "delete capasity",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "capasity id",
+                        "name": "capasityId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/company/capasity/{capasityId}/update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "update capasity",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "company-admin"
+                ],
+                "summary": "update capasity",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "capasity id",
+                        "name": "capasityId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "update capasity payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types_about_company.CapasityPayload"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/contact_us/create": {
             "post": {
                 "description": "create contact us",
@@ -594,6 +892,22 @@ const docTemplate = `{
                     "common"
                 ],
                 "summary": "get all media",
+                "responses": {}
+            }
+        },
+        "/partner/list": {
+            "get": {
+                "description": "list partner",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common"
+                ],
+                "summary": "list partner",
                 "responses": {}
             }
         },
@@ -810,6 +1124,23 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "types_about_company.CapasityPayload": {
+            "type": "object",
+            "properties": {
+                "nameEn": {
+                    "type": "string"
+                },
+                "nameRu": {
+                    "type": "string"
+                },
+                "nameUz": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                }
+            }
+        },
         "types_common.ContactCreatePayload": {
             "type": "object",
             "required": [

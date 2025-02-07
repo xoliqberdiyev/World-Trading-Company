@@ -20,6 +20,11 @@ type CommonStore interface {
 	GetAllMedias() ([]*MediaListPayload, error)
 	DeleteMediaById(id string) error
 	UpdateMedia(id string, media *MediaPayload) error
+	CreatePartner(partren *PartnersPayload) error
+	UpdatePartner(id string, partner *PartnersPayload) error
+	DeletePartner(id string) error
+	GetPartner(id string) (*PartnersListPayload, error)
+	ListPartner() ([]*PartnersListPayload, error)
 }
 
 type ContactListPayload struct {
@@ -106,4 +111,13 @@ type MediaListPayload struct {
 	FileRu    string `json:"fileRu"`
 	FileEn    string `json:"fileEn"`
 	CreatedAt string `json:"createdAt"`
+}
+
+type PartnersPayload struct {
+	Image string `json:"image"`
+}
+
+type PartnersListPayload struct {
+	Id    string `json:"id"`
+	Image string `json:"image"`
 }

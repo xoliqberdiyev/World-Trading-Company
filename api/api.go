@@ -10,8 +10,10 @@ import (
 
 	"github.com/XoliqberdiyevBehruz/wtc_backend/command"
 	_ "github.com/XoliqberdiyevBehruz/wtc_backend/docs"
+	"github.com/XoliqberdiyevBehruz/wtc_backend/services/about_company"
 	"github.com/XoliqberdiyevBehruz/wtc_backend/services/common"
 	"github.com/XoliqberdiyevBehruz/wtc_backend/services/common_admin"
+	product "github.com/XoliqberdiyevBehruz/wtc_backend/services/product_admin"
 	"github.com/XoliqberdiyevBehruz/wtc_backend/services/user_admin"
 	"github.com/XoliqberdiyevBehruz/wtc_backend/utils"
 	"github.com/go-chi/chi/v5"
@@ -66,6 +68,16 @@ func (s *APIServer) Run() error {
 	commonAdminStore := common_admin.NewStore(s.db)
 	commonAdminHandler := common_admin.NewHandler(commonAdminStore, userStore)
 	commonAdminHandler.RegisterRoutes(r)
+
+	// company-admin
+	companyAdminStore := about_company.NewStore(s.db)
+	companyAdminHandler := about_company.NewHandler(companyAdminStore, userStore)
+	companyAdminHandler.RegisterRoutes(r)
+
+	// product
+	productStore := product.NewStore(s.db)
+	productHandler := product.NewHandler(productStore, userStore)
+	productHandler.RegsiterRoutes(r)
 
 	// command
 	if len(os.Args) > 1 && os.Args[1] == "createsuperuser" {

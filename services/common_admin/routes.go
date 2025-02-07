@@ -44,6 +44,12 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 	r.Get("/admin/common/media/list", auth.AuthWithJWT(h.handleGetAllMedia, h.userStore))
 	r.Delete("/admin/common/media/{mediaId}/delete", auth.AuthWithJWT(h.handleDeleteMedia, h.userStore))
 	r.Put("/admin/common/media/{mediaId}/update", auth.AuthWithJWT(h.handleUpdateMedia, h.userStore))
+	//partner
+	r.Post("/admin/common/partner/create", auth.AuthWithJWT(h.handleCreatePartner, h.userStore))
+	r.Get("/admin/common/partner/list", auth.AuthWithJWT(h.handleListPartner, h.userStore))
+	r.Put("/admin/common/partner/{partnerId}/update", auth.AuthWithJWT(h.handleUpdatePartner, h.userStore))
+	r.Delete("/admin/common/partner/{partnerId}/delete", auth.AuthWithJWT(h.handleDeletePartner, h.userStore))
+	r.Get("/admin/common/partner/{partnerId}", auth.AuthWithJWT(h.handleGetPartner, h.userStore))
 }
 
 // =========================== Contact Us ===========================
@@ -695,3 +701,178 @@ func (h *Handler) handleUpdateMedia(w http.ResponseWriter, r *http.Request) {
 
 	utils.WriteJson(w, http.StatusOK, map[string]string{"message": "successfully updated"})
 }
+
+// @Summary create partner
+// @Description create partner
+// @Tags common-admin
+// @Accept multipart/data
+// @Produce json
+// @Param image formData file true "image"
+// @Router /admin/common/partner/create [post]
+// @Security BearerAuth
+func (h *Handler) handleCreatePartner(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseMultipartForm(50)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	image, imageHeader, err := r.FormFile("image")
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to read file"))
+		return
+	}
+	defer image.Close()
+
+	imagePath := "uploads/partners/images/" + imageHeader.Filename
+
+	outImage, err := os.Create(imagePath)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to save file"))
+		return
+	}
+	defer outImage.Close()
+
+	_, err = io.Copy(outImage, image)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image: %v", err))
+		return
+	}
+
+	partner := types_common_admin.PartnersPayload{
+		Image: imagePath,
+	}
+
+	err = h.store.CreatePartner(&partner)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusCreated, map[string]string{"message": "successfully created"})
+}
+
+// @Summary list partners
+// @Description list partners
+// @Tags common-admin
+// @Accept json
+// @Produce json
+// @Router /admin/common/partner/list [get]
+// @Security BearerAuth
+func (h *Handler) handleListPartner(w http.ResponseWriter, r *http.Request) {
+	list, err := h.store.ListPartner()
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, list)
+}
+
+// @Summart update partner
+// @Description update partner
+// @Tags common-admin
+// @Accept multipart/json
+// @Produce json
+// @Param partnerId path string true "partner id"
+// @Param image formData file true "image"
+// @Router /admin/common/partner/{partnerId}/update [put]
+// @Security BearerAuth
+func (h *Handler) handleUpdatePartner(w http.ResponseWriter, r *http.Request) {
+	var partnerId = r.PathValue("partnerId")
+
+	partner, err := h.store.GetPartner(partnerId)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	err = r.ParseMultipartForm(50)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	image, imageHeader, err := r.FormFile("image")
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to read image"))
+		return
+	}
+	defer image.Close()
+
+	imagePath := "uploads/partners/images/" + imageHeader.Filename
+
+	outImage, err := os.Create(imagePath)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to save file"))
+		return
+	}
+	defer outImage.Close()
+
+	_, err = io.Copy(outImage, image)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image"))
+		return
+	}
+
+	changed_partner := types_common_admin.PartnersPayload{
+		Image: imagePath,
+	}
+
+	err = h.store.UpdatePartner(partner.Id, &changed_partner)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, map[string]string{"message": "successfully updated"})
+}
+
+// @Summary delete partner
+// @Description delete partner
+// @Tags common-admin
+// @Accept json
+// @Produce json
+// @Param partnerId path string true "partner id"
+// @Router /admin/common/partner/{partnerId}/delete [delete]
+// @Security BearerAuth
+func (h *Handler) handleDeletePartner(w http.ResponseWriter, r *http.Request) {
+	var partnerId = r.PathValue("partnerId")
+
+	partner, err := h.store.GetPartner(partnerId)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+	if partner == nil {
+		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("partner not found"))
+		return
+	}
+
+	err = h.store.DeletePartner(partner.Id)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusNoContent, map[string]string{"message": "successfully deleted"})
+}
+
+// @Summart get partner
+// @Description get partner
+// @Tags common-admin
+// @Accept json
+// @Produce json
+// @Param partnerId path string true "partnerId"
+// @Router /admin/common/partner/{partnerId} [get]
+// @Security BearerAuth
+func (h *Handler) handleGetPartner(w http.ResponseWriter, r *http.Request) {
+	var partnerId = r.PathValue("partnerId")
+	partner, err := h.store.GetPartner(partnerId)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+	utils.WriteJson(w, http.StatusOK, partner)
+}
+

@@ -23,6 +23,7 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 	r.Get("/settings", h.handleGetSettings)
 	r.Post("/contact_us_footer/create", h.handleContactUsFooterCreate)
 	r.Get("/media/list", h.handleGetMediasList)
+	r.Get("/partner/list", h.handleListPartner)
 }
 
 // @Summary create contact us
@@ -128,5 +129,20 @@ func (h *Handler) handleGetMediasList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	utils.WriteJson(w, http.StatusOK, list)
+}
+
+// @Summary list partner
+// @Description list partner
+// @Tags common
+// @Accept json
+// @Produce json
+// @Router /partner/list [get]
+func (h *Handler) handleListPartner(w http.ResponseWriter, r *http.Request) {
+	list, err := h.store.ListPartner()
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
 	utils.WriteJson(w, http.StatusOK, list)
 }

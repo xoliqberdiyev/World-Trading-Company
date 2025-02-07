@@ -234,3 +234,59 @@ func (s *Store) UpdateMedia(id string, media *types_common_admin.MediaPayload) e
 	return nil
 }
 
+func (s *Store) CreatePartner(partren *types_common_admin.PartnersPayload) error {
+	query := `INSERT INTO partners(image) VALUES($1)`
+	_, err := s.db.Exec(query, &partren.Image)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) UpdatePartner(id string, partner *types_common_admin.PartnersPayload) error {
+	query := `UPDATE partners SET image = $1 WHERE id = $2`
+	_, err := s.db.Query(query, &partner.Image, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) DeletePartner(id string) error {
+	query := `DELETE FROM partners WHERE id = $1`
+	_, err := s.db.Query(query, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) GetPartner(id string) (*types_common_admin.PartnersListPayload, error) {
+	var partner types_common_admin.PartnersListPayload
+	query := `SELECT * FROM partners WHERE id = $1`
+	err := s.db.QueryRow(query, id).Scan(&partner.Id, &partner.Image)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &partner, nil
+}
+
+func (s *Store) ListPartner() ([]*types_common_admin.PartnersListPayload, error) {
+	var partners []*types_common_admin.PartnersListPayload
+	query := `SELECT * FROM partners`
+	rows, err := s.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var partner types_common_admin.PartnersListPayload
+		if err := rows.Scan(&partner.Id, &partner.Image); err != nil {
+			return nil, err
+		}
+		partners = append(partners, &partner)
+	}
+	return partners, nil
+}
