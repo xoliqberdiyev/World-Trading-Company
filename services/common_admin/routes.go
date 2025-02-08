@@ -501,7 +501,7 @@ func (h *Handler) handleCreateMedia(w http.ResponseWriter, r *http.Request) {
 	if fileEn != nil {
 		_, err = io.Copy(outFileEn, fileEn)
 		if err != nil {
-			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write fileEn"))
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write fileEn: %v", err))
 			return
 		}
 	}
@@ -875,4 +875,3 @@ func (h *Handler) handleGetPartner(w http.ResponseWriter, r *http.Request) {
 	}
 	utils.WriteJson(w, http.StatusOK, partner)
 }
-
