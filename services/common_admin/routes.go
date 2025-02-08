@@ -475,8 +475,7 @@ func (h *Handler) handleCreateMedia(w http.ResponseWriter, r *http.Request) {
 	var outFileEn *os.File
 
 	if fileEn != nil {
-
-		outFileEn, err := os.Create(fileEnPath)
+		outFileEn, err = os.Create(fileEnPath)
 		if err != nil {
 			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to save fileEn"))
 			return
