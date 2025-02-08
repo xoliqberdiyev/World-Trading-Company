@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	types_common "github.com/XoliqberdiyevBehruz/wtc_backend/types/common"
+	types_product "github.com/XoliqberdiyevBehruz/wtc_backend/types/product"
 )
 
 type Store struct {
@@ -83,4 +84,71 @@ func (s *Store) ListPartner() ([]*types_common.PartnerListPayload, error) {
 		partners = append(partners, &partner)
 	}
 	return partners, nil
+}
+
+func (s *Store) ListCategory() ([]*types_product.CategoryListPayload, error) {
+	var categories []*types_product.CategoryListPayload
+	query := `SELECT * FROM categories`
+	rows, err := s.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var category types_product.CategoryListPayload
+		if err := rows.Scan(&category.Id, &category.NameUz, &category.NameRu, &category.NameEn, &category.Image, &category.Icon, &category.CreatedAt); err != nil {
+			return nil, err
+		}
+		categories = append(categories, &category)
+	}
+	return categories, nil
+}
+
+func (s *Store) ListBanner() ([]*types_common.BannerPayload, error) {
+	var banners []*types_common.BannerPayload
+	query := `SELECT * FROM banner`
+	rows, err := s.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var b types_common.BannerPayload
+		if err := rows.Scan(&b.Id, &b.ImageUz, &b.ImageRu, &b.ImageEn, &b.CreatedAt); err != nil {
+			return nil, err
+		}
+		banners = append(banners, &b)
+	}
+	return banners, nil
+}
+
+func (s *Store) ListNews(limit, offset int) ([]*types_common.NewsListPayload, error) {
+	var news []*types_common.NewsListPayload
+	query := `SELECT * FROM news ORDER BY created_at DESC LIMIT $1 OFFSET $2`
+	rows, err := s.db.Query(query, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var new types_common.NewsListPayload
+		if err := rows.Scan(&new.Id, &new.TitleUz, &new.TitleRu, &new.TitleEn, &new.DescriptionUz, &new.DescriptionRu, &new.DescriptionEn, &new.Image, &new.Link, &new.CreatedAt); err != nil {
+			return nil, err
+		}
+		news = append(news, &new)
+	}
+	return news, nil
+}
+
+func (s *Store) GetNews(id string) (*types_common.NewsListPayload, error) {
+	var news types_common.NewsListPayload
+	query := `SELECT * FROM news WHERE id = $1`
+	err := s.db.QueryRow(query, id).Scan(&news.Id, &news.TitleUz, &news.TitleRu, &news.TitleEn, &news.DescriptionUz, &news.DescriptionRu, &news.DescriptionEn, &news.Image, &news.Link, &news.CreatedAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &news, nil
 }

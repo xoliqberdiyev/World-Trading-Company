@@ -3,8 +3,10 @@ package common_admin
 import (
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/XoliqberdiyevBehruz/wtc_backend/services/auth"
 	types_common_admin "github.com/XoliqberdiyevBehruz/wtc_backend/types/common_admin"
@@ -50,6 +52,18 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 	r.Put("/admin/common/partner/{partnerId}/update", auth.AuthWithJWT(h.handleUpdatePartner, h.userStore))
 	r.Delete("/admin/common/partner/{partnerId}/delete", auth.AuthWithJWT(h.handleDeletePartner, h.userStore))
 	r.Get("/admin/common/partner/{partnerId}", auth.AuthWithJWT(h.handleGetPartner, h.userStore))
+	// banner
+	r.Post("/admin/common/banner/create", auth.AuthWithJWT(h.handleCreateBanner, h.userStore))
+	r.Get("/admin/common/banner/list", auth.AuthWithJWT(h.handleListBanner, h.userStore))
+	r.Put("/admin/common/banner/{bannerId}/update", auth.AuthWithJWT(h.handleUpdateBanner, h.userStore))
+	r.Delete("/admin/common/banner/{bannerId}/delete", auth.AuthWithJWT(h.handleDeleteBanner, h.userStore))
+	r.Get("/admin/common/banner/{bannerId}", auth.AuthWithJWT(h.handleGetBanner, h.userStore))
+	// news
+	r.Post("/admin/common/news/create", auth.AuthWithJWT(h.handleCreateNews, h.userStore))
+	r.Get("/admin/common/news/list", auth.AuthWithJWT(h.handleListNews, h.userStore))
+	r.Put("/admin/common/news/{newsId}/update", auth.AuthWithJWT(h.handleUpdateNews, h.userStore))
+	r.Delete("/admin/common/news/{newsId}/delete", auth.AuthWithJWT(h.handleDeleteNews, h.userStore))
+	r.Get("/admin/common/news/{newsId}", auth.AuthWithJWT(h.handleGetNews, h.userStore))
 }
 
 // =========================== Contact Us ===========================
@@ -873,4 +887,518 @@ func (h *Handler) handleGetPartner(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	utils.WriteJson(w, http.StatusOK, partner)
+}
+
+// @Summart create banner
+// @Description create banner
+// @Tags common-admin
+// @Accept multipart/data
+// @Produce json
+// @Param imageUz formData file true "image uz"
+// @Param imageRu formData file true "image ru"
+// @Param imageEn formData file true "image en"
+// @Router /admin/common/banner/create [post]
+// @Security BearerAuth
+func (h *Handler) handleCreateBanner(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseMultipartForm(50)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	imageUz, imageUzHeader, err := r.FormFile("imageUz")
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unabel to read image_uz: %v", err))
+		return
+	}
+	defer imageUz.Close()
+
+	imageRu, imageRuHeader, err := r.FormFile("imageRu")
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unabel to read image_ru: %v", err))
+		return
+	}
+	defer imageRu.Close()
+
+	imageEn, imageEnHeader, err := r.FormFile("imageEn")
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unabel to read image_en: %v", err))
+		return
+	}
+	defer imageEn.Close()
+
+	imageUzPath := "uploads/banners/images/" + imageUzHeader.Filename
+	imageRuPath := "uploads/banners/images/" + imageRuHeader.Filename
+	imageEnPath := "uploads/banners/images/" + imageEnHeader.Filename
+
+	outImageUz, err := os.Create(imageUzPath)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image_uz: %v", err))
+		return
+	}
+	defer outImageUz.Close()
+
+	outImageRu, err := os.Create(imageRuPath)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image_ru: %v", err))
+		return
+	}
+	defer outImageRu.Close()
+
+	outImageEn, err := os.Create(imageEnPath)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image_en: %v", err))
+		return
+	}
+	defer outImageEn.Close()
+
+	_, err = io.Copy(outImageUz, imageUz)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image_uz: %v", err))
+		return
+	}
+
+	_, err = io.Copy(outImageRu, imageRu)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image_ru: %v", err))
+		return
+	}
+
+	_, err = io.Copy(outImageEn, imageEn)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image_en: %v", err))
+		return
+	}
+
+	banner := types_common_admin.BannerPayload{
+		ImageUz: imageUzPath,
+		ImageRu: imageRuPath,
+		ImageEn: imageEnPath,
+	}
+
+	new_banner, err := h.store.CreateBanner(&banner)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusCreated, new_banner)
+}
+
+// @Summary list banner
+// @Description list banner
+// @Tags common-admin
+// @Accept json
+// @Produce json
+// @Router /admin/common/banner/list [get]
+// @Security BearerAuth
+func (h *Handler) handleListBanner(w http.ResponseWriter, r *http.Request) {
+	list, err := h.store.ListBanner()
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, list)
+}
+
+// @Summary update banner
+// @Description update banner
+// @Tags common-admin
+// @Accept multipart/data
+// @Produce json
+// @Param bannerId path string true "banner id"
+// @Param imageUz formData file true "image uz"
+// @Param imageRu formData file true "image ru"
+// @Param imageEn formData file true "image en"
+// @Router /admin/common/banner/{bannerId}/update [put]
+// @Security BearerAuth
+func (h *Handler) handleUpdateBanner(w http.ResponseWriter, r *http.Request) {
+	var bannerId = r.PathValue("bannerId")
+	banner, err := h.store.GetBanner(bannerId)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+	if banner == nil {
+		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("banner not found"))
+		return
+	}
+
+	err = r.ParseMultipartForm(50)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	imageUz, imageUzHeader, err := r.FormFile("imageUz")
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unabel to read image_uz: %v", err))
+		return
+	}
+	defer imageUz.Close()
+
+	imageRu, imageRuHeader, err := r.FormFile("imageRu")
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unabel to read image_ru: %v", err))
+		return
+	}
+	defer imageRu.Close()
+
+	imageEn, imageEnHeader, err := r.FormFile("imageEn")
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unabel to read image_en: %v", err))
+		return
+	}
+	defer imageEn.Close()
+
+	imageUzPath := "uploads/banners/images/" + imageUzHeader.Filename
+	imageRuPath := "uploads/banners/images/" + imageRuHeader.Filename
+	imageEnPath := "uploads/banners/images/" + imageEnHeader.Filename
+
+	outImageUz, err := os.Create(imageUzPath)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image_uz: %v", err))
+		return
+	}
+	defer outImageUz.Close()
+
+	outImageRu, err := os.Create(imageRuPath)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image_ru: %v", err))
+		return
+	}
+	defer outImageRu.Close()
+
+	outImageEn, err := os.Create(imageEnPath)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image_en: %v", err))
+		return
+	}
+	defer outImageEn.Close()
+
+	_, err = io.Copy(outImageUz, imageUz)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image_uz: %v", err))
+		return
+	}
+
+	_, err = io.Copy(outImageRu, imageRu)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image_ru: %v", err))
+		return
+	}
+
+	_, err = io.Copy(outImageEn, imageEn)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image_en: %v", err))
+		return
+	}
+
+	changed_banner := types_common_admin.BannerPayload{
+		ImageUz: imageUzPath,
+		ImageRu: imageRuPath,
+		ImageEn: imageEnPath,
+	}
+	updated_banner, err := h.store.UpdateBanner(banner.Id, &changed_banner)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, updated_banner)
+}
+
+// @Summary delete banner
+// @Description delete banner
+// @Tags common-admin
+// @Accept json
+// @Produce json
+// @Param bannerId path string true "banner id"
+// @Router /admin/common/banner/{bannerId}/delete [delete]
+// @Security BearerAuth
+func (h *Handler) handleDeleteBanner(w http.ResponseWriter, r *http.Request) {
+	var bannerId = r.PathValue("bannerId")
+	banner, err := h.store.GetBanner(bannerId)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+	if banner == nil {
+		utils.WriteJson(w, http.StatusNotFound, map[string]string{"message": "banner not found"})
+		return
+	}
+
+	err = h.store.DeleteBanner(banner.Id)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+	utils.WriteJson(w, http.StatusNoContent, map[string]string{"message": "succesfully deleted"})
+}
+
+// @Summary get banner
+// @Description get banner
+// @Tags common-admin
+// @Accept json
+// @Produce json
+// @Param bannerId path string true "banner id"
+// @Router /admin/common/banner/{bannerId} [get]
+// @Security BearerAuth
+func (h *Handler) handleGetBanner(w http.ResponseWriter, r *http.Request) {
+	var bannerId = r.PathValue("bannerId")
+	banner, err := h.store.GetBanner(bannerId)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if banner == nil {
+		utils.WriteJson(w, http.StatusNotFound, map[string]string{"message": "not found"})
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, banner)
+}
+
+// @Summart create news
+// @Description create news
+// @Tags common-admin
+// @Accept multipart/data
+// @Produce json
+// @Param titleUz formData string true "title uz"
+// @Param titleRu formData string true "title ru"
+// @Param titleEn formData string true "title en"
+// @Param descriptionUz formData string true "description uz"
+// @Param descriptionRu formData string true "description ru"
+// @Param descriptionEn formData string true "description en"
+// @Param image formData file true "image"
+// @Param link formData string false "link"
+// @Router /admin/common/news/create [post]
+// @Security BearerAuth
+func (h *Handler) handleCreateNews(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseMultipartForm(50)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadGateway, err)
+		return
+	}
+
+	titleUz := r.FormValue("titleUz")
+	titleRu := r.FormValue("titleRu")
+	titleEn := r.FormValue("titleEn")
+	descriptionUz := r.FormValue("descriptionUz")
+	descriptionRu := r.FormValue("descriptionRu")
+	descriptionEn := r.FormValue("descriptionEn")
+	link := r.FormValue("link")
+	image, imageHeader, err := r.FormFile("image")
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to read image: %v", err))
+		return
+	}
+	defer image.Close()
+	imagePath := "uploads/news/images/" + imageHeader.Filename
+
+	outImage, err := os.Create(imagePath)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image: %v", err))
+		return
+	}
+	defer outImage.Close()
+
+	_, err = io.Copy(outImage, image)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image: %v", err))
+		return
+	}
+
+	payload := types_common_admin.NewsPayload{
+		TitleUz:       titleUz,
+		TitleRu:       titleRu,
+		TitleEn:       titleEn,
+		DescriptionUz: descriptionUz,
+		DescriptionRu: descriptionRu,
+		DescriptionEn: descriptionEn,
+		Image:         imagePath,
+		Link:          link,
+	}
+
+	news, err := h.store.CreateNews(&payload)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusCreated, news)
+}
+
+// @Summary list news
+// @Description list news
+// @Tags common-admin
+// @Accept json
+// @Produce json
+// @Param limit query string false "limit"
+// @Param page query string false "page"
+// @Router /admin/common/news/list [get]
+// @Security BearerAuth
+func (h *Handler) handleListNews(w http.ResponseWriter, r *http.Request) {
+	var limit int = 10
+	var offset int = 0
+
+	query := r.URL.Query()
+	if query.Get("limit") != "" {
+		parsedLimit, err := strconv.Atoi(query.Get("limit"))
+		if err == nil && parsedLimit > 0 {
+			limit = parsedLimit
+		}
+	}
+
+	if query.Get("page") != "" {
+		parsedPage, err := strconv.Atoi(query.Get("page"))
+		if err == nil && parsedPage > 0 {
+			offset = (parsedPage - 1) * limit
+		}
+	}
+
+	list, err := h.store.ListNews(limit, offset)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+	}
+	utils.WriteJson(w, http.StatusOK, map[string]interface{}{
+		"page":  offset/limit + 1,
+		"limit": limit,
+		"news":  list,
+	})
+}
+
+// @Summart update news
+// @Description update news
+// @Tags common-admin
+// @Accept multipart/data
+// @Produce json
+// @Param newsId path string true "news Id"
+// @Param titleUz formData string true "title uz"
+// @Param titleRu formData string true "title ru"
+// @Param titleEn formData string true "title en"
+// @Param descriptionUz formData string true "description uz"
+// @Param descriptionRu formData string true "description ru"
+// @Param descriptionEn formData string true "description en"
+// @Param image formData file true "image"
+// @Param link formData string false "link"
+// @Router /admin/common/news/{newsId}/update [put]
+// @Security BearerAuth
+func (h *Handler) handleUpdateNews(w http.ResponseWriter, r *http.Request) {
+	var newsId = r.PathValue("newsId")
+	news, err := h.store.GetNews(newsId)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if news == nil {
+		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("not found"))
+		return
+	}
+
+	err = r.ParseMultipartForm(50)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadGateway, err)
+		return
+	}
+
+	titleUz := r.FormValue("titleUz")
+	titleRu := r.FormValue("titleRu")
+	titleEn := r.FormValue("titleEn")
+	descriptionUz := r.FormValue("descriptionUz")
+	descriptionRu := r.FormValue("descriptionRu")
+	descriptionEn := r.FormValue("descriptionEn")
+	link := r.FormValue("link")
+	image, imageHeader, err := r.FormFile("image")
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to read image: %v", err))
+		return
+	}
+	defer image.Close()
+	imagePath := "uploads/news/images/" + imageHeader.Filename
+
+	outImage, err := os.Create(imagePath)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image: %v", err))
+		return
+	}
+	defer outImage.Close()
+
+	_, err = io.Copy(outImage, image)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image: %v", err))
+		return
+	}
+
+	payload := types_common_admin.NewsPayload{
+		TitleUz:       titleUz,
+		TitleRu:       titleRu,
+		TitleEn:       titleEn,
+		DescriptionUz: descriptionUz,
+		DescriptionRu: descriptionRu,
+		DescriptionEn: descriptionEn,
+		Image:         imagePath,
+		Link:          link,
+	}
+
+	new, err := h.store.UpdateNews(news.Id, &payload)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, new)
+}
+
+// @Summary delete news
+// @Description delete news
+// @Tags common-admin
+// @Accept json
+// @Produce json
+// @Param newsId path string true "news Id"
+// @Router /admin/common/news/{newsId}/delete [delete]
+// @Security BearerAuth
+func (h *Handler) handleDeleteNews(w http.ResponseWriter, r *http.Request) {
+	var newsId = r.PathValue("newsId")
+	log.Println(newsId)
+	news, err := h.store.GetNews(newsId)
+	log.Println(news)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if news == nil {
+		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("not found"))
+		return
+	}
+
+	if err := h.store.DeleteNews(news.Id); err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusNoContent, map[string]string{"message": "deleted"})
+}
+
+// @Summary get news
+// @Description get news
+// @Tags common-admin
+// @Accept json
+// @Produce json
+// @Param newsId path string true "news Id"
+// @Router /admin/common/news/{newsId} [get]
+// @Security BearerAuth
+func (h *Handler) handleGetNews(w http.ResponseWriter, r *http.Request) {
+	var newsId = r.PathValue("newsId")
+	news, err := h.store.GetNews(newsId)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, news)
 }

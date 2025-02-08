@@ -24,6 +24,181 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/admin/common/banner/create": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "create banner",
+                "consumes": [
+                    "multipart/data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "image uz",
+                        "name": "imageUz",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "image ru",
+                        "name": "imageRu",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "image en",
+                        "name": "imageEn",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/common/banner/list": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "list banner",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "summary": "list banner",
+                "responses": {}
+            }
+        },
+        "/admin/common/banner/{bannerId}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get banner",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "summary": "get banner",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "banner id",
+                        "name": "bannerId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/common/banner/{bannerId}/delete": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "delete banner",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "summary": "delete banner",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "banner id",
+                        "name": "bannerId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/common/banner/{bannerId}/update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "update banner",
+                "consumes": [
+                    "multipart/data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "summary": "update banner",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "banner id",
+                        "name": "bannerId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "image uz",
+                        "name": "imageUz",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "image ru",
+                        "name": "imageRu",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "image en",
+                        "name": "imageEn",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/admin/common/contact_us/list": {
             "get": {
                 "security": [
@@ -399,6 +574,262 @@ const docTemplate = `{
                         "type": "file",
                         "description": "file en",
                         "name": "fileEn",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/common/news/create": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "create news",
+                "consumes": [
+                    "multipart/data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "title uz",
+                        "name": "titleUz",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "title ru",
+                        "name": "titleRu",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "title en",
+                        "name": "titleEn",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "description uz",
+                        "name": "descriptionUz",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "description ru",
+                        "name": "descriptionRu",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "description en",
+                        "name": "descriptionEn",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "image",
+                        "name": "image",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "link",
+                        "name": "link",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/common/news/list": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "list news",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "summary": "list news",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/common/news/{newsId}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get news",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "summary": "get news",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "news Id",
+                        "name": "newsId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/common/news/{newsId}/delete": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "delete news",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "summary": "delete news",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "news Id",
+                        "name": "newsId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/common/news/{newsId}/update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "update news",
+                "consumes": [
+                    "multipart/data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "news Id",
+                        "name": "newsId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "title uz",
+                        "name": "titleUz",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "title ru",
+                        "name": "titleRu",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "title en",
+                        "name": "titleEn",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "description uz",
+                        "name": "descriptionUz",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "description ru",
+                        "name": "descriptionRu",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "description en",
+                        "name": "descriptionEn",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "image",
+                        "name": "image",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "link",
+                        "name": "link",
                         "in": "formData"
                     }
                 ],
@@ -825,6 +1256,236 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/admin/product/category/create": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "create category",
+                "consumes": [
+                    "multipart/data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "product-admin"
+                ],
+                "summary": "create category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "name uz",
+                        "name": "nameUz",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name ru",
+                        "name": "nameRu",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name en",
+                        "name": "nameEn",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "image",
+                        "name": "image",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "icon",
+                        "name": "icon",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/product/category/list": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "list category",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "product-admin"
+                ],
+                "summary": "list category",
+                "responses": {}
+            }
+        },
+        "/admin/product/category/{categoryId}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get category",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "product-admin"
+                ],
+                "summary": "get category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "category id",
+                        "name": "categoryId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/product/category/{categoryId}/delete": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "delete category",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "product-admin"
+                ],
+                "summary": "delete category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "category id",
+                        "name": "categoryId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/product/crategory/{categoryId}/update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "multipart/data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "product-admin"
+                ],
+                "summary": "update category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "category id",
+                        "name": "categoryId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name uz",
+                        "name": "nameUz",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name ru",
+                        "name": "nameRu",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name en",
+                        "name": "nameEn",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "image",
+                        "name": "image",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "icon",
+                        "name": "icon",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/banner/list": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common"
+                ],
+                "responses": {}
+            }
+        },
+        "/category/list": {
+            "get": {
+                "description": "list category",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common"
+                ],
+                "summary": "list category",
+                "responses": {}
+            }
+        },
         "/contact_us/create": {
             "post": {
                 "description": "create contact us",
@@ -892,6 +1553,66 @@ const docTemplate = `{
                     "common"
                 ],
                 "summary": "get all media",
+                "responses": {}
+            }
+        },
+        "/news/list": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "list news",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common"
+                ],
+                "summary": "list news",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/news/{newsId}": {
+            "get": {
+                "description": "get news",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common"
+                ],
+                "summary": "get news",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "news Id",
+                        "name": "newsId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {}
             }
         },

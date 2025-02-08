@@ -3,6 +3,7 @@ package common
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	types_common "github.com/XoliqberdiyevBehruz/wtc_backend/types/common"
 	"github.com/XoliqberdiyevBehruz/wtc_backend/utils"
@@ -24,6 +25,10 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 	r.Post("/contact_us_footer/create", h.handleContactUsFooterCreate)
 	r.Get("/media/list", h.handleGetMediasList)
 	r.Get("/partner/list", h.handleListPartner)
+	r.Get("/category/list", h.handleListCategory)
+	r.Get("/banner/list", h.handleListBanner)
+	r.Get("/news/list", h.handleListNews)
+	r.Get("/news/{newsId}", h.handleGetNews)
 }
 
 // @Summary create contact us
@@ -145,4 +150,92 @@ func (h *Handler) handleListPartner(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	utils.WriteJson(w, http.StatusOK, list)
+}
+
+// @Summary list category
+// @Description list category
+// @Tags common
+// @Accept json
+// @Produce json
+// @Router /category/list [get]
+func (h *Handler) handleListCategory(w http.ResponseWriter, r *http.Request) {
+	list, err := h.store.ListCategory()
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+	utils.WriteJson(w, http.StatusOK, list)
+}
+
+// @Summart list banner
+// @Decription list banner
+// @Tags common
+// @Accept json
+// @Produce json
+// @Router /banner/list [get]
+func (h *Handler) handleListBanner(w http.ResponseWriter, r *http.Request) {
+	list, err := h.store.ListBanner()
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, list)
+}
+
+// @Summary get news
+// @Description get news
+// @Tags common
+// @Accept json
+// @Produce json
+// @Param newsId path string true "news Id"
+// @Router /news/{newsId} [get]
+func (h *Handler) handleGetNews(w http.ResponseWriter, r *http.Request) {
+	var newsId = r.PathValue("newsId")
+	news, err := h.store.GetNews(newsId)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, news)
+}
+
+// @Summary list news
+// @Description list news
+// @Tags common
+// @Accept json
+// @Produce json
+// @Param limit query string false "limit"
+// @Param page query string false "page"
+// @Router /news/list [get]
+// @Security BearerAuth
+func (h *Handler) handleListNews(w http.ResponseWriter, r *http.Request) {
+	var limit int = 10
+	var offset int = 0
+
+	query := r.URL.Query()
+	if query.Get("limit") != "" {
+		parsedLimit, err := strconv.Atoi(query.Get("limit"))
+		if err == nil && parsedLimit > 0 {
+			limit = parsedLimit
+		}
+	}
+
+	if query.Get("page") != "" {
+		parsedPage, err := strconv.Atoi(query.Get("page"))
+		if err == nil && parsedPage > 0 {
+			offset = (parsedPage - 1) * limit
+		}
+	}
+
+	list, err := h.store.ListNews(limit, offset)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+	}
+	utils.WriteJson(w, http.StatusOK, map[string]interface{}{
+		"page":  offset/limit + 1,
+		"limit": limit,
+		"news":  list,
+	})
 }

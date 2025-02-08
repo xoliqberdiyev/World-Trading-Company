@@ -25,6 +25,16 @@ type CommonStore interface {
 	DeletePartner(id string) error
 	GetPartner(id string) (*PartnersListPayload, error)
 	ListPartner() ([]*PartnersListPayload, error)
+	GetBanner(id string) (*BannerListPayload, error)
+	CreateBanner(banner *BannerPayload) (*BannerListPayload, error)
+	UpdateBanner(id string, banner *BannerPayload) (*BannerListPayload, error)
+	DeleteBanner(id string) error
+	ListBanner() ([]*BannerListPayload, error)
+	CreateNews(news *NewsPayload) (*NewsListPayload, error)
+	GetNews(id string) (*NewsListPayload, error)
+	UpdateNews(id string, n *NewsPayload) (*NewsListPayload, error)
+	DeleteNews(id string) error
+	ListNews(limit, offset int) ([]*NewsListPayload, error)
 }
 
 type ContactListPayload struct {
@@ -41,7 +51,6 @@ type ContactUpdatePayload struct {
 	IsContacted bool `json:"isContacted"`
 }
 
-// ========== settings ===========
 type SettingsCreatePayload struct {
 	FirstPhone  string `json:"firstPhone" validate:"required,e164"`
 	SecondPhone string `json:"secondPhone" validate:"required,e164"`
@@ -106,11 +115,11 @@ type MediaPayload struct {
 }
 
 type MediaListPayload struct {
-	Id        string `json:"id"`
-	FileUz    string `json:"fileUz"`
-	FileRu    string `json:"fileRu"`
-	FileEn    string `json:"fileEn"`
-	CreatedAt string `json:"createdAt"`
+	Id        string    `json:"id"`
+	FileUz    string    `json:"fileUz"`
+	FileRu    string    `json:"fileRu"`
+	FileEn    string    `json:"fileEn"`
+	CreatedAt time.Time `json:"createdAt"`
 }
 
 type PartnersPayload struct {
@@ -120,4 +129,42 @@ type PartnersPayload struct {
 type PartnersListPayload struct {
 	Id    string `json:"id"`
 	Image string `json:"image"`
+}
+
+type BannerPayload struct {
+	ImageUz string `json:"imageUz"`
+	ImageRu string `json:"imageRu"`
+	ImageEn string `json:"imageEn"`
+}
+
+type BannerListPayload struct {
+	Id        string    `json:"id"`
+	ImageUz   string    `json:"imageUz"`
+	ImageRu   string    `json:"imageRu"`
+	ImageEn   string    `json:"imageEn"`
+	CreatedAt time.Time `json:"createdAt"`
+}
+
+type NewsPayload struct {
+	TitleUz       string `json:"titleUz"`
+	TitleRu       string `json:"titleRu"`
+	TitleEn       string `json:"titleEn"`
+	DescriptionUz string `json:"descriptionUz"`
+	DescriptionRu string `json:"descriptionRu"`
+	DescriptionEn string `json:"descriptionEn"`
+	Link          string `json:"link"`
+	Image         string `json:"image"`
+}
+
+type NewsListPayload struct {
+	Id            string    `json:"id"`
+	TitleUz       string    `json:"titleUz"`
+	TitleRu       string    `json:"titleRu"`
+	TitleEn       string    `json:"titleEn"`
+	DescriptionUz string    `json:"descriptionUz"`
+	DescriptionRu string    `json:"descriptionRu"`
+	DescriptionEn string    `json:"descriptionEn"`
+	Link          string    `json:"link"`
+	Image         string    `json:"image"`
+	CreatedAt     time.Time `json:"createdAt"`
 }

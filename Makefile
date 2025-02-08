@@ -29,3 +29,6 @@ createsuperuser:
 createfiles:
 	@mkdir uploads/ && mkdir uploads/medias/ && mkdir uploads/medias/files/
 	@mkdir uploads/partners && mkdir uploads/partners/images/
+	@mkdir uploads/categories && mkdir uploads/categories/images && mkdir uploads/categories/icons
+	@mkdir uploads/banners && mkdir uploads/banners/images
+	@mkdir uploads/news && mkdir uploads/news/images/

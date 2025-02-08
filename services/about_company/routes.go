@@ -178,3 +178,4 @@ func (h *Handler) handleGetCapasity(w http.ResponseWriter, r *http.Request) {
 
 	utils.WriteJson(w, http.StatusOK, capasity)
 }
+

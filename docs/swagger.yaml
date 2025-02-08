@@ -144,6 +144,119 @@ info:
   title: Swagger Example API
   version: "1.0"
 paths:
+  /admin/common/banner/{bannerId}:
+    get:
+      consumes:
+      - application/json
+      description: get banner
+      parameters:
+      - description: banner id
+        in: path
+        name: bannerId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: get banner
+      tags:
+      - common-admin
+  /admin/common/banner/{bannerId}/delete:
+    delete:
+      consumes:
+      - application/json
+      description: delete banner
+      parameters:
+      - description: banner id
+        in: path
+        name: bannerId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: delete banner
+      tags:
+      - common-admin
+  /admin/common/banner/{bannerId}/update:
+    put:
+      consumes:
+      - multipart/data
+      description: update banner
+      parameters:
+      - description: banner id
+        in: path
+        name: bannerId
+        required: true
+        type: string
+      - description: image uz
+        in: formData
+        name: imageUz
+        required: true
+        type: file
+      - description: image ru
+        in: formData
+        name: imageRu
+        required: true
+        type: file
+      - description: image en
+        in: formData
+        name: imageEn
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: update banner
+      tags:
+      - common-admin
+  /admin/common/banner/create:
+    post:
+      consumes:
+      - multipart/data
+      description: create banner
+      parameters:
+      - description: image uz
+        in: formData
+        name: imageUz
+        required: true
+        type: file
+      - description: image ru
+        in: formData
+        name: imageRu
+        required: true
+        type: file
+      - description: image en
+        in: formData
+        name: imageEn
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      tags:
+      - common-admin
+  /admin/common/banner/list:
+    get:
+      consumes:
+      - application/json
+      description: list banner
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: list banner
+      tags:
+      - common-admin
   /admin/common/contact_us/{contactId}:
     get:
       consumes:
@@ -384,6 +497,175 @@ paths:
       security:
       - BearerAuth: []
       summary: get medias
+      tags:
+      - common-admin
+  /admin/common/news/{newsId}:
+    get:
+      consumes:
+      - application/json
+      description: get news
+      parameters:
+      - description: news Id
+        in: path
+        name: newsId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: get news
+      tags:
+      - common-admin
+  /admin/common/news/{newsId}/delete:
+    delete:
+      consumes:
+      - application/json
+      description: delete news
+      parameters:
+      - description: news Id
+        in: path
+        name: newsId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: delete news
+      tags:
+      - common-admin
+  /admin/common/news/{newsId}/update:
+    put:
+      consumes:
+      - multipart/data
+      description: update news
+      parameters:
+      - description: news Id
+        in: path
+        name: newsId
+        required: true
+        type: string
+      - description: title uz
+        in: formData
+        name: titleUz
+        required: true
+        type: string
+      - description: title ru
+        in: formData
+        name: titleRu
+        required: true
+        type: string
+      - description: title en
+        in: formData
+        name: titleEn
+        required: true
+        type: string
+      - description: description uz
+        in: formData
+        name: descriptionUz
+        required: true
+        type: string
+      - description: description ru
+        in: formData
+        name: descriptionRu
+        required: true
+        type: string
+      - description: description en
+        in: formData
+        name: descriptionEn
+        required: true
+        type: string
+      - description: image
+        in: formData
+        name: image
+        required: true
+        type: file
+      - description: link
+        in: formData
+        name: link
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      tags:
+      - common-admin
+  /admin/common/news/create:
+    post:
+      consumes:
+      - multipart/data
+      description: create news
+      parameters:
+      - description: title uz
+        in: formData
+        name: titleUz
+        required: true
+        type: string
+      - description: title ru
+        in: formData
+        name: titleRu
+        required: true
+        type: string
+      - description: title en
+        in: formData
+        name: titleEn
+        required: true
+        type: string
+      - description: description uz
+        in: formData
+        name: descriptionUz
+        required: true
+        type: string
+      - description: description ru
+        in: formData
+        name: descriptionRu
+        required: true
+        type: string
+      - description: description en
+        in: formData
+        name: descriptionEn
+        required: true
+        type: string
+      - description: image
+        in: formData
+        name: image
+        required: true
+        type: file
+      - description: link
+        in: formData
+        name: link
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      tags:
+      - common-admin
+  /admin/common/news/list:
+    get:
+      consumes:
+      - application/json
+      description: list news
+      parameters:
+      - description: limit
+        in: query
+        name: limit
+        type: string
+      - description: page
+        in: query
+        name: page
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: list news
       tags:
       - common-admin
   /admin/common/partner/{partnerId}:
@@ -651,6 +933,157 @@ paths:
       summary: list capasity
       tags:
       - company-admin
+  /admin/product/category/{categoryId}:
+    get:
+      description: get category
+      parameters:
+      - description: category id
+        in: path
+        name: categoryId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: get category
+      tags:
+      - product-admin
+  /admin/product/category/{categoryId}/delete:
+    delete:
+      consumes:
+      - application/json
+      description: delete category
+      parameters:
+      - description: category id
+        in: path
+        name: categoryId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: delete category
+      tags:
+      - product-admin
+  /admin/product/category/create:
+    post:
+      consumes:
+      - multipart/data
+      description: create category
+      parameters:
+      - description: name uz
+        in: formData
+        name: nameUz
+        required: true
+        type: string
+      - description: name ru
+        in: formData
+        name: nameRu
+        required: true
+        type: string
+      - description: name en
+        in: formData
+        name: nameEn
+        required: true
+        type: string
+      - description: image
+        in: formData
+        name: image
+        required: true
+        type: file
+      - description: icon
+        in: formData
+        name: icon
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: create category
+      tags:
+      - product-admin
+  /admin/product/category/list:
+    get:
+      consumes:
+      - application/json
+      description: list category
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: list category
+      tags:
+      - product-admin
+  /admin/product/crategory/{categoryId}/update:
+    put:
+      consumes:
+      - multipart/data
+      parameters:
+      - description: category id
+        in: path
+        name: categoryId
+        required: true
+        type: string
+      - description: name uz
+        in: formData
+        name: nameUz
+        required: true
+        type: string
+      - description: name ru
+        in: formData
+        name: nameRu
+        required: true
+        type: string
+      - description: name en
+        in: formData
+        name: nameEn
+        required: true
+        type: string
+      - description: image
+        in: formData
+        name: image
+        required: true
+        type: file
+      - description: icon
+        in: formData
+        name: icon
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: update category
+      tags:
+      - product-admin
+  /banner/list:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses: {}
+      tags:
+      - common
+  /category/list:
+    get:
+      consumes:
+      - application/json
+      description: list category
+      produces:
+      - application/json
+      responses: {}
+      summary: list category
+      tags:
+      - common
   /contact_us/create:
     post:
       consumes:
@@ -696,6 +1129,45 @@ paths:
       - application/json
       responses: {}
       summary: get all media
+      tags:
+      - common
+  /news/{newsId}:
+    get:
+      consumes:
+      - application/json
+      description: get news
+      parameters:
+      - description: news Id
+        in: path
+        name: newsId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: get news
+      tags:
+      - common
+  /news/list:
+    get:
+      consumes:
+      - application/json
+      description: list news
+      parameters:
+      - description: limit
+        in: query
+        name: limit
+        type: string
+      - description: page
+        in: query
+        name: page
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: list news
       tags:
       - common
   /partner/list:

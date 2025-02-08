@@ -1,11 +1,21 @@
 package types_common
 
+import (
+	"time"
+
+	types_product "github.com/XoliqberdiyevBehruz/wtc_backend/types/product"
+)
+
 type CommonStore interface {
 	CreateContactUs(contact *ContactCreatePayload) error
 	GetAllSettings() ([]*SettingsPayload, error)
 	CreateContactUsFooter(contactUs ContactUsFooterPayload) error
 	GetAllMedia() ([]*MediaPayload, error)
 	ListPartner() ([]*PartnerListPayload, error)
+	ListCategory() ([]*types_product.CategoryListPayload, error)
+	ListBanner() ([]*BannerPayload, error)
+	GetNews(id string) (*NewsListPayload, error)
+	ListNews(limit, offset int) ([]*	NewsListPayload, error)
 }
 
 type ContactCreatePayload struct {
@@ -47,3 +57,25 @@ type PartnerListPayload struct {
 	Id    string `json:"id"`
 	Image string `json:"image"`
 }
+
+type BannerPayload struct {
+	Id        string    `json:"id"`
+	ImageUz   string    `json:"imageUz"`
+	ImageRu   string    `json:"ImageRu"`
+	ImageEn   string    `json:"ImageEn"`
+	CreatedAt time.Time `json:"createdAt"`
+}
+
+type NewsListPayload struct {
+	Id            string    `json:"id"`
+	TitleUz       string    `json:"titleUz"`
+	TitleRu       string    `json:"titleRu"`
+	TitleEn       string    `json:"titleEn"`
+	DescriptionUz string    `json:"descriptionUz"`
+	DescriptionRu string    `json:"descriptionRu"`
+	DescriptionEn string    `json:"descriptionEn"`
+	Link          string    `json:"link"`
+	Image         string    `json:"image"`
+	CreatedAt     time.Time `json:"createdAt"`
+}
+

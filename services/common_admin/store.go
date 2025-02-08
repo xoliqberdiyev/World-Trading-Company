@@ -290,3 +290,146 @@ func (s *Store) ListPartner() ([]*types_common_admin.PartnersListPayload, error)
 	}
 	return partners, nil
 }
+
+func (s *Store) GetBanner(id string) (*types_common_admin.BannerListPayload, error) {
+	var banner types_common_admin.BannerListPayload
+	query := `SELECT * FROM banner WHERE id = $1`
+	err := s.db.QueryRow(query, id).Scan(&banner.Id, &banner.ImageUz, &banner.ImageRu, &banner.ImageEn, &banner.CreatedAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &banner, nil
+}
+
+func (s *Store) CreateBanner(banner *types_common_admin.BannerPayload) (*types_common_admin.BannerListPayload, error) {
+	var b types_common_admin.BannerListPayload
+	query := `INSERT INTO banner(image_uz, image_ru, image_en) VALUES($1, $2, $3) RETURNING id, image_uz, image_ru, image_en, created_at`
+	err := s.db.QueryRow(query, &banner.ImageUz, &banner.ImageRu, &banner.ImageEn).Scan(&b.Id, &b.ImageUz, &b.ImageRu, &b.ImageEn, &b.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
+	return &b, nil
+}
+
+func (s *Store) UpdateBanner(id string, banner *types_common_admin.BannerPayload) (*types_common_admin.BannerListPayload, error) {
+	var b types_common_admin.BannerListPayload
+	query := `UPDATE banner SET image_uz = $1,  image_ru = $2, image_en = $3 WHERE id = $4 RETURNING id, image_uz, image_ru, image_en, created_at`
+	err := s.db.QueryRow(query, &banner.ImageUz, &banner.ImageRu, &banner.ImageEn, id).Scan(&b.Id, &b.ImageUz, &b.ImageRu, &b.ImageEn, &b.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
+	return &b, nil
+}
+
+func (s *Store) DeleteBanner(id string) error {
+	query := `DELETE FROM banner WHERE id = $1`
+	_, err := s.db.Query(query, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) ListBanner() ([]*types_common_admin.BannerListPayload, error) {
+	var banners []*types_common_admin.BannerListPayload
+	query := `SELECT * FROM banner`
+	rows, err := s.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var b types_common_admin.BannerListPayload
+		if err := rows.Scan(&b.Id, &b.ImageUz, &b.ImageRu, &b.ImageEn, &b.CreatedAt); err != nil {
+			return nil, err
+		}
+		banners = append(banners, &b)
+	}
+	return banners, nil
+}
+
+func (s *Store) CreateNews(news *types_common_admin.NewsPayload) (*types_common_admin.NewsListPayload, error) {
+	var n types_common_admin.NewsListPayload
+	query := `
+		INSERT INTO 
+			news(title_uz, title_ru, title_en, description_uz, description_ru, description_en, image, link)
+		VALUES($1, $2, $3, $4, $5, $6, $7, $8)
+		RETURNING id, title_uz, title_ru, title_en, description_uz, description_ru, description_en, image, link, created_at	
+	`
+
+	err := s.db.QueryRow(query, &news.TitleUz, &news.TitleRu, &news.TitleEn, &news.DescriptionUz, &news.DescriptionRu, &news.DescriptionEn, &news.Image, &news.Link).Scan(
+		&n.Id, &n.TitleUz, &n.TitleRu, &n.TitleEn, &n.DescriptionUz, &n.DescriptionRu, &n.DescriptionEn, &n.Image, &n.Link, &n.CreatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &n, nil
+}
+
+func (s *Store) GetNews(id string) (*types_common_admin.NewsListPayload, error) {
+	var news types_common_admin.NewsListPayload
+	query := `SELECT * FROM news WHERE id = $1`
+	err := s.db.QueryRow(query, id).Scan(&news.Id, &news.TitleUz, &news.TitleRu, &news.TitleEn, &news.DescriptionUz, &news.DescriptionRu, &news.DescriptionEn, &news.Image, &news.Link, &news.CreatedAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &news, nil
+}
+
+func (s *Store) UpdateNews(id string, n *types_common_admin.NewsPayload) (*types_common_admin.NewsListPayload, error) {
+	var news types_common_admin.NewsListPayload
+	query := `
+		UPDATE 
+			news 
+		SET 
+			title_uz = $1, title_ru = $2, title_en = $3, 
+			description_uz = $4, description_ru = $5, description_en = $6, 
+			image = $7, link = $8
+		WHERE 
+			id = $9
+		RETURNING
+			id, title_uz, title_ru, title_en, description_uz, description_ru, description_en, image, link, created_at
+	`
+	err := s.db.QueryRow(query, &n.TitleUz, &n.TitleRu, &n.TitleEn, &n.DescriptionUz, &n.DescriptionRu, &n.DescriptionEn, &n.Image, &n.Link, id).Scan(
+		&news.Id, &news.TitleUz, &news.TitleRu, &news.TitleEn, &news.DescriptionUz, &news.DescriptionRu, &news.DescriptionEn, &news.Image, &news.Link, &news.CreatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &news, nil
+}
+
+func (s *Store) DeleteNews(id string) error {
+	query := `DELETE FROM news WHERE id = $1`
+	_, err := s.db.Query(query, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) ListNews(limit, offset int) ([]*types_common_admin.NewsListPayload, error) {
+	var news []*types_common_admin.NewsListPayload
+	query := `SELECT * FROM news ORDER BY created_at DESC LIMIT $1 OFFSET $2`
+	rows, err := s.db.Query(query, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var new types_common_admin.NewsListPayload
+		if err := rows.Scan(&new.Id, &new.TitleUz, &new.TitleRu, &new.TitleEn, &new.DescriptionUz, &new.DescriptionRu, &new.DescriptionEn, &new.Image, &new.Link, &new.CreatedAt); err != nil {
+			return nil, err
+		}
+		news = append(news, &new)
+	}
+	return news, nil
+}

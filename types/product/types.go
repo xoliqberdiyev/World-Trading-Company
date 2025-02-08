@@ -9,7 +9,7 @@ type ProductStore interface {
 	DeleteCategory(id string) error
 	ListCategory() ([]*CategoryListPayload, error)
 }
-
+ 
 type CategoryPayload struct {
 	NameUz string `json:"nameUz"`
 	NameRu string `json:"nameRu"`
