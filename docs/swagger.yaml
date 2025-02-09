@@ -1,5 +1,20 @@
 basePath: /
 definitions:
+  types_about_company.AboutOilPayload:
+    properties:
+      nameEn:
+        type: string
+      nameRu:
+        type: string
+      nameUz:
+        type: string
+      textEn:
+        type: string
+      textRu:
+        type: string
+      textUz:
+        type: string
+    type: object
   types_about_company.CapasityPayload:
     properties:
       nameEn:
@@ -35,6 +50,21 @@ definitions:
     required:
     - email
     - phone
+    type: object
+  types_common_admin.CertificatePayload:
+    properties:
+      nameEn:
+        type: string
+      nameRu:
+        type: string
+      nameUz:
+        type: string
+      textEn:
+        type: string
+      textRu:
+        type: string
+      textUz:
+        type: string
     type: object
   types_common_admin.ContactUpdatePayload:
     properties:
@@ -144,6 +174,17 @@ info:
   title: Swagger Example API
   version: "1.0"
 paths:
+  /about_oil/list:
+    get:
+      consumes:
+      - application/json
+      description: list about oil
+      produces:
+      - application/json
+      responses: {}
+      summary: list about oil
+      tags:
+      - common
   /admin/common/banner/{bannerId}:
     get:
       consumes:
@@ -255,6 +296,101 @@ paths:
       security:
       - BearerAuth: []
       summary: list banner
+      tags:
+      - common-admin
+  /admin/common/certificate/{certificateId}:
+    get:
+      consumes:
+      - application/json
+      description: get certificate
+      parameters:
+      - description: certificate id
+        in: path
+        name: certificateId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: get certificate
+      tags:
+      - common-admin
+  /admin/common/certificate/{certificateId}/delete:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: certificate id
+        in: path
+        name: certificateId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: delete certificate
+      tags:
+      - common-admin
+  /admin/common/certificate/{certificateId}/update:
+    put:
+      consumes:
+      - application/json
+      description: update certificate
+      parameters:
+      - description: certificate id
+        in: path
+        name: certificateId
+        required: true
+        type: string
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types_common_admin.CertificatePayload'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: update certificate
+      tags:
+      - common-admin
+  /admin/common/certificate/create:
+    post:
+      consumes:
+      - application/json
+      description: create certificate
+      parameters:
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types_common_admin.CertificatePayload'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: create certificate
+      tags:
+      - common-admin
+  /admin/common/certificate/list:
+    get:
+      consumes:
+      - application/json
+      description: list certificate
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: list certificate
       tags:
       - common-admin
   /admin/common/contact_us/{contactId}:
@@ -409,6 +545,25 @@ paths:
       summary: ContactUsFooter list
       tags:
       - common-admin
+  /admin/common/media/{mediaId}:
+    get:
+      consumes:
+      - application/json
+      description: get media
+      parameters:
+      - description: media id
+        in: path
+        name: mediaId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: get media
+      tags:
+      - common-admin
   /admin/common/media/{mediaId}/delete:
     delete:
       consumes:
@@ -452,6 +607,10 @@ paths:
         in: formData
         name: fileEn
         type: file
+      - description: link
+        in: formData
+        name: link
+        type: string
       produces:
       - application/json
       responses: {}
@@ -479,6 +638,10 @@ paths:
         in: formData
         name: fileEn
         type: file
+      - description: link
+        in: formData
+        name: link
+        type: string
       produces:
       - application/json
       responses: {}
@@ -837,6 +1000,102 @@ paths:
       summary: get settings
       tags:
       - common-admin
+  /admin/company/about_oil/{oilId}:
+    get:
+      consumes:
+      - application/json
+      description: get about oil
+      parameters:
+      - description: id
+        in: path
+        name: oilId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: get about oil
+      tags:
+      - company-admin
+  /admin/company/about_oil/{oilId}/delete:
+    delete:
+      consumes:
+      - application/json
+      description: delete about oil
+      parameters:
+      - description: id
+        in: path
+        name: oilId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: delete about oil
+      tags:
+      - company-admin
+  /admin/company/about_oil/{oilId}/update:
+    put:
+      consumes:
+      - application/json
+      description: update about oil
+      parameters:
+      - description: id
+        in: path
+        name: oilId
+        required: true
+        type: string
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types_about_company.AboutOilPayload'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: update about oil
+      tags:
+      - company-admin
+  /admin/company/about_oil/create:
+    post:
+      consumes:
+      - application/json
+      description: create about oil
+      parameters:
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types_about_company.AboutOilPayload'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: h=create about oil
+      tags:
+      - company-admin
+  /admin/company/about_oil/list:
+    get:
+      consumes:
+      - application/json
+      description: about oil
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: list about oil
+      tags:
+      - company-admin
   /admin/company/capasity/{capasityId}:
     get:
       consumes:
@@ -1082,6 +1341,17 @@ paths:
       - application/json
       responses: {}
       summary: list category
+      tags:
+      - common
+  /certificate/list:
+    get:
+      consumes:
+      - application/json
+      description: list certificate
+      produces:
+      - application/json
+      responses: {}
+      summary: list certificate
       tags:
       - common
   /contact_us/create:

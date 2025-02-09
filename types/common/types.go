@@ -3,6 +3,7 @@ package types_common
 import (
 	"time"
 
+	types_about_company "github.com/XoliqberdiyevBehruz/wtc_backend/types/about_company"
 	types_product "github.com/XoliqberdiyevBehruz/wtc_backend/types/product"
 )
 
@@ -15,7 +16,9 @@ type CommonStore interface {
 	ListCategory() ([]*types_product.CategoryListPayload, error)
 	ListBanner() ([]*BannerPayload, error)
 	GetNews(id string) (*NewsListPayload, error)
-	ListNews(limit, offset int) ([]*	NewsListPayload, error)
+	ListNews(limit, offset int) ([]*NewsListPayload, error)
+	ListAboutOil() ([]*types_about_company.AboutOilListPayload, error)
+	ListCertificate() ([]*CertificateListPayload, error)
 }
 
 type ContactCreatePayload struct {
@@ -50,6 +53,7 @@ type MediaPayload struct {
 	FileUz    string `json:"fileUz"`
 	FileRu    string `json:"fileRu"`
 	FileEn    string `json:"fileEn"`
+	Link      string `json:"link"`
 	CreatedAt string `json:"createdAt"`
 }
 
@@ -79,3 +83,13 @@ type NewsListPayload struct {
 	CreatedAt     time.Time `json:"createdAt"`
 }
 
+type CertificateListPayload struct {
+	Id        string    `json:"id"`
+	NameUz    string    `json:"nameUz"`
+	NameRu    string    `json:"nameRu"`
+	NameEn    string    `json:"nameEn"`
+	TextUz    string    `json:"textUz"`
+	TextRu    string    `json:"textRu"`
+	TextEn    string    `json:"textEn"`
+	CreatedAt time.Time `json:"createdAt"`
+}

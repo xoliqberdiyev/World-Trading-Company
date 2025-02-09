@@ -3,5 +3,6 @@ CREATE TABLE IF NOT EXISTS "medias"(
     "file_uz" BYTEA NOT NULL,
     "file_ru" BYTEA,
     "file_en" BYTEA,
+    "link" VARCHAR,
     "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

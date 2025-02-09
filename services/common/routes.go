@@ -29,6 +29,8 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 	r.Get("/banner/list", h.handleListBanner)
 	r.Get("/news/list", h.handleListNews)
 	r.Get("/news/{newsId}", h.handleGetNews)
+	r.Get("/about_oil/list", h.handleListAboutOil)
+	r.Get("/certificate/list", h.handleListCertificate)
 }
 
 // @Summary create contact us
@@ -238,4 +240,36 @@ func (h *Handler) handleListNews(w http.ResponseWriter, r *http.Request) {
 		"limit": limit,
 		"news":  list,
 	})
+}
+
+// @Summary list about oil
+// @Description list about oil
+// @Tags common
+// @Accept json 
+// @Produce json
+// @Router /about_oil/list [get]
+func (h *Handler) handleListAboutOil(w http.ResponseWriter, r *http.Request) {
+	list, err := h.store.ListAboutOil()
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, list)
+}
+
+// @Summary list certificate
+// @Description list certificate
+// @Tags common
+// @Accept json
+// @Produce json
+// @Router /certificate/list [get]
+func (h *Handler) handleListCertificate(w http.ResponseWriter, r *http.Request) {
+	list, err := h.store.ListCertificate()
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, list)
 }

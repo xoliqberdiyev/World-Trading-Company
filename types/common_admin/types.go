@@ -35,6 +35,11 @@ type CommonStore interface {
 	UpdateNews(id string, n *NewsPayload) (*NewsListPayload, error)
 	DeleteNews(id string) error
 	ListNews(limit, offset int) ([]*NewsListPayload, error)
+	CreateCertificate(payload *CertificatePayload) (*CertificateListPayload, error)
+	GetCertificate(id string) (*CertificateListPayload, error)
+	UpdateCertificate(id string, payload *CertificatePayload) (*CertificateListPayload, error)
+	DeleteCertificate(id string) error
+	ListCertificate() ([]*CertificateListPayload, error) 
 }
 
 type ContactListPayload struct {
@@ -112,6 +117,7 @@ type MediaPayload struct {
 	FileUz string `json:"fileUz"`
 	FileRu string `json:"fileRu"`
 	FileEn string `json:"fileEn"`
+	Link   string `json:"link"`
 }
 
 type MediaListPayload struct {
@@ -119,6 +125,7 @@ type MediaListPayload struct {
 	FileUz    string    `json:"fileUz"`
 	FileRu    string    `json:"fileRu"`
 	FileEn    string    `json:"fileEn"`
+	Link      string    `json:"link"`
 	CreatedAt time.Time `json:"createdAt"`
 }
 
@@ -167,4 +174,24 @@ type NewsListPayload struct {
 	Link          string    `json:"link"`
 	Image         string    `json:"image"`
 	CreatedAt     time.Time `json:"createdAt"`
+}
+
+type CertificatePayload struct {
+	NameUz string `json:"nameUz"`
+	NameRu string `json:"nameRu"`
+	NameEn string `json:"nameEn"`
+	TextUz string `json:"textUz"`
+	TextRu string `json:"textRu"`
+	TextEn string `json:"textEn"`
+}
+
+type CertificateListPayload struct {
+	Id        string    `json:"id"`
+	NameUz    string    `json:"nameUz"`
+	NameRu    string    `json:"nameRu"`
+	NameEn    string    `json:"nameEn"`
+	TextUz    string    `json:"textUz"`
+	TextRu    string    `json:"textRu"`
+	TextEn    string    `json:"textEn"`
+	CreatedAt time.Time `json:"createdAt"`
 }

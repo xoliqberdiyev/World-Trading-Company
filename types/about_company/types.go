@@ -11,7 +11,7 @@ type CompanyStore interface {
 	CreateAboutOil(payload *AboutOilPayload) (*AboutOilListPayload, error)
 	GetAboutOil(id string) (*AboutOilListPayload, error)
 	UpdateAboutOil(id string, payload *AboutOilPayload) (*AboutOilListPayload, error)
-	DeleteAboutOil(id string) (*AboutOilListPayload, error)
+	DeleteAboutOil(id string) error
 	ListAboutOil() ([]*AboutOilListPayload, error)
 }
 

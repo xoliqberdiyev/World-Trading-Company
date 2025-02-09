@@ -46,6 +46,7 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 	r.Get("/admin/common/media/list", auth.AuthWithJWT(h.handleGetAllMedia, h.userStore))
 	r.Delete("/admin/common/media/{mediaId}/delete", auth.AuthWithJWT(h.handleDeleteMedia, h.userStore))
 	r.Put("/admin/common/media/{mediaId}/update", auth.AuthWithJWT(h.handleUpdateMedia, h.userStore))
+	r.Get("/admin/common/media/{mediaId}", auth.AuthWithJWT(h.handleGetMedia, h.userStore))
 	//partner
 	r.Post("/admin/common/partner/create", auth.AuthWithJWT(h.handleCreatePartner, h.userStore))
 	r.Get("/admin/common/partner/list", auth.AuthWithJWT(h.handleListPartner, h.userStore))
@@ -64,13 +65,19 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 	r.Put("/admin/common/news/{newsId}/update", auth.AuthWithJWT(h.handleUpdateNews, h.userStore))
 	r.Delete("/admin/common/news/{newsId}/delete", auth.AuthWithJWT(h.handleDeleteNews, h.userStore))
 	r.Get("/admin/common/news/{newsId}", auth.AuthWithJWT(h.handleGetNews, h.userStore))
+	// certificate
+	r.Post("/admin/common/certificate/create", auth.AuthWithJWT(h.handleCreateCertificate, h.userStore))
+	r.Get("/admin/common/certificate/list", auth.AuthWithJWT(h.handleListCertificate, h.userStore))
+	r.Delete("/admin/common/certificate/{certificateId}/delete", auth.AuthWithJWT(h.handleDeleteCertificate, h.userStore))
+	r.Put("/admin/common/certificate/{certificateId}/update", auth.AuthWithJWT(h.handleUpdateCertificate, h.userStore))
+	r.Get("/admin/common/certificate/{certificateId}", auth.AuthWithJWT(h.handleGetCertificate, h.userStore))
 }
 
 // =========================== Contact Us ===========================
 // @Summary get contact us
 // @Description get contact us
 // @Tags common-admin
-// @Accept  json
+// @Accept  json	
 // @Produce  json
 // @Router /admin/common/contact_us/list [get]
 // @Security		BearerAuth
@@ -411,6 +418,7 @@ func (h *Handler) handleDeleteContactUsFooter(w http.ResponseWriter, r *http.Req
 // @Param fileUz formData file true "file uz"
 // @Param fileRu formData file false "file ru"
 // @Param fileEn formData file false "file en"
+// @Param link formData string false "link"
 // @Router /admin/common/media/create [post]
 // @Security BearerAuth
 func (h *Handler) handleCreateMedia(w http.ResponseWriter, r *http.Request) {
@@ -419,7 +427,7 @@ func (h *Handler) handleCreateMedia(w http.ResponseWriter, r *http.Request) {
 		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to parse form"))
 		return
 	}
-
+	link := r.FormValue("link")
 	fileUz, fileHeader, err := r.FormFile("fileUz")
 	if err != nil {
 		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to read file_uz"))
@@ -523,6 +531,7 @@ func (h *Handler) handleCreateMedia(w http.ResponseWriter, r *http.Request) {
 		FileUz: fileUzPath,
 		FileRu: fileRuPath,
 		FileEn: fileEnPath,
+		Link:   link,
 	}
 
 	err = h.store.CreateMedia(&meida)
@@ -584,6 +593,7 @@ func (h *Handler) handleDeleteMedia(w http.ResponseWriter, r *http.Request) {
 // @Param fileUz formData file true "file uz"
 // @Param fileRu formData file false "file ru"
 // @Param fileEn formData file false "file en"
+// @Param link formData string false "link"
 // @Router /admin/common/media/{mediaId}/update [put]
 // @Security BearerAuth
 func (h *Handler) handleUpdateMedia(w http.ResponseWriter, r *http.Request) {
@@ -599,7 +609,6 @@ func (h *Handler) handleUpdateMedia(w http.ResponseWriter, r *http.Request) {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return
 	}
-
 	fileUz, fileHeader, err := r.FormFile("fileUz")
 	if err != nil {
 		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to read file_uz"))
@@ -699,11 +708,13 @@ func (h *Handler) handleUpdateMedia(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	link := r.FormValue("link")
 
 	changed_media := types_common_admin.MediaPayload{
 		FileUz: fileUzPath,
 		FileRu: fileRuPath,
 		FileEn: fileEnPath,
+		Link:   link,
 	}
 
 	err = h.store.UpdateMedia(media.Id, &changed_media)
@@ -713,6 +724,24 @@ func (h *Handler) handleUpdateMedia(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.WriteJson(w, http.StatusOK, map[string]string{"message": "successfully updated"})
+}
+
+// @Summary get media
+// @Description get media
+// @Tags common-admin
+// @Accept json
+// @Produce json
+// @Param mediaId path string true "media id"
+// @Router /admin/common/media/{mediaId} [get]
+// @Security BearerAuth
+func (h *Handler) handleGetMedia(w http.ResponseWriter, r *http.Request) {
+	var mediaId = r.PathValue("mediaId")
+	media, err := h.store.GetMediaById(mediaId)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+	utils.WriteJson(w, http.StatusOK, media)
 }
 
 // @Summary create partner
@@ -1401,4 +1430,159 @@ func (h *Handler) handleGetNews(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.WriteJson(w, http.StatusOK, news)
+}
+
+// @Summary create certificate
+// @Description create certificate
+// @Tags common-admin
+// @Accept json
+// @Produce json
+// @Param payload body types_common_admin.CertificatePayload true "payload"
+// @Router /admin/common/certificate/create [post]
+// @Security BearerAuth
+func (h *Handler) handleCreateCertificate(w http.ResponseWriter, r *http.Request) {
+	var payload types_common_admin.CertificatePayload
+	if err := utils.ParseJson(r, &payload); err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if err := utils.Validate.Struct(payload); err != nil {
+		errors := err.(validator.ValidationErrors)
+		utils.WriteError(w, http.StatusBadRequest, errors)
+		return
+	}
+
+	certificate := types_common_admin.CertificatePayload{
+		NameUz: payload.NameUz,
+		NameRu: payload.NameRu,
+		NameEn: payload.NameEn,
+		TextUz: payload.TextUz,
+		TextRu: payload.TextRu,
+		TextEn: payload.TextEn,
+	}
+
+	result, err := h.store.CreateCertificate(&certificate)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusCreated, result)
+}
+
+// @Summary list certificate
+// @Description list certificate
+// @Tags common-admin
+// @Accept json
+// @Produce json
+// @Router /admin/common/certificate/list [get]
+// @Security BearerAuth
+func (h *Handler) handleListCertificate(w http.ResponseWriter, r *http.Request) {
+	list, err := h.store.ListCertificate()
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, list)
+}
+
+// @Summary delete certificate
+// @Summary delete certificate
+// @Tags common-admin
+// @Accept json
+// @Produce json
+// @Param certificateId path string true "certificate id"
+// @Router /admin/common/certificate/{certificateId}/delete [delete]
+// @Security BearerAuth
+func (h *Handler) handleDeleteCertificate(w http.ResponseWriter, r *http.Request) {
+	var certificateId = r.PathValue("certificateId")
+	certificate, err := h.store.GetCertificate(certificateId)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if certificate == nil {
+		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("not found"))
+		return
+	}
+
+	err = h.store.DeleteCertificate(certificate.Id)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusNoContent, map[string]string{"message": "deleted"})
+}
+
+// @Summary update certificate
+// @Description update certificate
+// @Tags common-admin
+// @Accept json
+// @Produce json
+// @Param certificateId path string true "certificate id"
+// @Param payload body types_common_admin.CertificatePayload true "payload"
+// @Router /admin/common/certificate/{certificateId}/update [put]
+// @Security BearerAuth
+func (h *Handler) handleUpdateCertificate(w http.ResponseWriter, r *http.Request) {
+	var certificateId = r.PathValue("certificateId")
+	certificate, err := h.store.GetCertificate(certificateId)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if certificate == nil {
+		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("not found"))
+		return
+	}
+
+	var payload types_common_admin.CertificatePayload
+	if err := utils.ParseJson(r, &payload); err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if err := utils.Validate.Struct(payload); err != nil {
+		errors := err.(validator.ValidationErrors)
+		utils.WriteError(w, http.StatusBadRequest, errors)
+		return
+	}
+
+	updatedCertificate, err := h.store.UpdateCertificate(certificate.Id, &types_common_admin.CertificatePayload{
+		NameUz: payload.NameUz,
+		NameRu: payload.NameRu,
+		NameEn: payload.NameEn,
+		TextUz: payload.TextUz,
+		TextRu: payload.TextRu,
+		TextEn: payload.TextEn,
+	})
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, updatedCertificate)
+}
+
+// @Summary get certificate
+// @Description get certificate
+// @Tags common-admin
+// @Accept json
+// @Produce json
+// @Param certificateId path string true "certificate id"
+// @Router /admin/common/certificate/{certificateId} [get]
+// @Security BearerAuth
+func (h *Handler) handleGetCertificate(w http.ResponseWriter, r *http.Request) {
+	var certificateId = r.PathValue("certificateId")
+	certificate, err := h.store.GetCertificate(certificateId)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, certificate)
 }

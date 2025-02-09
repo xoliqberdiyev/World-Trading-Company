@@ -3,6 +3,7 @@ package common
 import (
 	"database/sql"
 
+	types_about_company "github.com/XoliqberdiyevBehruz/wtc_backend/types/about_company"
 	types_common "github.com/XoliqberdiyevBehruz/wtc_backend/types/common"
 	types_product "github.com/XoliqberdiyevBehruz/wtc_backend/types/product"
 )
@@ -60,7 +61,7 @@ func (s *Store) GetAllMedia() ([]*types_common.MediaPayload, error) {
 	}
 	for rows.Next() {
 		var media types_common.MediaPayload
-		if err := rows.Scan(&media.Id, &media.FileUz, &media.FileRu, &media.FileEn, &media.CreatedAt); err != nil {
+		if err := rows.Scan(&media.Id, &media.FileUz, &media.FileRu, &media.FileEn, &media.Link, &media.CreatedAt); err != nil {
 			return nil, err
 		}
 		medias = append(medias, &media)
@@ -151,4 +152,38 @@ func (s *Store) GetNews(id string) (*types_common.NewsListPayload, error) {
 	}
 
 	return &news, nil
+}
+
+func (s *Store) ListAboutOil() ([]*types_about_company.AboutOilListPayload, error) {
+	var oils []*types_about_company.AboutOilListPayload
+	query := `SELECT * FROM about_oil ORDER BY created_at`
+	rows, err := s.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var oil types_about_company.AboutOilListPayload
+		if err := rows.Scan(&oil.Id, &oil.NameUz, &oil.NameRu, &oil.NameEn, &oil.TextUz, &oil.TextRu, &oil.TextEn, &oil.CreatedAt); err != nil {
+			return nil, err
+		}
+		oils = append(oils, &oil)
+	}
+	return oils, nil
+}
+
+func (s *Store) ListCertificate() ([]*types_common.CertificateListPayload, error) {
+	var certificates []*types_common.CertificateListPayload
+	query := `SELECT * FROM certificates ORDER BY created_at`
+	rows, err := s.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var certificate types_common.CertificateListPayload
+		if err := rows.Scan(&certificate.Id, &certificate.NameUz, &certificate.NameRu, &certificate.NameEn, &certificate.TextUz, &certificate.TextRu, &certificate.TextEn, &certificate.CreatedAt); err != nil {
+			return nil, err
+		}
+		certificates = append(certificates, &certificate)
+	}
+	return certificates, nil
 }

@@ -27,6 +27,11 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 	r.Delete("/admin/company/capasity/{capasityId}/delete", auth.AuthWithJWT(h.handleDeleteCapasity, h.userStore))
 	r.Put("/admin/company/capasity/{capasityId}/update", auth.AuthWithJWT(h.handleUpdateCapasity, h.userStore))
 	r.Get("/admin/company/capasity/{capasityId}", auth.AuthWithJWT(h.handleGetCapasity, h.userStore))
+	r.Post("/admin/company/about_oil/create", auth.AuthWithJWT(h.handleCreateAboutOil, h.userStore))
+	r.Get("/admin/company/about_oil/list", auth.AuthWithJWT(h.handleListAboutOil, h.userStore))
+	r.Put("/admin/company/about_oil/{oilId}/update", auth.AuthWithJWT(h.handleUpdateAboutOil, h.userStore))
+	r.Delete("/admin/company/about_oil/{oilId}/delete", auth.AuthWithJWT(h.handleDeleteAboutOil, h.userStore))
+	r.Get("/admin/company/about_oil/{oilId}", auth.AuthWithJWT(h.handleGetAboutOil, h.userStore))
 }
 
 // @Summary create capasity
@@ -179,3 +184,155 @@ func (h *Handler) handleGetCapasity(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJson(w, http.StatusOK, capasity)
 }
 
+// @Summary h=create about oil
+// @DEscription create about oil
+// @Tags company-admin
+// @Accept json
+// @Produce json
+// @Param payload body types_about_company.AboutOilPayload true "payload"
+// @Router /admin/company/about_oil/create [post]
+// @Security BearerAuth
+func (h *Handler) handleCreateAboutOil(w http.ResponseWriter, r *http.Request) {
+	var payload types_about_company.AboutOilPayload
+	if err := utils.ParseJson(r, &payload); err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if err := utils.Validate.Struct(payload); err != nil {
+		errors := err.(validator.ValidationErrors)
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid payload: %v", errors))
+		return
+	}
+
+	about_oil, err := h.store.CreateAboutOil(&types_about_company.AboutOilPayload{
+		NameUz: payload.NameUz,
+		NameRu: payload.NameRu,
+		NameEn: payload.NameEn,
+		TextUz: payload.TextUz,
+		TextRu: payload.TextRu,
+		TextEn: payload.TextEn,
+	})
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusCreated, about_oil)
+}
+
+// @Summary list about oil
+// @Description about oil
+// @Tags company-admin
+// @Accept json
+// @Produce json
+// @Router /admin/company/about_oil/list [get]
+// @Security BearerAuth
+func (h *Handler) handleListAboutOil(w http.ResponseWriter, r *http.Request) {
+	list, err := h.store.ListAboutOil()
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, list)
+}
+
+// @Summary update about oil
+// @Description update about oil
+// @Tags company-admin
+// @Accept json
+// @Produce json
+// @Param oilId path string true "id"
+// @Param payload body types_about_company.AboutOilPayload true "payload"
+// @Router /admin/company/about_oil/{oilId}/update [put]
+// @Security BearerAuth
+func (h *Handler) handleUpdateAboutOil(w http.ResponseWriter, r *http.Request) {
+	var oilId = r.PathValue("oilId")
+	oil, err := h.store.GetAboutOil(oilId)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+	if oil == nil {
+		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("not found"))
+		return
+	}
+	var payload types_about_company.AboutOilPayload
+
+	if err := utils.ParseJson(r, &payload); err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if err := utils.Validate.Struct(payload); err != nil {
+		errors := err.(validator.ValidationErrors)
+		utils.WriteError(w, http.StatusBadRequest, errors)
+		return
+	}
+
+	updated_oil := types_about_company.AboutOilPayload{
+		NameUz: payload.NameUz,
+		NameRu: payload.NameRu,
+		NameEn: payload.NameEn,
+		TextUz: payload.TextUz,
+		TextRu: payload.TextRu,
+		TextEn: payload.TextEn,
+	}
+
+	about_oil, err := h.store.UpdateAboutOil(oil.Id, &updated_oil)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, about_oil)
+}
+
+// @Summary delete about oil
+// @Description delete about oil
+// @Tags company-admin
+// @Accept json 
+// @Produce json
+// @Param oilId path string true "id"
+// @Router /admin/company/about_oil/{oilId}/delete [delete]
+// @Security BearerAuth
+func (h *Handler) handleDeleteAboutOil(w http.ResponseWriter, r *http.Request) {
+	var oilId = r.PathValue("oilId")
+	oil, err := h.store.GetAboutOil(oilId)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if oil == nil {
+		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("not found"))
+		return
+	}
+
+	err = h.store.DeleteAboutOil(oil.Id)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+	utils.WriteJson(w, http.StatusNoContent, map[string]string{"message": "deleted"})
+}
+
+// @Summary get about oil
+// @Description get about oil
+// @Tags company-admin
+// @Accept json 
+// @Produce json 
+// @Param oilId path string true "id"
+// @Router /admin/company/about_oil/{oilId} [get]
+// @Security BearerAuth
+func (h *Handler) handleGetAboutOil(w http.ResponseWriter, r *http.Request) {
+	var oilId = r.PathValue("oilId")
+	oil, err := h.store.GetAboutOil(oilId)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, oil)
+}

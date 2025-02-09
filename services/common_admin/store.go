@@ -178,8 +178,8 @@ func (s *Store) DeleteContactUsFooterById(id string) error {
 }
 
 func (s *Store) CreateMedia(media *types_common_admin.MediaPayload) error {
-	query := `INSERT INTO medias(file_uz, file_ru, file_en) VALUES($1, $2, $3)`
-	_, err := s.db.Exec(query, &media.FileUz, &media.FileRu, &media.FileEn)
+	query := `INSERT INTO medias(file_uz, file_ru, file_en, link) VALUES($1, $2, $3, $4)`
+	_, err := s.db.Exec(query, &media.FileUz, &media.FileRu, &media.FileEn, &media.Link)
 	if err != nil {
 		return err
 	}
@@ -189,7 +189,7 @@ func (s *Store) CreateMedia(media *types_common_admin.MediaPayload) error {
 func (s *Store) GetMediaById(id string) (*types_common_admin.MediaListPayload, error) {
 	var media types_common_admin.MediaListPayload
 	query := `SELECT * FROM medias WHERE id = $1`
-	err := s.db.QueryRow(query, id).Scan(&media.Id, &media.FileUz, &media.FileRu, &media.FileEn, &media.CreatedAt)
+	err := s.db.QueryRow(query, id).Scan(&media.Id, &media.FileUz, &media.FileRu, &media.FileEn, &media.Link, &media.CreatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -208,7 +208,7 @@ func (s *Store) GetAllMedias() ([]*types_common_admin.MediaListPayload, error) {
 	}
 	for rows.Next() {
 		var media types_common_admin.MediaListPayload
-		if err := rows.Scan(&media.Id, &media.FileUz, &media.FileRu, &media.FileEn, &media.CreatedAt); err != nil {
+		if err := rows.Scan(&media.Id, &media.FileUz, &media.FileRu, &media.FileEn, &media.Link, &media.CreatedAt); err != nil {
 			return nil, err
 		}
 		medias = append(medias, &media)
@@ -226,8 +226,8 @@ func (s *Store) DeleteMediaById(id string) error {
 }
 
 func (s *Store) UpdateMedia(id string, media *types_common_admin.MediaPayload) error {
-	query := `UPDATE medias SET file_uz = $1, file_ru = $2, file_en = $3 WHERE id = $4`
-	_, err := s.db.Query(query, &media.FileUz, &media.FileRu, &media.FileEn, id)
+	query := `UPDATE medias SET file_uz = $1, file_ru = $2, file_en = $3, link = $5 WHERE id = $4`
+	_, err := s.db.Query(query, &media.FileUz, &media.FileRu, &media.FileEn, id, &media.Link)
 	if err != nil {
 		return err
 	}
@@ -432,4 +432,67 @@ func (s *Store) ListNews(limit, offset int) ([]*types_common_admin.NewsListPaylo
 		news = append(news, &new)
 	}
 	return news, nil
+}
+
+func (s *Store) CreateCertificate(payload *types_common_admin.CertificatePayload) (*types_common_admin.CertificateListPayload, error) {
+	var certificate types_common_admin.CertificateListPayload
+	query := `INSERT INTO certificates(name_uz, name_ru, name_en, text_uz, text_ru, text_en) VALUES($1, $2, $3, $4, $5, $6) RETURNING id, name_uz, name_ru, name_en, text_uz, text_ru, text_en, created_at`
+	err := s.db.QueryRow(query, payload.NameUz, payload.NameRu, payload.NameEn, payload.TextUz, payload.TextRu, payload.TextEn).Scan(
+		&certificate.Id, &certificate.NameUz, &certificate.NameRu, &certificate.NameEn, &certificate.TextUz, &certificate.TextRu, &certificate.TextEn, &certificate.CreatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &certificate, nil
+}
+
+func (s *Store) GetCertificate(id string) (*types_common_admin.CertificateListPayload, error) {
+	var certificate types_common_admin.CertificateListPayload
+	query := `SELECT * FROM certificates WHERE id = $1`
+	err := s.db.QueryRow(query, id).Scan(&certificate.Id, &certificate.NameUz, &certificate.NameRu, &certificate.NameEn, &certificate.TextUz, &certificate.TextRu, &certificate.TextEn, &certificate.CreatedAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &certificate, nil
+}
+
+func (s *Store) UpdateCertificate(id string, payload *types_common_admin.CertificatePayload) (*types_common_admin.CertificateListPayload, error) {
+	var certificate types_common_admin.CertificateListPayload
+	query := `UPDATE certificates SET name_uz = $1, name_ru = $2, name_en = $3, text_uz = $4, text_ru = $5, text_en = $6 WHERE id = $7 RETURNING id, name_uz, name_ru, name_en, text_uz, text_ru, text_en, created_at`
+	err := s.db.QueryRow(query, payload.NameUz, payload.NameRu, payload.NameEn, payload.TextUz, payload.TextRu, payload.TextEn, id).Scan(
+		&certificate.Id, &certificate.NameUz, &certificate.NameRu, &certificate.NameEn, &certificate.TextUz, &certificate.TextRu, &certificate.TextEn, &certificate.CreatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &certificate, nil
+}
+
+func (s *Store) DeleteCertificate(id string) error {
+	query := `DELETE FROM certificates WHERE id = $1`
+	_, err := s.db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) ListCertificate() ([]*types_common_admin.CertificateListPayload, error) {
+	var certificates []*types_common_admin.CertificateListPayload
+	query := `SELECT * FROM certificates ORDER BY created_at`
+	rows, err := s.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var certificate types_common_admin.CertificateListPayload
+		if err := rows.Scan(&certificate.Id, &certificate.NameUz, &certificate.NameRu, &certificate.NameEn, &certificate.TextUz, &certificate.TextRu, &certificate.TextEn, &certificate.CreatedAt); err != nil {
+			return nil, err
+		}
+		certificates = append(certificates, &certificate)
+	}
+	return certificates, nil
 }

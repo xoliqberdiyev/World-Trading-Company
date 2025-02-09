@@ -24,6 +24,22 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/about_oil/list": {
+            "get": {
+                "description": "list about oil",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common"
+                ],
+                "summary": "list about oil",
+                "responses": {}
+            }
+        },
         "/admin/common/banner/create": {
             "post": {
                 "security": [
@@ -194,6 +210,157 @@ const docTemplate = `{
                         "name": "imageEn",
                         "in": "formData",
                         "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/common/certificate/create": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "create certificate",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "summary": "create certificate",
+                "parameters": [
+                    {
+                        "description": "payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types_common_admin.CertificatePayload"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/common/certificate/list": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "list certificate",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "summary": "list certificate",
+                "responses": {}
+            }
+        },
+        "/admin/common/certificate/{certificateId}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get certificate",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "summary": "get certificate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "certificate id",
+                        "name": "certificateId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/common/certificate/{certificateId}/delete": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "summary": "delete certificate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "certificate id",
+                        "name": "certificateId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/common/certificate/{certificateId}/update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "update certificate",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "summary": "update certificate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "certificate id",
+                        "name": "certificateId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types_common_admin.CertificatePayload"
+                        }
                     }
                 ],
                 "responses": {}
@@ -475,6 +642,12 @@ const docTemplate = `{
                         "description": "file en",
                         "name": "fileEn",
                         "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "link",
+                        "name": "link",
+                        "in": "formData"
                     }
                 ],
                 "responses": {}
@@ -498,6 +671,36 @@ const docTemplate = `{
                     "common-admin"
                 ],
                 "summary": "get medias",
+                "responses": {}
+            }
+        },
+        "/admin/common/media/{mediaId}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get media",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common-admin"
+                ],
+                "summary": "get media",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "media id",
+                        "name": "mediaId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {}
             }
         },
@@ -574,6 +777,12 @@ const docTemplate = `{
                         "type": "file",
                         "description": "file en",
                         "name": "fileEn",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "link",
+                        "name": "link",
                         "in": "formData"
                     }
                 ],
@@ -1104,6 +1313,158 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/admin/company/about_oil/create": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "create about oil",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "company-admin"
+                ],
+                "summary": "h=create about oil",
+                "parameters": [
+                    {
+                        "description": "payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types_about_company.AboutOilPayload"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/company/about_oil/list": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "about oil",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "company-admin"
+                ],
+                "summary": "list about oil",
+                "responses": {}
+            }
+        },
+        "/admin/company/about_oil/{oilId}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get about oil",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "company-admin"
+                ],
+                "summary": "get about oil",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "oilId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/company/about_oil/{oilId}/delete": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "delete about oil",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "company-admin"
+                ],
+                "summary": "delete about oil",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "oilId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/company/about_oil/{oilId}/update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "update about oil",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "company-admin"
+                ],
+                "summary": "update about oil",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "oilId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types_about_company.AboutOilPayload"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/admin/company/capasity/create": {
             "post": {
                 "security": [
@@ -1486,6 +1847,22 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/certificate/list": {
+            "get": {
+                "description": "list certificate",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common"
+                ],
+                "summary": "list certificate",
+                "responses": {}
+            }
+        },
         "/contact_us/create": {
             "post": {
                 "description": "create contact us",
@@ -1845,6 +2222,29 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "types_about_company.AboutOilPayload": {
+            "type": "object",
+            "properties": {
+                "nameEn": {
+                    "type": "string"
+                },
+                "nameRu": {
+                    "type": "string"
+                },
+                "nameUz": {
+                    "type": "string"
+                },
+                "textEn": {
+                    "type": "string"
+                },
+                "textRu": {
+                    "type": "string"
+                },
+                "textUz": {
+                    "type": "string"
+                }
+            }
+        },
         "types_about_company.CapasityPayload": {
             "type": "object",
             "properties": {
@@ -1896,6 +2296,29 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "phone": {
+                    "type": "string"
+                }
+            }
+        },
+        "types_common_admin.CertificatePayload": {
+            "type": "object",
+            "properties": {
+                "nameEn": {
+                    "type": "string"
+                },
+                "nameRu": {
+                    "type": "string"
+                },
+                "nameUz": {
+                    "type": "string"
+                },
+                "textEn": {
+                    "type": "string"
+                },
+                "textRu": {
+                    "type": "string"
+                },
+                "textUz": {
                     "type": "string"
                 }
             }
