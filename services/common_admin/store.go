@@ -2,6 +2,8 @@ package common_admin
 
 import (
 	"database/sql"
+	"fmt"
+	"log"
 
 	types_common_admin "github.com/XoliqberdiyevBehruz/wtc_backend/types/common_admin"
 )
@@ -226,14 +228,45 @@ func (s *Store) DeleteMediaById(id string) error {
 }
 
 func (s *Store) UpdateMedia(id string, media *types_common_admin.MediaPayload) error {
-	query := `UPDATE medias SET file_uz = $1, file_ru = $2, file_en = $3, link = $5 WHERE id = $4`
-	_, err := s.db.Query(query, &media.FileUz, &media.FileRu, &media.FileEn, id, &media.Link)
+	query := `UPDATE medias SET `
+	args := []interface{}{}
+	argIndex := 1
+
+	if media.FileUz != "" {
+		query += fmt.Sprintf("file_uz = $%d, ", argIndex)
+		args = append(args, media.FileUz)
+		argIndex++
+	}
+	if media.FileRu != "" {
+		query += fmt.Sprintf("file_ru = $%d, ", argIndex)
+		args = append(args, media.FileRu)
+		argIndex++
+	}
+	if media.FileEn != "" {
+		query += fmt.Sprintf("file_en = $%d, ", argIndex)
+		args = append(args, media.FileEn)
+		argIndex++
+	}
+	if media.Link != "" {
+		query += fmt.Sprintf("link = $%d, ", argIndex)
+		args = append(args, media.Link)
+		argIndex++
+	}
+
+	if len(args) == 0 {
+		return nil
+	}
+
+	query = query[:len(query)-2] + fmt.Sprintf(" WHERE id = $%d", argIndex)
+	args = append(args, id)
+
+	_, err := s.db.Exec(query, args...)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
-
 func (s *Store) CreatePartner(partren *types_common_admin.PartnersPayload) error {
 	query := `INSERT INTO partners(image) VALUES($1)`
 	_, err := s.db.Exec(query, &partren.Image)
@@ -244,7 +277,7 @@ func (s *Store) CreatePartner(partren *types_common_admin.PartnersPayload) error
 }
 
 func (s *Store) UpdatePartner(id string, partner *types_common_admin.PartnersPayload) error {
-	query := `UPDATE partners SET image = $1 WHERE id = $2`
+	query := `UPDATE partners SET `
 	_, err := s.db.Query(query, &partner.Image, id)
 	if err != nil {
 		return err
@@ -316,8 +349,31 @@ func (s *Store) CreateBanner(banner *types_common_admin.BannerPayload) (*types_c
 
 func (s *Store) UpdateBanner(id string, banner *types_common_admin.BannerPayload) (*types_common_admin.BannerListPayload, error) {
 	var b types_common_admin.BannerListPayload
-	query := `UPDATE banner SET image_uz = $1,  image_ru = $2, image_en = $3 WHERE id = $4 RETURNING id, image_uz, image_ru, image_en, created_at`
-	err := s.db.QueryRow(query, &banner.ImageUz, &banner.ImageRu, &banner.ImageEn, id).Scan(&b.Id, &b.ImageUz, &b.ImageRu, &b.ImageEn, &b.CreatedAt)
+	query := `UPDATE banner SET `
+	args := []interface{}{}
+	argsIndex := 1
+
+	if banner.ImageUz != "" {
+		query += fmt.Sprintf("image_uz = $%d, ", argsIndex)
+		args = append(args, banner.ImageUz)
+		argsIndex++
+	}
+
+	if banner.ImageRu != "" {
+		query += fmt.Sprintf("image_ru = $%d, ", argsIndex)
+		args = append(args, banner.ImageRu)
+		argsIndex++
+	}
+
+	if banner.ImageEn != "" {
+		query += fmt.Sprintf("image_en = $%d, ", argsIndex)
+		args = append(args, banner.ImageEn)
+		argsIndex++
+	}
+
+	query = query[:len(query)-2] + fmt.Sprintf(" WHERE id = $%d", argsIndex)
+	args = append(args, id)
+	_, err := s.db.Exec(query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -384,19 +440,57 @@ func (s *Store) GetNews(id string) (*types_common_admin.NewsListPayload, error) 
 
 func (s *Store) UpdateNews(id string, n *types_common_admin.NewsPayload) (*types_common_admin.NewsListPayload, error) {
 	var news types_common_admin.NewsListPayload
-	query := `
-		UPDATE 
-			news 
-		SET 
-			title_uz = $1, title_ru = $2, title_en = $3, 
-			description_uz = $4, description_ru = $5, description_en = $6, 
-			image = $7, link = $8
-		WHERE 
-			id = $9
-		RETURNING
-			id, title_uz, title_ru, title_en, description_uz, description_ru, description_en, image, link, created_at
-	`
-	err := s.db.QueryRow(query, &n.TitleUz, &n.TitleRu, &n.TitleEn, &n.DescriptionUz, &n.DescriptionRu, &n.DescriptionEn, &n.Image, &n.Link, id).Scan(
+	query := `UPDATE news SET `
+	args := []interface{}{}
+	argsIndex := 1
+
+	if n.TitleUz != "" {
+		query += fmt.Sprintf("title_uz = $%d, ", argsIndex)
+		args = append(args, n.TitleUz)
+		argsIndex++
+	}
+	if n.TitleRu != "" {
+		query += fmt.Sprintf("title_ru = $%d, ", argsIndex)
+		args = append(args, n.TitleRu)
+		argsIndex++
+	}
+	if n.TitleEn != "" {
+		query += fmt.Sprintf("title_en = $%d, ", argsIndex)
+		args = append(args, n.TitleEn)
+		argsIndex++
+	}
+	if n.DescriptionUz != "" {
+		query += fmt.Sprintf("description_uz = $%d, ", argsIndex)
+		args = append(args, n.DescriptionUz)
+		argsIndex++
+	}
+	if n.DescriptionRu != "" {
+		query += fmt.Sprintf("desription_ru = $%d, ", argsIndex)
+		args = append(args, n.DescriptionRu)
+		argsIndex++
+	}
+	if n.DescriptionEn != "" {
+		query += fmt.Sprintf("description_en = $%d, ", argsIndex)
+		args = append(args, n.DescriptionEn)
+		argsIndex++
+	}
+	if n.Image != "" {
+		query += fmt.Sprintf("image = $%d, ", argsIndex)
+		args = append(args, n.Image)
+		argsIndex++
+	}
+	if n.Link != "" {
+		query += fmt.Sprintf("link = $%d, ", argsIndex)
+		args = append(args, n.Link)
+		argsIndex++
+	}
+	if len(args) == 0 {
+		return nil, nil
+	}
+	query = query[:len(query)-2] + fmt.Sprintf(" WHERE id = $%d RETURNING id, title_uz, title_ru, title_en, description_uz, description_ru, description_en, image, link, created_at", argsIndex)
+	args = append(args, id)
+	log.Println(args...)
+	err := s.db.QueryRow(query, args...).Scan(
 		&news.Id, &news.TitleUz, &news.TitleRu, &news.TitleEn, &news.DescriptionUz, &news.DescriptionRu, &news.DescriptionEn, &news.Image, &news.Link, &news.CreatedAt,
 	)
 	if err != nil {
@@ -436,9 +530,9 @@ func (s *Store) ListNews(limit, offset int) ([]*types_common_admin.NewsListPaylo
 
 func (s *Store) CreateCertificate(payload *types_common_admin.CertificatePayload) (*types_common_admin.CertificateListPayload, error) {
 	var certificate types_common_admin.CertificateListPayload
-	query := `INSERT INTO certificates(name_uz, name_ru, name_en, text_uz, text_ru, text_en) VALUES($1, $2, $3, $4, $5, $6) RETURNING id, name_uz, name_ru, name_en, text_uz, text_ru, text_en, created_at`
-	err := s.db.QueryRow(query, payload.NameUz, payload.NameRu, payload.NameEn, payload.TextUz, payload.TextRu, payload.TextEn).Scan(
-		&certificate.Id, &certificate.NameUz, &certificate.NameRu, &certificate.NameEn, &certificate.TextUz, &certificate.TextRu, &certificate.TextEn, &certificate.CreatedAt,
+	query := `INSERT INTO certificates(name_uz, name_ru, name_en, text_uz, text_ru, text_en, image) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING id, name_uz, name_ru, name_en, text_uz, text_ru, text_en, image, created_at`
+	err := s.db.QueryRow(query, payload.NameUz, payload.NameRu, payload.NameEn, payload.TextUz, payload.TextRu, payload.TextEn, payload.Image).Scan(
+		&certificate.Id, &certificate.NameUz, &certificate.NameRu, &certificate.NameEn, &certificate.TextUz, &certificate.TextRu, &certificate.TextEn, &payload.Image, &certificate.CreatedAt,
 	)
 	if err != nil {
 		return nil, err
@@ -449,7 +543,7 @@ func (s *Store) CreateCertificate(payload *types_common_admin.CertificatePayload
 func (s *Store) GetCertificate(id string) (*types_common_admin.CertificateListPayload, error) {
 	var certificate types_common_admin.CertificateListPayload
 	query := `SELECT * FROM certificates WHERE id = $1`
-	err := s.db.QueryRow(query, id).Scan(&certificate.Id, &certificate.NameUz, &certificate.NameRu, &certificate.NameEn, &certificate.TextUz, &certificate.TextRu, &certificate.TextEn, &certificate.CreatedAt)
+	err := s.db.QueryRow(query, id).Scan(&certificate.Id, &certificate.NameUz, &certificate.NameRu, &certificate.NameEn, &certificate.TextUz, &certificate.TextRu, &certificate.TextEn, &certificate.Image, &certificate.CreatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -461,9 +555,48 @@ func (s *Store) GetCertificate(id string) (*types_common_admin.CertificateListPa
 
 func (s *Store) UpdateCertificate(id string, payload *types_common_admin.CertificatePayload) (*types_common_admin.CertificateListPayload, error) {
 	var certificate types_common_admin.CertificateListPayload
-	query := `UPDATE certificates SET name_uz = $1, name_ru = $2, name_en = $3, text_uz = $4, text_ru = $5, text_en = $6 WHERE id = $7 RETURNING id, name_uz, name_ru, name_en, text_uz, text_ru, text_en, created_at`
-	err := s.db.QueryRow(query, payload.NameUz, payload.NameRu, payload.NameEn, payload.TextUz, payload.TextRu, payload.TextEn, id).Scan(
-		&certificate.Id, &certificate.NameUz, &certificate.NameRu, &certificate.NameEn, &certificate.TextUz, &certificate.TextRu, &certificate.TextEn, &certificate.CreatedAt,
+	query := `UPDATE certificates SET `
+	args := []interface{}{}
+	argsIndex := 1
+	if payload.NameUz != "" {
+		query += fmt.Sprintf("name_uz = $%d, ", argsIndex)
+		args = append(args, payload.NameUz)
+		argsIndex++
+	}
+
+	if payload.NameRu != "" {
+		query += fmt.Sprintf("name_ru = $%d, ", argsIndex)
+		args = append(args, payload.NameRu)
+		argsIndex++
+	}
+
+	if payload.NameEn != "" {
+		query += fmt.Sprintf("name_en = $%d, ", argsIndex)
+		args = append(args, payload.NameEn)
+		argsIndex++
+	}
+
+	if payload.TextUz != "" {
+		query += fmt.Sprintf("text_uz = $%d, ", argsIndex)
+		args = append(args, payload.TextUz)
+		argsIndex++
+	}
+
+	if payload.TextRu != "" {
+		query += fmt.Sprintf("text_ru = $%d, ", argsIndex)
+		args = append(args, payload.TextRu)
+		argsIndex++
+	}
+
+	if payload.TextEn != "" {
+		query += fmt.Sprintf("text_en = $%d, ", argsIndex)
+		args = append(args, payload.TextEn)
+		argsIndex++
+	}
+	query = query[:len(query)-2] + fmt.Sprintf(" WHERE id = $%d RETURNING id, name_uz, name_ru, name_en, text_uz, text_ru, text_en, image, created_at", argsIndex)
+	args = append(args, id)
+	err := s.db.QueryRow(query, args...).Scan(
+		&certificate.Id, &certificate.NameUz, &certificate.NameRu, &certificate.NameEn, &certificate.TextUz, &certificate.TextRu, &certificate.TextEn, &certificate.Image,  &certificate.CreatedAt,
 	)
 	if err != nil {
 		return nil, err
@@ -489,7 +622,7 @@ func (s *Store) ListCertificate() ([]*types_common_admin.CertificateListPayload,
 	}
 	for rows.Next() {
 		var certificate types_common_admin.CertificateListPayload
-		if err := rows.Scan(&certificate.Id, &certificate.NameUz, &certificate.NameRu, &certificate.NameEn, &certificate.TextUz, &certificate.TextRu, &certificate.TextEn, &certificate.CreatedAt); err != nil {
+		if err := rows.Scan(&certificate.Id, &certificate.NameUz, &certificate.NameRu, &certificate.NameEn, &certificate.TextUz, &certificate.TextRu, &certificate.TextEn, &certificate.Image, &certificate.CreatedAt); err != nil {
 			return nil, err
 		}
 		certificates = append(certificates, &certificate)

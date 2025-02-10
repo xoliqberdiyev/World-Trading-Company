@@ -45,7 +45,7 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 	r.Post("/admin/common/media/create", auth.AuthWithJWT(h.handleCreateMedia, h.userStore))
 	r.Get("/admin/common/media/list", auth.AuthWithJWT(h.handleGetAllMedia, h.userStore))
 	r.Delete("/admin/common/media/{mediaId}/delete", auth.AuthWithJWT(h.handleDeleteMedia, h.userStore))
-	r.Put("/admin/common/media/{mediaId}/update", auth.AuthWithJWT(h.handleUpdateMedia, h.userStore))
+	r.Patch("/admin/common/media/{mediaId}/update", auth.AuthWithJWT(h.handleUpdateMedia, h.userStore))
 	r.Get("/admin/common/media/{mediaId}", auth.AuthWithJWT(h.handleGetMedia, h.userStore))
 	//partner
 	r.Post("/admin/common/partner/create", auth.AuthWithJWT(h.handleCreatePartner, h.userStore))
@@ -77,7 +77,7 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 // @Summary get contact us
 // @Description get contact us
 // @Tags common-admin
-// @Accept  json	
+// @Accept  json
 // @Produce  json
 // @Router /admin/common/contact_us/list [get]
 // @Security		BearerAuth
@@ -594,7 +594,7 @@ func (h *Handler) handleDeleteMedia(w http.ResponseWriter, r *http.Request) {
 // @Param fileRu formData file false "file ru"
 // @Param fileEn formData file false "file en"
 // @Param link formData string false "link"
-// @Router /admin/common/media/{mediaId}/update [put]
+// @Router /admin/common/media/{mediaId}/update [patch]
 // @Security BearerAuth
 func (h *Handler) handleUpdateMedia(w http.ResponseWriter, r *http.Request) {
 	var mediaId = r.PathValue("mediaId")
@@ -620,7 +620,7 @@ func (h *Handler) handleUpdateMedia(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if err == http.ErrMissingFile {
 			fileRu = nil
-			fileHeader = nil
+			fileRuHeader = nil
 		} else {
 			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to read file_ru"))
 			return
@@ -1037,9 +1037,9 @@ func (h *Handler) handleListBanner(w http.ResponseWriter, r *http.Request) {
 // @Accept multipart/data
 // @Produce json
 // @Param bannerId path string true "banner id"
-// @Param imageUz formData file true "image uz"
-// @Param imageRu formData file true "image ru"
-// @Param imageEn formData file true "image en"
+// @Param imageUz formData file false "image uz"
+// @Param imageRu formData file false "image ru"
+// @Param imageEn formData file false "image en"
 // @Router /admin/common/banner/{bannerId}/update [put]
 // @Security BearerAuth
 func (h *Handler) handleUpdateBanner(w http.ResponseWriter, r *http.Request) {
@@ -1062,66 +1062,105 @@ func (h *Handler) handleUpdateBanner(w http.ResponseWriter, r *http.Request) {
 
 	imageUz, imageUzHeader, err := r.FormFile("imageUz")
 	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unabel to read image_uz: %v", err))
-		return
+		if err == http.ErrMissingFile {
+			imageUz = nil
+			imageUzHeader = nil
+		} else {
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unabel to read image_uz: %v", err))
+			return
+		}
 	}
-	defer imageUz.Close()
+	if imageUz != nil {
+		defer imageUz.Close()
+	}
 
 	imageRu, imageRuHeader, err := r.FormFile("imageRu")
 	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unabel to read image_ru: %v", err))
-		return
+		if err == http.ErrMissingFile {
+			imageRu = nil
+			imageRuHeader = nil
+		} else {
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unabel to read image_ru: %v", err))
+			return
+		}
 	}
-	defer imageRu.Close()
+	if imageRu != nil {
+		defer imageRu.Close()
+	}
 
 	imageEn, imageEnHeader, err := r.FormFile("imageEn")
 	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unabel to read image_en: %v", err))
-		return
+		if err == http.ErrMissingFile {
+			imageEn = nil
+			imageEnHeader = nil
+		} else {
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unabel to read image_en: %v", err))
+			return
+		}
 	}
-	defer imageEn.Close()
-
-	imageUzPath := "uploads/banners/images/" + imageUzHeader.Filename
-	imageRuPath := "uploads/banners/images/" + imageRuHeader.Filename
-	imageEnPath := "uploads/banners/images/" + imageEnHeader.Filename
-
-	outImageUz, err := os.Create(imageUzPath)
-	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image_uz: %v", err))
-		return
+	if imageEn != nil {
+		defer imageEn.Close()
 	}
-	defer outImageUz.Close()
-
-	outImageRu, err := os.Create(imageRuPath)
-	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image_ru: %v", err))
-		return
+	var imageUzPath string
+	if imageUzHeader != nil {
+		imageUzPath = "uploads/banners/images/" + imageUzHeader.Filename
+	} else {
+		imageUzPath = ""
 	}
-	defer outImageRu.Close()
-
-	outImageEn, err := os.Create(imageEnPath)
-	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image_en: %v", err))
-		return
+	var imageRuPath string
+	if imageRuHeader != nil {
+		imageRuPath = "uploads/banners/images/" + imageRuHeader.Filename
+	} else {
+		imageRuPath = ""
 	}
-	defer outImageEn.Close()
-
-	_, err = io.Copy(outImageUz, imageUz)
-	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image_uz: %v", err))
-		return
+	var imageEnPath string
+	if imageEnHeader != nil {
+		imageEnPath = "uploads/banners/images/" + imageEnHeader.Filename
+	} else {
+		imageEnPath = ""
 	}
 
-	_, err = io.Copy(outImageRu, imageRu)
-	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image_ru: %v", err))
-		return
-	}
+	if imageUzPath != "" {
 
-	_, err = io.Copy(outImageEn, imageEn)
-	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image_en: %v", err))
-		return
+		outImageUz, err := os.Create(imageUzPath)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image_uz: %v", err))
+			return
+		}
+		defer outImageUz.Close()
+
+		_, err = io.Copy(outImageUz, imageUz)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image_uz: %v", err))
+			return
+		}
+	}
+	if imageRuPath != "" {
+
+		outImageRu, err := os.Create(imageRuPath)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image_ru: %v", err))
+			return
+		}
+		defer outImageRu.Close()
+		_, err = io.Copy(outImageRu, imageRu)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image_ru: %v", err))
+			return
+		}
+	}
+	if imageEnPath != "" {
+		outImageEn, err := os.Create(imageEnPath)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image_en: %v", err))
+			return
+		}
+		defer outImageEn.Close()
+		_, err = io.Copy(outImageEn, imageEn)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image_en: %v", err))
+			return
+		}
 	}
 
 	changed_banner := types_common_admin.BannerPayload{
@@ -1305,13 +1344,13 @@ func (h *Handler) handleListNews(w http.ResponseWriter, r *http.Request) {
 // @Accept multipart/data
 // @Produce json
 // @Param newsId path string true "news Id"
-// @Param titleUz formData string true "title uz"
-// @Param titleRu formData string true "title ru"
-// @Param titleEn formData string true "title en"
-// @Param descriptionUz formData string true "description uz"
-// @Param descriptionRu formData string true "description ru"
-// @Param descriptionEn formData string true "description en"
-// @Param image formData file true "image"
+// @Param titleUz formData string false "title uz"
+// @Param titleRu formData string false "title ru"
+// @Param titleEn formData string false "title en"
+// @Param descriptionUz formData string false "description uz"
+// @Param descriptionRu formData string false "description ru"
+// @Param descriptionEn formData string false "description en"
+// @Param image formData file false "image"
 // @Param link formData string false "link"
 // @Router /admin/common/news/{newsId}/update [put]
 // @Security BearerAuth
@@ -1343,23 +1382,34 @@ func (h *Handler) handleUpdateNews(w http.ResponseWriter, r *http.Request) {
 	link := r.FormValue("link")
 	image, imageHeader, err := r.FormFile("image")
 	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to read image: %v", err))
-		return
+		if err == http.ErrMissingFile {
+			image = nil
+			imageHeader = nil
+		} else {
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to read image: %v", err))
+			return
+		}
 	}
-	defer image.Close()
-	imagePath := "uploads/news/images/" + imageHeader.Filename
-
-	outImage, err := os.Create(imagePath)
-	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image: %v", err))
-		return
+	if image != nil {
+		defer image.Close()
 	}
-	defer outImage.Close()
+	var imagePath string
+	if imageHeader != nil {
+		imagePath = "uploads/news/images/" + imageHeader.Filename
+	}
 
-	_, err = io.Copy(outImage, image)
-	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image: %v", err))
-		return
+	if imagePath != "" {
+		outImage, err := os.Create(imagePath)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image: %v", err))
+			return
+		}
+		defer outImage.Close()
+		_, err = io.Copy(outImage, image)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image: %v", err))
+			return
+		}
 	}
 
 	payload := types_common_admin.NewsPayload{
@@ -1435,31 +1485,56 @@ func (h *Handler) handleGetNews(w http.ResponseWriter, r *http.Request) {
 // @Summary create certificate
 // @Description create certificate
 // @Tags common-admin
-// @Accept json
+// @Accept multipart/data
 // @Produce json
-// @Param payload body types_common_admin.CertificatePayload true "payload"
+// @Param nameUz formData string true "name uz"
+// @Param nameRu formData string true "name ru"
+// @Param nameEn formData string true "name en"
+// @Param textUz formData string true "text uz"
+// @Param textRu formData string true "text ru"
+// @Param textEn formData string true "text en"
+// @Param image formData file true "image"
 // @Router /admin/common/certificate/create [post]
 // @Security BearerAuth
 func (h *Handler) handleCreateCertificate(w http.ResponseWriter, r *http.Request) {
-	var payload types_common_admin.CertificatePayload
-	if err := utils.ParseJson(r, &payload); err != nil {
+	err := r.ParseMultipartForm(50)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+	nameUz := r.FormValue("nameUz")
+	nameRu := r.FormValue("nameRu")
+	nameEn := r.FormValue("nameEn")
+	textUz := r.FormValue("textUz")
+	textRu := r.FormValue("textRu")
+	textEn := r.FormValue("textEn")
+	image, imageHeader, err := r.FormFile("image")
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to read image: %v", err))
+		return
+	}
+	defer image.Close()
+	imagePath := "uploads/certificate/images/" + imageHeader.Filename
+	outImage, err := os.Create(imagePath)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+	defer outImage.Close()
+	_, err = io.Copy(outImage, image)
+	if err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return
 	}
 
-	if err := utils.Validate.Struct(payload); err != nil {
-		errors := err.(validator.ValidationErrors)
-		utils.WriteError(w, http.StatusBadRequest, errors)
-		return
-	}
-
 	certificate := types_common_admin.CertificatePayload{
-		NameUz: payload.NameUz,
-		NameRu: payload.NameRu,
-		NameEn: payload.NameEn,
-		TextUz: payload.TextUz,
-		TextRu: payload.TextRu,
-		TextEn: payload.TextEn,
+		NameUz: nameUz,
+		NameRu: nameRu,
+		NameEn: nameEn,
+		TextUz: textUz,
+		TextRu: textRu,
+		TextEn: textEn,
+		Image:  imagePath,
 	}
 
 	result, err := h.store.CreateCertificate(&certificate)
@@ -1524,7 +1599,13 @@ func (h *Handler) handleDeleteCertificate(w http.ResponseWriter, r *http.Request
 // @Accept json
 // @Produce json
 // @Param certificateId path string true "certificate id"
-// @Param payload body types_common_admin.CertificatePayload true "payload"
+// @Param nameUz formData string false "name uz"
+// @Param nameRu formData string false "name ru"
+// @Param nameEn formData string false "name en"
+// @Param textUz formData string false "text uz"
+// @Param textRu formData string false "text ru"
+// @Param textEn formData string false "text en"
+// @Param image formData file false "image"
 // @Router /admin/common/certificate/{certificateId}/update [put]
 // @Security BearerAuth
 func (h *Handler) handleUpdateCertificate(w http.ResponseWriter, r *http.Request) {
@@ -1539,26 +1620,53 @@ func (h *Handler) handleUpdateCertificate(w http.ResponseWriter, r *http.Request
 		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("not found"))
 		return
 	}
+	nameUz := r.FormValue("nameUz")
+	nameRu := r.FormValue("nameRu")
+	nameEn := r.FormValue("nameEn")
+	textUz := r.FormValue("textUz")
+	textRu := r.FormValue("textRu")
+	textEn := r.FormValue("textEn")
 
-	var payload types_common_admin.CertificatePayload
-	if err := utils.ParseJson(r, &payload); err != nil {
-		utils.WriteError(w, http.StatusBadRequest, err)
-		return
+	image, imageHeader, err := r.FormFile("image")
+	if err != nil {
+		if err == http.ErrMissingFile {
+			image = nil
+			imageHeader = nil
+		} else {
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to read image: %v", err))
+			return
+		}
+	}
+	if image != nil {
+		defer image.Close()
 	}
 
-	if err := utils.Validate.Struct(payload); err != nil {
-		errors := err.(validator.ValidationErrors)
-		utils.WriteError(w, http.StatusBadRequest, errors)
-		return
+	var imagePath string
+	if imageHeader != nil {
+		imagePath = "uploads/certificate/images/" + imageHeader.Filename
+	}
+	if imagePath != "" {
+		outImage, err := os.Create(imagePath)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
+		defer outImage.Close()
+		_, err = io.Copy(outImage, image)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
 	}
 
 	updatedCertificate, err := h.store.UpdateCertificate(certificate.Id, &types_common_admin.CertificatePayload{
-		NameUz: payload.NameUz,
-		NameRu: payload.NameRu,
-		NameEn: payload.NameEn,
-		TextUz: payload.TextUz,
-		TextRu: payload.TextRu,
-		TextEn: payload.TextEn,
+		NameUz: nameUz,
+		NameRu: nameRu,
+		NameEn: nameEn,
+		TextUz: textUz,
+		TextRu: textRu,
+		TextEn: textEn,
+		Image:  imagePath,
 	})
 	if err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)

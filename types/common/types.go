@@ -19,6 +19,7 @@ type CommonStore interface {
 	ListNews(limit, offset int) ([]*NewsListPayload, error)
 	ListAboutOil() ([]*types_about_company.AboutOilListPayload, error)
 	ListCertificate() ([]*CertificateListPayload, error)
+	ListWhyUs() ([]*types_about_company.WhyUsListPayload, error)
 }
 
 type ContactCreatePayload struct {

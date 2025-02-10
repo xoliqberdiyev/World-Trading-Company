@@ -2,6 +2,7 @@ package about_company
 
 import (
 	"database/sql"
+	"fmt"
 
 	types_about_company "github.com/XoliqberdiyevBehruz/wtc_backend/types/about_company"
 )
@@ -130,4 +131,118 @@ func (s *Store) ListAboutOil() ([]*types_about_company.AboutOilListPayload, erro
 		oil = append(oil, &o)
 	}
 	return oil, nil
+}
+
+func (s *Store) CreateWhyUs(payload *types_about_company.WhyUsPayload) (*types_about_company.WhyUsListPayload, error) {
+	var whyUs types_about_company.WhyUsListPayload
+	query := `INSERT INTO why_us(title_uz, title_ru, title_en, description_uz, description_ru, description_en, image) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING id, title_uz, title_ru, title_en, description_uz, description_ru, description_en, image, created_at`
+	err := s.db.QueryRow(query, payload.TitleUz, payload.TitleRu, payload.TitleEn, payload.DescriptionUz, payload.DescriptionRu, payload.DescriptionEn, payload.Image).Scan(
+		&whyUs.Id, &whyUs.TitleUz, &whyUs.TitleRu, &whyUs.TitleEn, &whyUs.DescriptionUz, &whyUs.DescriptionRu, &whyUs.DescriptionEn, &whyUs.Image, &whyUs.CreatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &whyUs, nil
+}
+
+func (s *Store) ListWhyUs() ([]*types_about_company.WhyUsListPayload, error) {
+	var whyUsList []*types_about_company.WhyUsListPayload
+	query := `SELECT * FROM why_us ORDER BY created_at`
+	rows, err := s.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var whyUs types_about_company.WhyUsListPayload
+		if err := rows.Scan(&whyUs.Id, &whyUs.TitleUz, &whyUs.TitleRu, &whyUs.TitleEn, &whyUs.DescriptionUz, &whyUs.DescriptionRu, &whyUs.DescriptionEn, &whyUs.Image, &whyUs.CreatedAt); err != nil {
+			return nil, err
+		}
+		whyUsList = append(whyUsList, &whyUs)
+	}
+	return whyUsList, nil
+}
+
+func (s *Store) DeleteWhyUs(id string) error {
+	query := `DELETE FROM why_us WHERE id = $1`
+	_, err := s.db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) UpdateWhyUs(id string, payload *types_about_company.WhyUsPayload) (*types_about_company.WhyUsListPayload, error) {
+	var whyUs types_about_company.WhyUsListPayload
+	query := `UPDATE why_us SET `
+	args := []interface{}{}
+	argsIndex := 1
+
+	if payload.TitleUz != "" {
+		query += fmt.Sprintf("title_uz = $%d, ", argsIndex)
+		args = append(args, payload.TitleUz)
+		argsIndex++
+	}
+
+
+	if payload.TitleRu != "" {
+		query += fmt.Sprintf("title_ru = $%d, ", argsIndex)
+		args = append(args, payload.TitleRu)
+		argsIndex++
+	}
+
+	if payload.TitleEn != "" {
+		query += fmt.Sprintf("title_en = $%d, ", argsIndex)
+		args = append(args, payload.TitleEn)
+		argsIndex++
+	}
+
+	if payload.DescriptionUz != "" {
+		query += fmt.Sprintf("description_uz = $%d, ", argsIndex)
+		args = append(args, payload.DescriptionUz)
+		argsIndex++
+	}
+
+	if payload.DescriptionRu != "" {
+		query += fmt.Sprintf("description_ru = $%d, ", argsIndex)
+		args = append(args, payload.DescriptionRu)
+		argsIndex++
+	}
+
+	if payload.DescriptionEn != "" {
+		query += fmt.Sprintf("description_en = $%d, ", argsIndex)
+		args = append(args, payload.DescriptionEn)
+		argsIndex++
+	}
+
+	if payload.Image != "" {
+		query += fmt.Sprintf("image = $%d, ", argsIndex)
+		args = append(args, payload.Image)
+		argsIndex++
+	}
+
+	query = query[:len(query)-2] + fmt.Sprintf(" WHERE id = $%d RETURNING id, title_uz, title_ru, title_en, description_uz, description_ru, description_en, image, created_at", argsIndex)
+	args = append(args, id)
+
+	err := s.db.QueryRow(query, args...).Scan(
+		&whyUs.Id, &whyUs.TitleUz, &whyUs.TitleRu, &whyUs.TitleEn, &whyUs.DescriptionUz, &whyUs.DescriptionRu, &whyUs.DescriptionEn, &whyUs.Image, &whyUs.CreatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &whyUs, nil
+}
+
+func (s *Store) GetWhyUs(id string) (*types_about_company.WhyUsListPayload, error) {
+	var whyUs types_about_company.WhyUsListPayload
+	query := `SELECT * FROM why_us WHERE id = $1`
+	err := s.db.QueryRow(query, id).Scan(
+		&whyUs.Id, &whyUs.TitleUz, &whyUs.TitleRu, &whyUs.TitleEn, &whyUs.DescriptionUz, &whyUs.DescriptionRu, &whyUs.DescriptionEn, &whyUs.Image, &whyUs.CreatedAt,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &whyUs, nil
 }

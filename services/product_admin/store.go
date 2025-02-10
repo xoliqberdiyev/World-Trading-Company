@@ -2,6 +2,7 @@ package product
 
 import (
 	"database/sql"
+	"fmt"
 
 	types_product "github.com/XoliqberdiyevBehruz/wtc_backend/types/product"
 )
@@ -37,8 +38,41 @@ func (s *Store) GetCategory(id string) (*types_product.CategoryListPayload, erro
 }
 
 func (s *Store) UpdateCategory(id string, payload *types_product.CategoryPayload) error {
-	query := `UPDATE categories SET name_uz = $1, name_ru = $2, name_en = $3, image = $4, icon = $5 WHERE id = $6`
-	_, err := s.db.Query(query, &payload.NameUz, &payload.NameRu, &payload.NameEn, &payload.Image, &payload.Icon, id)
+	query := `UPDATE categories SET `
+	args := []interface{}{}
+	argsIndex := 1
+	if payload.NameUz != "" {
+		query += fmt.Sprintf("name_uz = $%d, ", argsIndex)
+		args = append(args, payload.NameUz)
+		argsIndex++
+	}
+
+	if payload.NameRu != "" {
+		query += fmt.Sprintf("name_ru = $%d, ", argsIndex)
+		args = append(args, payload.NameRu)
+		argsIndex++
+	}
+
+	if payload.NameEn != "" {
+		query += fmt.Sprintf("name_en = $%d, ", argsIndex)
+		args = append(args, payload.NameEn)
+		argsIndex++
+	}
+
+	if payload.Image != "" {
+		query += fmt.Sprintf("image = $%d, ", argsIndex)
+		args = append(args, payload.Image)
+		argsIndex++
+	}
+
+	if payload.Icon != "" {
+		query += fmt.Sprintf("icon = $%d, ", argsIndex)
+		args = append(args, payload.Icon)
+		argsIndex++
+	}
+	query = query[:len(query)-2] + fmt.Sprintf(" WHERE id = $%d", argsIndex)
+	args = append(args, id)
+	_, err := s.db.Query(query, args...)
 	if err != nil {
 		return err
 	}
@@ -71,4 +105,3 @@ func (s *Store) ListCategory() ([]*types_product.CategoryListPayload, error) {
 	}
 	return categories, nil
 }
-

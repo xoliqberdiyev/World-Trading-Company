@@ -51,21 +51,6 @@ definitions:
     - email
     - phone
     type: object
-  types_common_admin.CertificatePayload:
-    properties:
-      nameEn:
-        type: string
-      nameRu:
-        type: string
-      nameUz:
-        type: string
-      textEn:
-        type: string
-      textRu:
-        type: string
-      textUz:
-        type: string
-    type: object
   types_common_admin.ContactUpdatePayload:
     properties:
       isContacted:
@@ -237,17 +222,14 @@ paths:
       - description: image uz
         in: formData
         name: imageUz
-        required: true
         type: file
       - description: image ru
         in: formData
         name: imageRu
-        required: true
         type: file
       - description: image en
         in: formData
         name: imageEn
-        required: true
         type: file
       produces:
       - application/json
@@ -346,12 +328,34 @@ paths:
         name: certificateId
         required: true
         type: string
-      - description: payload
-        in: body
-        name: payload
-        required: true
-        schema:
-          $ref: '#/definitions/types_common_admin.CertificatePayload'
+      - description: name uz
+        in: formData
+        name: nameUz
+        type: string
+      - description: name ru
+        in: formData
+        name: nameRu
+        type: string
+      - description: name en
+        in: formData
+        name: nameEn
+        type: string
+      - description: text uz
+        in: formData
+        name: textUz
+        type: string
+      - description: text ru
+        in: formData
+        name: textRu
+        type: string
+      - description: text en
+        in: formData
+        name: textEn
+        type: string
+      - description: image
+        in: formData
+        name: image
+        type: file
       produces:
       - application/json
       responses: {}
@@ -363,15 +367,44 @@ paths:
   /admin/common/certificate/create:
     post:
       consumes:
-      - application/json
+      - multipart/data
       description: create certificate
       parameters:
-      - description: payload
-        in: body
-        name: payload
+      - description: name uz
+        in: formData
+        name: nameUz
         required: true
-        schema:
-          $ref: '#/definitions/types_common_admin.CertificatePayload'
+        type: string
+      - description: name ru
+        in: formData
+        name: nameRu
+        required: true
+        type: string
+      - description: name en
+        in: formData
+        name: nameEn
+        required: true
+        type: string
+      - description: text uz
+        in: formData
+        name: textUz
+        required: true
+        type: string
+      - description: text ru
+        in: formData
+        name: textRu
+        required: true
+        type: string
+      - description: text en
+        in: formData
+        name: textEn
+        required: true
+        type: string
+      - description: image
+        in: formData
+        name: image
+        required: true
+        type: file
       produces:
       - application/json
       responses: {}
@@ -584,7 +617,7 @@ paths:
       tags:
       - common-admin
   /admin/common/media/{mediaId}/update:
-    put:
+    patch:
       consumes:
       - multipart/data
       description: update media
@@ -714,37 +747,30 @@ paths:
       - description: title uz
         in: formData
         name: titleUz
-        required: true
         type: string
       - description: title ru
         in: formData
         name: titleRu
-        required: true
         type: string
       - description: title en
         in: formData
         name: titleEn
-        required: true
         type: string
       - description: description uz
         in: formData
         name: descriptionUz
-        required: true
         type: string
       - description: description ru
         in: formData
         name: descriptionRu
-        required: true
         type: string
       - description: description en
         in: formData
         name: descriptionEn
-        required: true
         type: string
       - description: image
         in: formData
         name: image
-        required: true
         type: file
       - description: link
         in: formData
@@ -1192,6 +1218,148 @@ paths:
       summary: list capasity
       tags:
       - company-admin
+  /admin/company/why_us/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: get why us
+      tags:
+      - company-admin
+  /admin/company/why_us/{id}/delete:
+    delete:
+      consumes:
+      - application/json
+      description: delete why us
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: delete why us
+      tags:
+      - company-admin
+  /admin/company/why_us/{id}/update:
+    put:
+      description: update why us
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: image
+        in: formData
+        name: image
+        type: file
+      - description: titleUz
+        in: formData
+        name: titleUz
+        type: string
+      - description: titleRu
+        in: formData
+        name: titleRu
+        type: string
+      - description: titleEn
+        in: formData
+        name: titleEn
+        type: string
+      - description: descriptionUz
+        in: formData
+        name: descriptionUz
+        type: string
+      - description: descriptionRu
+        in: formData
+        name: descriptionRu
+        type: string
+      - description: descriptionEn
+        in: formData
+        name: descriptionEn
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: update why us
+      tags:
+      - company-admin
+  /admin/company/why_us/create:
+    post:
+      consumes:
+      - multipart/data
+      description: create why us
+      parameters:
+      - description: image
+        in: formData
+        name: image
+        type: file
+      - description: titleUz
+        in: formData
+        name: titleUz
+        required: true
+        type: string
+      - description: titleRu
+        in: formData
+        name: titleRu
+        required: true
+        type: string
+      - description: titleEn
+        in: formData
+        name: titleEn
+        required: true
+        type: string
+      - description: descriptionUz
+        in: formData
+        name: descriptionUz
+        required: true
+        type: string
+      - description: descriptionRu
+        in: formData
+        name: descriptionRu
+        required: true
+        type: string
+      - description: descriptionEn
+        in: formData
+        name: descriptionEn
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: create why us
+      tags:
+      - company-admin
+  /admin/company/why_us/list:
+    get:
+      consumes:
+      - application/json
+      description: list why_us
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: list why_us
+      tags:
+      - company-admin
   /admin/product/category/{categoryId}:
     get:
       description: get category
@@ -1293,27 +1461,22 @@ paths:
       - description: name uz
         in: formData
         name: nameUz
-        required: true
         type: string
       - description: name ru
         in: formData
         name: nameRu
-        required: true
         type: string
       - description: name en
         in: formData
         name: nameEn
-        required: true
         type: string
       - description: image
         in: formData
         name: image
-        required: true
         type: file
       - description: icon
         in: formData
         name: icon
-        required: true
         type: file
       produces:
       - application/json
@@ -1584,6 +1747,17 @@ paths:
       summary: Update user
       tags:
       - user-admin
+  /why_us/list:
+    get:
+      consumes:
+      - application/json
+      description: list why us
+      produces:
+      - application/json
+      responses: {}
+      summary: list why us
+      tags:
+      - common
 securityDefinitions:
   BearerAuth:
     in: header

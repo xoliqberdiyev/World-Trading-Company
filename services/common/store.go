@@ -187,3 +187,20 @@ func (s *Store) ListCertificate() ([]*types_common.CertificateListPayload, error
 	}
 	return certificates, nil
 }
+
+func (s *Store) ListWhyUs() ([]*types_about_company.WhyUsListPayload, error) {
+	var whyUsList []*types_about_company.WhyUsListPayload
+	query := `SELECT * FROM why_us ORDER BY created_at`
+	rows, err := s.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var whyUs types_about_company.WhyUsListPayload
+		if err := rows.Scan(&whyUs.Id, &whyUs.TitleUz, &whyUs.TitleRu, &whyUs.TitleEn, &whyUs.DescriptionUz, &whyUs.DescriptionRu, &whyUs.DescriptionEn, &whyUs.Image, &whyUs.CreatedAt); err != nil {
+			return nil, err
+		}
+		whyUsList = append(whyUsList, &whyUs)
+	}
+	return whyUsList, nil
+}

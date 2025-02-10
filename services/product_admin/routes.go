@@ -131,11 +131,11 @@ func (h *Handler) handleListCategory(w http.ResponseWriter, r *http.Request) {
 // @Accept multipart/data
 // @Produce json
 // @Param categoryId path string true "category id"
-// @Param nameUz formData string true "name uz"
-// @Param nameRu formData string true "name ru"
-// @Param nameEn formData string true "name en"
-// @Param image formData file true "image"
-// @Param icon formData file true "icon"
+// @Param nameUz formData string false "name uz"
+// @Param nameRu formData string false "name ru"
+// @Param nameEn formData string false "name en"
+// @Param image formData file false "image"
+// @Param icon formData file false "icon"
 // @Router /admin/product/crategory/{categoryId}/update [put]
 // @Security BearerAuth
 func (h *Handler) handleUpdateCategory(w http.ResponseWriter, r *http.Request) {
@@ -163,40 +163,64 @@ func (h *Handler) handleUpdateCategory(w http.ResponseWriter, r *http.Request) {
 
 	image, imageHeader, err := r.FormFile("image")
 	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to read image: %v", err))
-		return
+		if err == http.ErrMissingFile {
+			image = nil
+			imageHeader = nil
+		} else {
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to read image: %v", err))
+			return
+		}
 	}
-
+	if image != nil {
+		defer image.Close()
+	}
 	icon, iconHeader, err := r.FormFile("icon")
 	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to read icon: %v", err))
-		return
+		if err == http.ErrMissingFile {
+			icon = nil
+			iconHeader = nil
+		} else {
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to read icon: %v", err))
+			return
+		}
 	}
-
-	imagePath := "uploads/categories/images/" + imageHeader.Filename
-	iconPath := "uploads/categories/icons/" + iconHeader.Filename
-
-	outImage, err := os.Create(imagePath)
-	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to copy image: %v", err))
-		return
+	if icon != nil {
+		defer icon.Close()
 	}
-	outIcon, err := os.Create(iconPath)
-	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to copy icon: %v", err))
-		return
+	var imagePath string
+	var iconPath string
+	if imageHeader != nil {
+		imagePath = "uploads/categories/images/" + imageHeader.Filename
 	}
-
-	_, err = io.Copy(outImage, image)
-	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image: %v", err))
-		return
+	if iconHeader != nil {
+		iconPath = "uploads/categories/icons/" + iconHeader.Filename
 	}
+	if imagePath != "" {
+		outImage, err := os.Create(imagePath)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to copy image: %v", err))
+			return
+		}
+		defer outImage.Close()
 
-	_, err = io.Copy(outIcon, icon)
-	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write icon: %v", err))
-		return
+		_, err = io.Copy(outImage, image)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image: %v", err))
+			return
+		}
+	}
+	if iconPath != "" {
+		outIcon, err := os.Create(iconPath)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to copy icon: %v", err))
+			return
+		}
+		defer outIcon.Close()
+		_, err = io.Copy(outIcon, icon)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write icon: %v", err))
+			return
+		}
 	}
 
 	changed_category := types_product.CategoryPayload{

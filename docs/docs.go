@@ -194,22 +194,19 @@ const docTemplate = `{
                         "type": "file",
                         "description": "image uz",
                         "name": "imageUz",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "file",
                         "description": "image ru",
                         "name": "imageRu",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "file",
                         "description": "image en",
                         "name": "imageEn",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     }
                 ],
                 "responses": {}
@@ -224,7 +221,7 @@ const docTemplate = `{
                 ],
                 "description": "create certificate",
                 "consumes": [
-                    "application/json"
+                    "multipart/data"
                 ],
                 "produces": [
                     "application/json"
@@ -235,13 +232,53 @@ const docTemplate = `{
                 "summary": "create certificate",
                 "parameters": [
                     {
-                        "description": "payload",
-                        "name": "payload",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/types_common_admin.CertificatePayload"
-                        }
+                        "type": "string",
+                        "description": "name uz",
+                        "name": "nameUz",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name ru",
+                        "name": "nameRu",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name en",
+                        "name": "nameEn",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "text uz",
+                        "name": "textUz",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "text ru",
+                        "name": "textRu",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "text en",
+                        "name": "textEn",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "image",
+                        "name": "image",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -354,13 +391,46 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "payload",
-                        "name": "payload",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/types_common_admin.CertificatePayload"
-                        }
+                        "type": "string",
+                        "description": "name uz",
+                        "name": "nameUz",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "name ru",
+                        "name": "nameRu",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "name en",
+                        "name": "nameEn",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "text uz",
+                        "name": "textUz",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "text ru",
+                        "name": "textRu",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "text en",
+                        "name": "textEn",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "image",
+                        "name": "image",
+                        "in": "formData"
                     }
                 ],
                 "responses": {}
@@ -735,7 +805,7 @@ const docTemplate = `{
             }
         },
         "/admin/common/media/{mediaId}/update": {
-            "put": {
+            "patch": {
                 "security": [
                     {
                         "BearerAuth": []
@@ -990,50 +1060,43 @@ const docTemplate = `{
                         "type": "string",
                         "description": "title uz",
                         "name": "titleUz",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "string",
                         "description": "title ru",
                         "name": "titleRu",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "string",
                         "description": "title en",
                         "name": "titleEn",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "string",
                         "description": "description uz",
                         "name": "descriptionUz",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "string",
                         "description": "description ru",
                         "name": "descriptionRu",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "string",
                         "description": "description en",
                         "name": "descriptionEn",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "file",
                         "description": "image",
                         "name": "image",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "string",
@@ -1617,6 +1680,225 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/admin/company/why_us/create": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "create why us",
+                "consumes": [
+                    "multipart/data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "company-admin"
+                ],
+                "summary": "create why us",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "image",
+                        "name": "image",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "titleUz",
+                        "name": "titleUz",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "titleRu",
+                        "name": "titleRu",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "titleEn",
+                        "name": "titleEn",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "descriptionUz",
+                        "name": "descriptionUz",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "descriptionRu",
+                        "name": "descriptionRu",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "descriptionEn",
+                        "name": "descriptionEn",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/company/why_us/list": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "list why_us",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "company-admin"
+                ],
+                "summary": "list why_us",
+                "responses": {}
+            }
+        },
+        "/admin/company/why_us/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "company-admin"
+                ],
+                "summary": "get why us",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/company/why_us/{id}/delete": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "delete why us",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "company-admin"
+                ],
+                "summary": "delete why us",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/company/why_us/{id}/update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "update why us",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "company-admin"
+                ],
+                "summary": "update why us",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "image",
+                        "name": "image",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "titleUz",
+                        "name": "titleUz",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "titleRu",
+                        "name": "titleRu",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "titleEn",
+                        "name": "titleEn",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "descriptionUz",
+                        "name": "descriptionUz",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "descriptionRu",
+                        "name": "descriptionRu",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "descriptionEn",
+                        "name": "descriptionEn",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/admin/product/category/create": {
             "post": {
                 "security": [
@@ -1782,36 +2064,31 @@ const docTemplate = `{
                         "type": "string",
                         "description": "name uz",
                         "name": "nameUz",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "string",
                         "description": "name ru",
                         "name": "nameRu",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "string",
                         "description": "name en",
                         "name": "nameEn",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "file",
                         "description": "image",
                         "name": "image",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "file",
                         "description": "icon",
                         "name": "icon",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     }
                 ],
                 "responses": {}
@@ -2219,6 +2496,22 @@ const docTemplate = `{
                 ],
                 "responses": {}
             }
+        },
+        "/why_us/list": {
+            "get": {
+                "description": "list why us",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common"
+                ],
+                "summary": "list why us",
+                "responses": {}
+            }
         }
     },
     "definitions": {
@@ -2296,29 +2589,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "phone": {
-                    "type": "string"
-                }
-            }
-        },
-        "types_common_admin.CertificatePayload": {
-            "type": "object",
-            "properties": {
-                "nameEn": {
-                    "type": "string"
-                },
-                "nameRu": {
-                    "type": "string"
-                },
-                "nameUz": {
-                    "type": "string"
-                },
-                "textEn": {
-                    "type": "string"
-                },
-                "textRu": {
-                    "type": "string"
-                },
-                "textUz": {
                     "type": "string"
                 }
             }

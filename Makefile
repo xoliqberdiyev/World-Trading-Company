@@ -32,3 +32,5 @@ createfiles:
 	@mkdir uploads/categories && mkdir uploads/categories/images && mkdir uploads/categories/icons
 	@mkdir uploads/banners && mkdir uploads/banners/images
 	@mkdir uploads/news && mkdir uploads/news/images/
+	@mkdir uploads/why_us && mkdir uploads/why_us/images/
+	@mkdir uploads/certificate && mkdir uploads/certificate/images/

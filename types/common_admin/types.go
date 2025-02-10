@@ -1,6 +1,8 @@
 package types_common_admin
 
-import "time"
+import (
+	"time"
+)
 
 type CommonStore interface {
 	GetContactUsList() ([]*ContactListPayload, error)
@@ -39,7 +41,7 @@ type CommonStore interface {
 	GetCertificate(id string) (*CertificateListPayload, error)
 	UpdateCertificate(id string, payload *CertificatePayload) (*CertificateListPayload, error)
 	DeleteCertificate(id string) error
-	ListCertificate() ([]*CertificateListPayload, error) 
+	ListCertificate() ([]*CertificateListPayload, error)
 }
 
 type ContactListPayload struct {
@@ -183,6 +185,7 @@ type CertificatePayload struct {
 	TextUz string `json:"textUz"`
 	TextRu string `json:"textRu"`
 	TextEn string `json:"textEn"`
+	Image  string `json:"image"`
 }
 
 type CertificateListPayload struct {
@@ -193,5 +196,6 @@ type CertificateListPayload struct {
 	TextUz    string    `json:"textUz"`
 	TextRu    string    `json:"textRu"`
 	TextEn    string    `json:"textEn"`
+	Image     string    `json:"image"`
 	CreatedAt time.Time `json:"createdAt"`
 }

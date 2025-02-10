@@ -13,6 +13,11 @@ type CompanyStore interface {
 	UpdateAboutOil(id string, payload *AboutOilPayload) (*AboutOilListPayload, error)
 	DeleteAboutOil(id string) error
 	ListAboutOil() ([]*AboutOilListPayload, error)
+	CreateWhyUs(payload *WhyUsPayload) (*WhyUsListPayload, error)
+	ListWhyUs() ([]*WhyUsListPayload, error)
+	DeleteWhyUs(id string) error
+	UpdateWhyUs(id string, payload *WhyUsPayload) (*WhyUsListPayload, error)
+	GetWhyUs(id string) (*WhyUsListPayload, error)
 }
 
 type CapasityListPayload struct {
@@ -49,4 +54,26 @@ type AboutOilListPayload struct {
 	TextRu    string    `json:"textRu"`
 	TextEn    string    `json:"textEn"`
 	CreatedAt time.Time `json:"createdAt"`
+}
+
+type WhyUsPayload struct {
+	TitleUz       string `json:"titleUz"`
+	TitleRu       string `json:"titleRu"`
+	TitleEn       string `json:"titleEn"`
+	DescriptionUz string `json:"descriptionUz"`
+	DescriptionRu string `json:"descriptionRu"`
+	DescriptionEn string `json:"descriptionEn"`
+	Image         string `json:"image"`
+}
+
+type WhyUsListPayload struct {
+	Id            string    `json:"id"`
+	TitleUz       string    `json:"titleUz"`
+	TitleRu       string    `json:"titleRu"`
+	TitleEn       string    `json:"titleEn"`
+	DescriptionUz string    `json:"descriptionUz"`
+	DescriptionRu string    `json:"descriptionRu"`
+	DescriptionEn string    `json:"descriptionEn"`
+	Image         string    `json:"image"`
+	CreatedAt     time.Time `json:"createdAt"`
 }

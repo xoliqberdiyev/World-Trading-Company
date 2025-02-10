@@ -6,5 +6,6 @@ CREATE TABLE IF NOT EXISTS "certificates" (
     "text_uz" TEXT NOT NULL,
     "text_ru" TEXT NOT NULL, 
     "text_en" TEXT NOT NULL,
+    "image" BYTEA,
     "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

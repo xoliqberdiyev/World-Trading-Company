@@ -31,6 +31,7 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 	r.Get("/news/{newsId}", h.handleGetNews)
 	r.Get("/about_oil/list", h.handleListAboutOil)
 	r.Get("/certificate/list", h.handleListCertificate)
+	r.Get("/why_us/list", h.handleListWhyUs)
 }
 
 // @Summary create contact us
@@ -245,7 +246,7 @@ func (h *Handler) handleListNews(w http.ResponseWriter, r *http.Request) {
 // @Summary list about oil
 // @Description list about oil
 // @Tags common
-// @Accept json 
+// @Accept json
 // @Produce json
 // @Router /about_oil/list [get]
 func (h *Handler) handleListAboutOil(w http.ResponseWriter, r *http.Request) {
@@ -266,6 +267,22 @@ func (h *Handler) handleListAboutOil(w http.ResponseWriter, r *http.Request) {
 // @Router /certificate/list [get]
 func (h *Handler) handleListCertificate(w http.ResponseWriter, r *http.Request) {
 	list, err := h.store.ListCertificate()
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, list)
+}
+
+// @Summary list why us
+// @Description list why us
+// @Tags common
+// @Accept json
+// @Produce json
+// @Router /why_us/list [get]
+func (h *Handler) handleListWhyUs(w http.ResponseWriter, r *http.Request) {
+	list, err := h.store.ListWhyUs()
 	if err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return
