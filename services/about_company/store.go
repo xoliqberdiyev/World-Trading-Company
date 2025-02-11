@@ -183,7 +183,6 @@ func (s *Store) UpdateWhyUs(id string, payload *types_about_company.WhyUsPayload
 		argsIndex++
 	}
 
-
 	if payload.TitleRu != "" {
 		query += fmt.Sprintf("title_ru = $%d, ", argsIndex)
 		args = append(args, payload.TitleRu)
@@ -245,4 +244,144 @@ func (s *Store) GetWhyUs(id string) (*types_about_company.WhyUsListPayload, erro
 		return nil, err
 	}
 	return &whyUs, nil
+}
+
+func (s *Store) CreateAboutUs(payload *types_about_company.AboutUsPayload) (*types_about_company.AboutUsListPayload, error) {
+	var aboutUs types_about_company.AboutUsListPayload
+	query := `
+		INSERT INTO 
+			about_us(title_uz, title_ru, title_en, description_uz, description_ru, description_en, image_uz, image_ru, image_en) 
+		VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)
+		RETURNING 
+			id, title_uz, title_ru, title_en, description_uz, description_ru, description_en, image_uz, image_ru, image_en, created_at
+	`
+	err := s.db.QueryRow(
+		query, payload.TitleUz, payload.TitleRu, payload.TitleEn, payload.DescriptionUz,
+		payload.DescriptionRu, payload.DescriptionEn, payload.ImageUz, payload.ImageRu, payload.ImageEn,
+	).Scan(
+		&aboutUs.Id, &aboutUs.TitleUz, &aboutUs.TitleRu, &aboutUs.TitleEn,
+		&aboutUs.DescriptionUz, &aboutUs.DescriptionRu, &aboutUs.DescriptionEn, &aboutUs.ImageUz, &aboutUs.ImageRu, &aboutUs.ImageEn, 
+		&aboutUs.CreatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &aboutUs, nil
+}
+
+func (s *Store) ListAboutUs() ([]*types_about_company.AboutUsListPayload, error) {
+	var list []*types_about_company.AboutUsListPayload
+	query := `SELECT * FROM about_us ORDER BY created_at`
+	rows, err := s.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var aboutUs types_about_company.AboutUsListPayload
+		err := rows.Scan(
+			&aboutUs.Id, &aboutUs.TitleUz, &aboutUs.TitleRu,
+			&aboutUs.TitleEn, &aboutUs.DescriptionUz, &aboutUs.DescriptionRu,
+			&aboutUs.DescriptionEn, &aboutUs.ImageUz, &aboutUs.ImageRu, &aboutUs.ImageEn, 
+			&aboutUs.CreatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+		list = append(list, &aboutUs)
+	}
+	return list, nil
+}
+
+func (s *Store) GetAboutUs(id string) (*types_about_company.AboutUsListPayload, error) {
+	var aboutUs types_about_company.AboutUsListPayload
+	query := `SELECT * FROM about_us WHERE id = $1`
+	err := s.db.QueryRow(query, id).Scan(
+		&aboutUs.Id, &aboutUs.TitleUz, &aboutUs.TitleRu, &aboutUs.TitleEn,
+		&aboutUs.DescriptionUz, &aboutUs.DescriptionRu, &aboutUs.DescriptionEn,
+		&aboutUs.ImageUz, &aboutUs.ImageRu, &aboutUs.ImageEn, &aboutUs.CreatedAt,
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &aboutUs, nil
+}
+
+func (s *Store) DeleteAboutUs(id string) error {
+	query := `DELETE FROM about_us WHERE id = $1`
+	_, err := s.db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) UpdateAboutUs(id string, payload *types_about_company.AboutUsPayload) (*types_about_company.AboutUsListPayload, error) {
+	var aboutUs types_about_company.AboutUsListPayload
+	query := `UPDATE about_us SET `
+	args := []interface{}{}
+	index := 1
+
+	if payload.TitleUz != "" {
+		query += fmt.Sprintf("title_uz = $%d, ", index)
+		args = append(args, payload.TitleUz)
+		index++
+	}
+	if payload.TitleRu != "" {
+		query += fmt.Sprintf("title_ru = $%d, ", index)
+		args = append(args, payload.TitleRu)
+		index++
+	}
+	if payload.TitleEn != "" {
+		query += fmt.Sprintf("title_en = $%d, ", index)
+		args = append(args, payload.TitleEn)
+		index++
+	}
+	if payload.DescriptionUz != "" {
+		query += fmt.Sprintf("description_uz = $%d, ", index)
+		args = append(args, payload.DescriptionUz)
+		index++
+	}
+	if payload.DescriptionRu != "" {
+		query += fmt.Sprintf("description_ru = $%d, ", index)
+		args = append(args, payload.DescriptionRu)
+		index++
+	}
+	if payload.DescriptionEn != "" {
+		query += fmt.Sprintf("description_en = $%d, ", index)
+		args = append(args, payload.DescriptionEn)
+		index++
+	}
+	if payload.ImageUz != "" {
+		query += fmt.Sprintf("image_uz = $%d, ", index)
+		args = append(args, payload.ImageUz)
+		index++
+	}
+	if payload.ImageRu != "" {
+		query += fmt.Sprintf("image_ru = $%d, ", index)
+		args = append(args, payload.ImageRu)
+		index++
+	}
+	if payload.ImageEn != "" {
+		query += fmt.Sprintf("image_en = $%d, ", index)
+		args = append(args, payload.ImageEn)
+		index++
+	}
+
+	query = query[:len(query)-2] + fmt.Sprintf(" WHERE id = $%d RETURNING id, title_uz, title_ru, title_en, description_uz, description_ru, description_en, image_uz, image_ru, image_en, created_at", index)
+	args = append(args, id)
+
+	err := s.db.QueryRow(query, args...).Scan(
+		&aboutUs.Id, &aboutUs.TitleUz, &aboutUs.TitleRu,
+		&aboutUs.TitleEn, &aboutUs.DescriptionUz, &aboutUs.DescriptionRu, &aboutUs.DescriptionEn,
+		&aboutUs.ImageUz, &aboutUs.ImageRu, &aboutUs.ImageEn, &aboutUs.CreatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &aboutUs, nil
 }

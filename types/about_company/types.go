@@ -18,6 +18,11 @@ type CompanyStore interface {
 	DeleteWhyUs(id string) error
 	UpdateWhyUs(id string, payload *WhyUsPayload) (*WhyUsListPayload, error)
 	GetWhyUs(id string) (*WhyUsListPayload, error)
+	CreateAboutUs(payload *AboutUsPayload) (*AboutUsListPayload, error)
+	ListAboutUs() ([]*AboutUsListPayload, error)
+	GetAboutUs(id string) (*AboutUsListPayload, error)
+	DeleteAboutUs(id string) error
+	UpdateAboutUs(id string, payload *AboutUsPayload) (*AboutUsListPayload, error)
 }
 
 type CapasityListPayload struct {
@@ -75,5 +80,31 @@ type WhyUsListPayload struct {
 	DescriptionRu string    `json:"descriptionRu"`
 	DescriptionEn string    `json:"descriptionEn"`
 	Image         string    `json:"image"`
+	CreatedAt     time.Time `json:"createdAt"`
+}
+
+type AboutUsPayload struct {
+	TitleUz       string `json:"titleUz"`
+	TitleRu       string `json:"titleRu"`
+	TitleEn       string `json:"titleEn"`
+	DescriptionUz string `json:"descriptionUz"`
+	DescriptionRu string `json:"descriptionRu"`
+	DescriptionEn string `json:"descriptionEn"`
+	ImageUz       string `json:"imageUz"`
+	ImageRu       string `json:"imageRu"`
+	ImageEn       string `json:"imageEn"`
+}
+
+type AboutUsListPayload struct {
+	Id            string    `json:"id"`
+	TitleUz       string    `json:"titleUz"`
+	TitleRu       string    `json:"titleRu"`
+	TitleEn       string    `json:"titleEn"`
+	DescriptionUz string    `json:"descriptionUz"`
+	DescriptionRu string    `json:"descriptionRu"`
+	DescriptionEn string    `json:"descriptionEn"`
+	ImageUz       string    `json:"imageUz"`
+	ImageRu       string    `json:"imageRu"`
+	ImageEn       string    `json:"imageEn"`
 	CreatedAt     time.Time `json:"createdAt"`
 }

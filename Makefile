@@ -34,3 +34,5 @@ createfiles:
 	@mkdir uploads/news && mkdir uploads/news/images/
 	@mkdir uploads/why_us && mkdir uploads/why_us/images/
 	@mkdir uploads/certificate && mkdir uploads/certificate/images/
+	@mkdir uploads/about_us && mkdir uploads/about_us/images/
+	@mkdir uploads/product/ && mkdir uploads/product/images && mkdir uploads/product/banners

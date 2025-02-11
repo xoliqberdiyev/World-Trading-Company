@@ -43,6 +43,12 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 	r.Put("/admin/company/why_us/{id}/update", auth.AuthWithJWT(h.handleUpdateWhyUs, h.userStore))
 	r.Delete("/admin/company/why_us/{id}/delete", auth.AuthWithJWT(h.handleDeleteWhyUs, h.userStore))
 	r.Get("/admin/company/why_us/{id}", auth.AuthWithJWT(h.handleGetWhyUs, h.userStore))
+	// about us
+	r.Post("/admin/company/about_us/create", auth.AuthWithJWT(h.handleCreateAboutUs, h.userStore))
+	r.Get("/admin/company/about_us/list", auth.AuthWithJWT(h.handleListAboutUs, h.userStore))
+	r.Get("/admin/company/about_us/{id}", auth.AuthWithJWT(h.handleGetAboutUs, h.userStore))
+	r.Delete("/admin/company/about_us/{id}/delete", auth.AuthWithJWT(h.handleDeleteAboutUs, h.userStore))
+	r.Put("/admin/company/about_us/{id}/update", auth.AuthWithJWT(h.handleUpdateAboutUs, h.userStore))
 }
 
 // @Summary create capasity
@@ -574,6 +580,388 @@ func (h *Handler) handleUpdateWhyUs(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		log.Println("next")
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, result)
+}
+
+// @Summary create about us
+// @Description create about us
+// @Tags company-admin
+// @Accept multipart/json
+// @Produce json
+// @Param titleUz formData string true "titleUz"
+// @Param titleRu formData string true "titleRu"
+// @Param titleEn formData string true "titleEn"
+// @Param descriptionUz formData string true "descriptionUz"
+// @Param descriptionRu formData string true "descriptionRu"
+// @Param descriptionEn formData string true "descriptionEn"
+// @Param imageUz formData file true "imageUz"
+// @Param imageRu formData file false "imageRu"
+// @Param imageEn formData file false "imageEn"
+// @Router /admin/company/about_us/create [post]
+// @Security BearerAuth
+func (h *Handler) handleCreateAboutUs(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseMultipartForm(50)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	titleUz := r.FormValue("titleUz")
+	titleRu := r.FormValue("titleRu")
+	titleEn := r.FormValue("titleEn")
+	descriptionUz := r.FormValue("descriptionUz")
+	descriptionRu := r.FormValue("descriptionRu")
+	descriptionEn := r.FormValue("descriptionEn")
+	imageUz, imageUzHeader, err := r.FormFile("imageUz")
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+	defer imageUz.Close()
+
+	imageRu, imageRuHeader, err := r.FormFile("imageRu")
+	if err != nil {
+		if err == http.ErrMissingFile {
+			imageRu = nil
+			imageRuHeader = nil
+		} else {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
+	}
+	if imageRu != nil {
+		defer imageRu.Close()
+	}
+
+	imageEn, imageEnHeader, err := r.FormFile("imageEn")
+	if err != nil {
+		if err == http.ErrMissingFile {
+			imageEn = nil
+			imageEnHeader = nil
+		} else {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
+	}
+	if imageEn != nil {
+		defer imageEn.Close()
+	}
+
+	imageUzPath := "uploads/about_us/images/" + imageUzHeader.Filename
+	var imageRuPath string
+	var imageEnPath string
+
+	if imageRuHeader != nil {
+		imageRuPath = "uploads/about_us/images/" + imageRuHeader.Filename
+	} else {
+		imageRuPath = ""
+	}
+	if imageEnHeader != nil {
+		imageEnPath = "uploads/about_us/images/" + imageEnHeader.Filename
+	} else {
+		imageEnPath = ""
+	}
+
+	outImageUz, err := os.Create(imageUzPath)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+	defer outImageUz.Close()
+
+	_, err = io.Copy(outImageUz, imageUz)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if imageRuPath != "" {
+		outImageRu, err := os.Create(imageRuPath)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
+		defer outImageRu.Close()
+
+		_, err = io.Copy(outImageRu, imageRu)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
+	}
+
+	if imageEnPath != "" {
+		outImageEn, err := os.Create(imageEnPath)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
+		defer outImageEn.Close()
+
+		_, err = io.Copy(outImageEn, imageEn)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
+	}
+
+	payload := types_about_company.AboutUsPayload{
+		TitleUz:       titleUz,
+		TitleRu:       titleRu,
+		TitleEn:       titleEn,
+		DescriptionUz: descriptionUz,
+		DescriptionRu: descriptionRu,
+		DescriptionEn: descriptionEn,
+		ImageUz:       imageUzPath,
+		ImageRu:       imageRuPath,
+		ImageEn:       imageEnPath,
+	}
+
+	aboutUs, err := h.store.CreateAboutUs(&payload)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusCreated, aboutUs)
+}
+
+// @Summary list about us
+// @Description list about us
+// @Tags company-admin
+// @Accept json
+// @Produce json
+// @Router /admin/company/about_us/list [get]
+// @Security BearerAuth
+func (h *Handler) handleListAboutUs(w http.ResponseWriter, r *http.Request) {
+	list, err := h.store.ListAboutUs()
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, list)
+}
+
+// @Summary get about us
+// @Description get about us
+// @Tags company-admin
+// @Accept json
+// @Produce json
+// @Param id path string true "id"
+// @Router /admin/company/about_us/{id} [get]
+// @Security BearerAuth
+func (h *Handler) handleGetAboutUs(w http.ResponseWriter, r *http.Request) {
+	var id = r.PathValue("id")
+	aboutUs, err := h.store.GetAboutUs(id)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if aboutUs == nil {
+		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("not found"))
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, aboutUs)
+}
+
+// @Summary delete about us
+// @Description delete about us
+// @Tags company-admin
+// @Accept json
+// @Produce json
+// @Param id path string true "id"
+// @Router /admin/company/about_us/{id}/delete [delete]
+// @Security BearerAuth
+func (h *Handler) handleDeleteAboutUs(w http.ResponseWriter, r *http.Request) {
+	var id = r.PathValue("id")
+	aboutUs, err := h.store.GetAboutUs(id)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+	if aboutUs == nil {
+		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("not found"))
+		return
+	}
+
+	err = h.store.DeleteAboutUs(aboutUs.Id)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusNoContent, map[string]string{"message": "deleted"})
+}
+
+// @Summary update about us
+// @Description update about us
+// @Tags company-admin
+// @Accept multipart/data
+// @Produce json
+// @Param id path string true "id"
+// @Param titleUz formData string false "titleUz"
+// @Param titleRu formData string false "titleRu"
+// @Param titleEn formData string false "titleEn"
+// @Param descriptionUz formData string false "descriptionUz"
+// @Param descriptionRu formData string false "descriptionRu"
+// @Param descriptionEn formData string false "descriptionEn"
+// @Param imageUz formData file false "imageUz"
+// @Param imageRu formData file false "imageRu"
+// @Param imageEn formData file false "imageEn"
+// @Router /admin/company/about_us/{id}/update [put]
+// @Security BearerAuth
+func (h *Handler) handleUpdateAboutUs(w http.ResponseWriter, r *http.Request) {
+	var id = r.PathValue("id")
+	aboutUs, err := h.store.GetAboutUs(id)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if aboutUs == nil {
+		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("not found"))
+		return
+	}
+
+	err = r.ParseMultipartForm(50)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	titleUz := r.FormValue("titleUz")
+	titleRu := r.FormValue("titleRu")
+	titleEn := r.FormValue("titleEn")
+	descriptionUz := r.FormValue("descriptionUz")
+	descriptionRu := r.FormValue("descriptionRu")
+	descriptionEn := r.FormValue("descriptionEn")
+	imageUz, imageUzHeader, err := r.FormFile("imageUz")
+	if err != nil {
+		if err == http.ErrMissingFile {
+			imageUz = nil
+			imageUzHeader = nil
+		} else {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
+	}
+	if imageUz != nil {
+		defer imageUz.Close()
+	}
+
+	imageRu, imageRuHeader, err := r.FormFile("imageRu")
+	if err != nil {
+		if err == http.ErrMissingFile {
+			imageRu = nil
+			imageRuHeader = nil
+		} else {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
+	}
+	if imageRu != nil {
+		defer imageRu.Close()
+	}
+
+	imageEn, imageEnHeader, err := r.FormFile("imageEn")
+	if err != nil {
+		if err == http.ErrMissingFile {
+			imageEn = nil
+			imageEnHeader = nil
+		} else {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
+	}
+	if imageEn != nil {
+		defer imageEn.Close()
+	}
+
+	var imageUzPath string
+	var imageRuPath string
+	var imageEnPath string
+	if imageUzHeader != nil {
+		imageUzPath = "uploads/about_us/images/" + imageUzHeader.Filename
+	} else {
+		imageUzPath = ""
+	}
+	if imageRuHeader != nil {
+		imageRuPath = "uploads/about_us/images/" + imageRuHeader.Filename
+	} else {
+		imageRuPath = ""
+	}
+	if imageEnHeader != nil {
+		imageEnPath = "uploads/about_us/images/" + imageEnHeader.Filename
+	} else {
+		imageEnPath = ""
+	}
+
+	if imageUzPath != "" {
+		outImageUz, err := os.Create(imageUzPath)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
+		defer outImageUz.Close()
+
+		_, err = io.Copy(outImageUz, imageUz)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
+	}
+
+	if imageRuPath != "" {
+		outImageRu, err := os.Create(imageRuPath)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
+		defer outImageRu.Close()
+
+		_, err = io.Copy(outImageRu, imageRu)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
+	}
+
+	if imageEnPath != "" {
+		outImageEn, err := os.Create(imageEnPath)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
+		defer outImageEn.Close()
+
+		_, err = io.Copy(outImageEn, imageEn)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
+	}
+
+	payload := types_about_company.AboutUsPayload{
+		TitleUz:       titleUz,
+		TitleRu:       titleRu,
+		TitleEn:       titleEn,
+		DescriptionUz: descriptionUz,
+		DescriptionRu: descriptionRu,
+		DescriptionEn: descriptionEn,
+		ImageUz:       imageUzPath,
+		ImageRu:       imageRuPath,
+		ImageEn:       imageEnPath,
+	}
+
+	result, err := h.store.UpdateAboutUs(aboutUs.Id, &payload)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
 		return
 	}
 

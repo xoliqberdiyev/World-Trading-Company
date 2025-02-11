@@ -33,6 +33,22 @@
                 "responses": {}
             }
         },
+        "/about_us/list": {
+            "get": {
+                "description": "list about us",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common"
+                ],
+                "summary": "list about us",
+                "responses": {}
+            }
+        },
         "/admin/common/banner/create": {
             "post": {
                 "security": [
@@ -1521,6 +1537,255 @@
                 "responses": {}
             }
         },
+        "/admin/company/about_us/create": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "create about us",
+                "consumes": [
+                    "multipart/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "company-admin"
+                ],
+                "summary": "create about us",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "titleUz",
+                        "name": "titleUz",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "titleRu",
+                        "name": "titleRu",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "titleEn",
+                        "name": "titleEn",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "descriptionUz",
+                        "name": "descriptionUz",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "descriptionRu",
+                        "name": "descriptionRu",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "descriptionEn",
+                        "name": "descriptionEn",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "imageUz",
+                        "name": "imageUz",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "imageRu",
+                        "name": "imageRu",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "imageEn",
+                        "name": "imageEn",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/company/about_us/list": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "list about us",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "company-admin"
+                ],
+                "summary": "list about us",
+                "responses": {}
+            }
+        },
+        "/admin/company/about_us/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get about us",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "company-admin"
+                ],
+                "summary": "get about us",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/company/about_us/{id}/delete": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "delete about us",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "company-admin"
+                ],
+                "summary": "delete about us",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/company/about_us/{id}/update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "update about us",
+                "consumes": [
+                    "multipart/data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "company-admin"
+                ],
+                "summary": "update about us",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "titleUz",
+                        "name": "titleUz",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "titleRu",
+                        "name": "titleRu",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "titleEn",
+                        "name": "titleEn",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "descriptionUz",
+                        "name": "descriptionUz",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "descriptionRu",
+                        "name": "descriptionRu",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "descriptionEn",
+                        "name": "descriptionEn",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "imageUz",
+                        "name": "imageUz",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "imageRu",
+                        "name": "imageRu",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "imageEn",
+                        "name": "imageEn",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/admin/company/capasity/create": {
             "post": {
                 "security": [
@@ -2087,6 +2352,293 @@
                 "responses": {}
             }
         },
+        "/admin/product/product/create": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "create product",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "product-admin"
+                ],
+                "summary": "create product",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "name uz",
+                        "name": "nameUz",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name ru",
+                        "name": "nameRu",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name en",
+                        "name": "nameEn",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "description uz",
+                        "name": "descriptionUz",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "description ru",
+                        "name": "descriptionRu",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "description en",
+                        "name": "descriptionEn",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "text uz",
+                        "name": "textUz",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "text ru",
+                        "name": "textRu",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "text uz",
+                        "name": "textUz",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "category id",
+                        "name": "categoryId",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "image",
+                        "name": "image",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "banner",
+                        "name": "banner",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/product/product/list": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "list product",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "product-admin"
+                ],
+                "summary": "list product",
+                "responses": {}
+            }
+        },
+        "/admin/product/product/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get product",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "product-admin"
+                ],
+                "summary": "get product",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/product/product/{id}/delete": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "delete product",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "product-admin"
+                ],
+                "summary": "delete product",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/product/product/{id}/update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "update product",
+                "consumes": [
+                    "multipart/data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "product-admin"
+                ],
+                "summary": "update product",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name uz",
+                        "name": "nameUz",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "name ru",
+                        "name": "nameRu",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "name en",
+                        "name": "nameEn",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "description uz",
+                        "name": "descriptionUz",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "description ru",
+                        "name": "descriptionRu",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "description en",
+                        "name": "descriptionEn",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "text uz",
+                        "name": "textUz",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "text ru",
+                        "name": "textRu",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "text uz",
+                        "name": "textUz",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "category id",
+                        "name": "categoryId",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "image",
+                        "name": "image",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "banner",
+                        "name": "banner",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/banner/list": {
             "get": {
                 "consumes": [
@@ -2098,6 +2650,22 @@
                 "tags": [
                     "common"
                 ],
+                "responses": {}
+            }
+        },
+        "/capasity/list": {
+            "get": {
+                "description": "list capasity",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "common"
+                ],
+                "summary": "list capasity",
                 "responses": {}
             }
         },

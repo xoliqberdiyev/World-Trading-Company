@@ -170,6 +170,17 @@ paths:
       summary: list about oil
       tags:
       - common
+  /about_us/list:
+    get:
+      consumes:
+      - application/json
+      description: list about us
+      produces:
+      - application/json
+      responses: {}
+      summary: list about us
+      tags:
+      - common
   /admin/common/banner/{bannerId}:
     get:
       consumes:
@@ -1122,6 +1133,169 @@ paths:
       summary: list about oil
       tags:
       - company-admin
+  /admin/company/about_us/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get about us
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: get about us
+      tags:
+      - company-admin
+  /admin/company/about_us/{id}/delete:
+    delete:
+      consumes:
+      - application/json
+      description: delete about us
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: delete about us
+      tags:
+      - company-admin
+  /admin/company/about_us/{id}/update:
+    put:
+      consumes:
+      - multipart/data
+      description: update about us
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: titleUz
+        in: formData
+        name: titleUz
+        type: string
+      - description: titleRu
+        in: formData
+        name: titleRu
+        type: string
+      - description: titleEn
+        in: formData
+        name: titleEn
+        type: string
+      - description: descriptionUz
+        in: formData
+        name: descriptionUz
+        type: string
+      - description: descriptionRu
+        in: formData
+        name: descriptionRu
+        type: string
+      - description: descriptionEn
+        in: formData
+        name: descriptionEn
+        type: string
+      - description: imageUz
+        in: formData
+        name: imageUz
+        type: file
+      - description: imageRu
+        in: formData
+        name: imageRu
+        type: file
+      - description: imageEn
+        in: formData
+        name: imageEn
+        type: file
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: update about us
+      tags:
+      - company-admin
+  /admin/company/about_us/create:
+    post:
+      consumes:
+      - multipart/json
+      description: create about us
+      parameters:
+      - description: titleUz
+        in: formData
+        name: titleUz
+        required: true
+        type: string
+      - description: titleRu
+        in: formData
+        name: titleRu
+        required: true
+        type: string
+      - description: titleEn
+        in: formData
+        name: titleEn
+        required: true
+        type: string
+      - description: descriptionUz
+        in: formData
+        name: descriptionUz
+        required: true
+        type: string
+      - description: descriptionRu
+        in: formData
+        name: descriptionRu
+        required: true
+        type: string
+      - description: descriptionEn
+        in: formData
+        name: descriptionEn
+        required: true
+        type: string
+      - description: imageUz
+        in: formData
+        name: imageUz
+        required: true
+        type: file
+      - description: imageRu
+        in: formData
+        name: imageRu
+        type: file
+      - description: imageEn
+        in: formData
+        name: imageEn
+        type: file
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: create about us
+      tags:
+      - company-admin
+  /admin/company/about_us/list:
+    get:
+      consumes:
+      - application/json
+      description: list about us
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: list about us
+      tags:
+      - company-admin
   /admin/company/capasity/{capasityId}:
     get:
       consumes:
@@ -1486,6 +1660,196 @@ paths:
       summary: update category
       tags:
       - product-admin
+  /admin/product/product/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get product
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: get product
+      tags:
+      - product-admin
+  /admin/product/product/{id}/delete:
+    delete:
+      consumes:
+      - application/json
+      description: delete product
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: delete product
+      tags:
+      - product-admin
+  /admin/product/product/{id}/update:
+    put:
+      consumes:
+      - multipart/data
+      description: update product
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: name uz
+        in: formData
+        name: nameUz
+        type: string
+      - description: name ru
+        in: formData
+        name: nameRu
+        type: string
+      - description: name en
+        in: formData
+        name: nameEn
+        type: string
+      - description: description uz
+        in: formData
+        name: descriptionUz
+        type: string
+      - description: description ru
+        in: formData
+        name: descriptionRu
+        type: string
+      - description: description en
+        in: formData
+        name: descriptionEn
+        type: string
+      - description: text uz
+        in: formData
+        name: textUz
+        type: string
+      - description: text ru
+        in: formData
+        name: textRu
+        type: string
+      - description: text uz
+        in: formData
+        name: textUz
+        type: string
+      - description: category id
+        in: formData
+        name: categoryId
+        type: string
+      - description: image
+        in: formData
+        name: image
+        type: file
+      - description: banner
+        in: formData
+        name: banner
+        type: file
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: update product
+      tags:
+      - product-admin
+  /admin/product/product/create:
+    post:
+      description: create product
+      parameters:
+      - description: name uz
+        in: formData
+        name: nameUz
+        required: true
+        type: string
+      - description: name ru
+        in: formData
+        name: nameRu
+        required: true
+        type: string
+      - description: name en
+        in: formData
+        name: nameEn
+        required: true
+        type: string
+      - description: description uz
+        in: formData
+        name: descriptionUz
+        required: true
+        type: string
+      - description: description ru
+        in: formData
+        name: descriptionRu
+        required: true
+        type: string
+      - description: description en
+        in: formData
+        name: descriptionEn
+        required: true
+        type: string
+      - description: text uz
+        in: formData
+        name: textUz
+        required: true
+        type: string
+      - description: text ru
+        in: formData
+        name: textRu
+        required: true
+        type: string
+      - description: text uz
+        in: formData
+        name: textUz
+        required: true
+        type: string
+      - description: category id
+        in: formData
+        name: categoryId
+        required: true
+        type: string
+      - description: image
+        in: formData
+        name: image
+        required: true
+        type: file
+      - description: banner
+        in: formData
+        name: banner
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: create product
+      tags:
+      - product-admin
+  /admin/product/product/list:
+    get:
+      consumes:
+      - application/json
+      description: list product
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: list product
+      tags:
+      - product-admin
   /banner/list:
     get:
       consumes:
@@ -1493,6 +1857,17 @@ paths:
       produces:
       - application/json
       responses: {}
+      tags:
+      - common
+  /capasity/list:
+    get:
+      consumes:
+      - application/json
+      description: list capasity
+      produces:
+      - application/json
+      responses: {}
+      summary: list capasity
       tags:
       - common
   /category/list:

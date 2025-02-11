@@ -33,7 +33,7 @@ func NewServer(db *sql.DB, address string) *APIServer {
 
 func (s *APIServer) Run() error {
 	corsHandler := cors.New(cors.Options{
-		AllowedOrigins: []string{"http://localhost:5173"}, // Frontend URL manzilingiz
+		AllowedOrigins: []string{"http://localhost:5173", "http://localhost:3000"}, // Frontend URL manzilingiz
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders: []string{"Content-Type", "Authorization"},
 	})

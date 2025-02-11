@@ -32,6 +32,8 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 	r.Get("/about_oil/list", h.handleListAboutOil)
 	r.Get("/certificate/list", h.handleListCertificate)
 	r.Get("/why_us/list", h.handleListWhyUs)
+	r.Get("/about_us/list", h.handleListAboutUs)
+	r.Get("/capasity/list", h.handleListCapasity)
 }
 
 // @Summary create contact us
@@ -240,6 +242,7 @@ func (h *Handler) handleListNews(w http.ResponseWriter, r *http.Request) {
 		"page":  offset/limit + 1,
 		"limit": limit,
 		"news":  list,
+		"count": len(list),
 	})
 }
 
@@ -283,6 +286,38 @@ func (h *Handler) handleListCertificate(w http.ResponseWriter, r *http.Request) 
 // @Router /why_us/list [get]
 func (h *Handler) handleListWhyUs(w http.ResponseWriter, r *http.Request) {
 	list, err := h.store.ListWhyUs()
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, list)
+}
+
+// @Summary list about us
+// @Description list about us
+// @Tags common
+// @Accept json
+// @Produce json
+// @Router /about_us/list [get]
+func (h *Handler) handleListAboutUs(w http.ResponseWriter, r *http.Request) {
+	list, err := h.store.ListAboutUs()
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, list)
+}
+
+// @Summary list capasity
+// @Description list capasity
+// @Tags common
+// @Accept json
+// @Produce json
+// @Router /capasity/list [get]
+func (h *Handler) handleListCapasity(w http.ResponseWriter, r *http.Request) {
+	list, err := h.store.ListCapasity()
 	if err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return

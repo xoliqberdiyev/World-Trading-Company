@@ -20,6 +20,8 @@ type CommonStore interface {
 	ListAboutOil() ([]*types_about_company.AboutOilListPayload, error)
 	ListCertificate() ([]*CertificateListPayload, error)
 	ListWhyUs() ([]*types_about_company.WhyUsListPayload, error)
+	ListAboutUs() ([]*types_about_company.AboutUsListPayload, error)
+	ListCapasity() ([]*types_about_company.CapasityListPayload, error)
 }
 
 type ContactCreatePayload struct {
@@ -92,5 +94,6 @@ type CertificateListPayload struct {
 	TextUz    string    `json:"textUz"`
 	TextRu    string    `json:"textRu"`
 	TextEn    string    `json:"textEn"`
+	Image     string    `json:"image"`
 	CreatedAt time.Time `json:"createdAt"`
 }

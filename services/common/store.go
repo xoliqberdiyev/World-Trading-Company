@@ -180,7 +180,7 @@ func (s *Store) ListCertificate() ([]*types_common.CertificateListPayload, error
 	}
 	for rows.Next() {
 		var certificate types_common.CertificateListPayload
-		if err := rows.Scan(&certificate.Id, &certificate.NameUz, &certificate.NameRu, &certificate.NameEn, &certificate.TextUz, &certificate.TextRu, &certificate.TextEn, &certificate.CreatedAt); err != nil {
+		if err := rows.Scan(&certificate.Id, &certificate.NameUz, &certificate.NameRu, &certificate.NameEn, &certificate.TextUz, &certificate.TextRu, &certificate.Image, &certificate.TextEn, &certificate.CreatedAt); err != nil {
 			return nil, err
 		}
 		certificates = append(certificates, &certificate)
@@ -203,4 +203,44 @@ func (s *Store) ListWhyUs() ([]*types_about_company.WhyUsListPayload, error) {
 		whyUsList = append(whyUsList, &whyUs)
 	}
 	return whyUsList, nil
+}
+
+func (s *Store) ListAboutUs() ([]*types_about_company.AboutUsListPayload, error) {
+	var list []*types_about_company.AboutUsListPayload
+	query := `SELECT * FROM about_us ORDER BY created_at`
+	rows, err := s.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var aboutUs types_about_company.AboutUsListPayload
+		err := rows.Scan(
+			&aboutUs.Id, &aboutUs.TitleUz, &aboutUs.TitleRu,
+			&aboutUs.TitleEn, &aboutUs.DescriptionUz, &aboutUs.DescriptionRu,
+			&aboutUs.DescriptionEn, &aboutUs.ImageUz, &aboutUs.ImageRu, &aboutUs.ImageEn,
+			&aboutUs.CreatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+		list = append(list, &aboutUs)
+	}
+	return list, nil
+}
+
+func (s *Store) ListCapasity() ([]*types_about_company.CapasityListPayload, error) {
+	var capasities []*types_about_company.CapasityListPayload
+	query := `SELECT * FROM capasity`
+	rows, err := s.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var capasity types_about_company.CapasityListPayload
+		if err := rows.Scan(&capasity.Id, &capasity.NameUz, &capasity.NameRu, &capasity.NameEn, &capasity.Quantity, &capasity.CreatedAt); err != nil {
+			return nil, err
+		}
+		capasities = append(capasities, &capasity)
+	}
+	return capasities, nil
 }
