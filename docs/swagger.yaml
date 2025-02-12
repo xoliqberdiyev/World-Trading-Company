@@ -1842,12 +1842,131 @@ paths:
       consumes:
       - application/json
       description: list product
+      parameters:
+      - description: limit
+        in: query
+        name: limit
+        type: string
+      - description: page
+        in: query
+        name: page
+        type: string
       produces:
       - application/json
       responses: {}
       security:
       - BearerAuth: []
       summary: list product
+      tags:
+      - product-admin
+  /admin/product/product_media/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: get product media
+      tags:
+      - product-admin
+  /admin/product/product_media/{id}/delete:
+    delete:
+      consumes:
+      - application/json
+      description: delete product media
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: delete product_media
+      tags:
+      - product-admin
+  /admin/product/product_media/{id}/update:
+    put:
+      consumes:
+      - multipart/data
+      description: update product media
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: product id
+        in: formData
+        name: productId
+        type: string
+      - description: image
+        in: formData
+        name: image
+        type: file
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: update product media
+      tags:
+      - product-admin
+  /admin/product/product_media/create:
+    post:
+      consumes:
+      - multipart/data
+      description: create product media
+      parameters:
+      - description: product id
+        in: formData
+        name: productId
+        required: true
+        type: string
+      - description: image
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: create product media
+      tags:
+      - product-admin
+  /admin/product/product_media/list:
+    get:
+      consumes:
+      - application/json
+      description: list product medias
+      parameters:
+      - description: limit
+        in: query
+        name: limit
+        type: string
+      - description: page
+        in: query
+        name: page
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: list product medias
       tags:
       - product-admin
   /banner/list:
@@ -1868,6 +1987,23 @@ paths:
       - application/json
       responses: {}
       summary: list capasity
+      tags:
+      - common
+  /category/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get category
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: get category
       tags:
       - common
   /category/list:

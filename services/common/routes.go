@@ -26,6 +26,7 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 	r.Get("/media/list", h.handleGetMediasList)
 	r.Get("/partner/list", h.handleListPartner)
 	r.Get("/category/list", h.handleListCategory)
+	r.Get("/category/{id}", h.handleGetCategory)
 	r.Get("/banner/list", h.handleListBanner)
 	r.Get("/news/list", h.handleListNews)
 	r.Get("/news/{newsId}", h.handleGetNews)
@@ -172,6 +173,35 @@ func (h *Handler) handleListCategory(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJson(w, http.StatusOK, list)
 }
 
+// @Summary get category
+// @Description get category
+// @Tags common
+// @Accept json
+// @Produce json
+// @Param id path string true "id"
+// @Router /category/{id} [get]
+func (h *Handler) handleGetCategory(w http.ResponseWriter, r *http.Request) {
+	var id = r.PathValue("id")
+	category, err := h.store.GetCategory(id)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if category == nil {
+		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("not found"))
+		return
+	}
+
+	list, err := h.store.GetProductsByCategoryId(category.Id)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, list)
+}
+
 // @Summart list banner
 // @Decription list banner
 // @Tags common
@@ -234,15 +264,15 @@ func (h *Handler) handleListNews(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	list, err := h.store.ListNews(limit, offset)
+	list, count, err := h.store.ListNews(limit, offset)
 	if err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 	}
 	utils.WriteJson(w, http.StatusOK, map[string]interface{}{
-		"page":  offset/limit + 1,
-		"limit": limit,
-		"news":  list,
-		"count": len(list),
+		"page":   offset/limit + 1,
+		"limit":  limit,
+		"result": list,
+		"count":  count,
 	})
 }
 

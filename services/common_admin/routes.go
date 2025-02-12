@@ -1327,14 +1327,15 @@ func (h *Handler) handleListNews(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	list, err := h.store.ListNews(limit, offset)
+	list, count, err := h.store.ListNews(limit, offset)
 	if err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 	}
 	utils.WriteJson(w, http.StatusOK, map[string]interface{}{
 		"page":  offset/limit + 1,
 		"limit": limit,
-		"news":  list,
+		"count": count,
+		"result":  list,
 	})
 }
 

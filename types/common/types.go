@@ -16,12 +16,14 @@ type CommonStore interface {
 	ListCategory() ([]*types_product.CategoryListPayload, error)
 	ListBanner() ([]*BannerPayload, error)
 	GetNews(id string) (*NewsListPayload, error)
-	ListNews(limit, offset int) ([]*NewsListPayload, error)
+	ListNews(limit, offset int) ([]*NewsListPayload, int, error)
 	ListAboutOil() ([]*types_about_company.AboutOilListPayload, error)
 	ListCertificate() ([]*CertificateListPayload, error)
 	ListWhyUs() ([]*types_about_company.WhyUsListPayload, error)
 	ListAboutUs() ([]*types_about_company.AboutUsListPayload, error)
 	ListCapasity() ([]*types_about_company.CapasityListPayload, error)
+	GetProductsByCategoryId(categoryId string) (*types_product.CategoryDetailPayload, error)
+	GetCategory(id string) (*types_product.CategoryListPayload, error)
 }
 
 type ContactCreatePayload struct {

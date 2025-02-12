@@ -127,14 +127,24 @@ func (s *Store) CreateProduct(payload *types_product.ProductPayload) (*types_pro
 	return &product, nil
 }
 
-func (s *Store) ListProduct() ([]*types_product.ProductListPayload, error) {
+func (s *Store) ListProduct(offset, limit int) ([]*types_product.ProductListPayload, int, error) {
 	var products []*types_product.ProductListPayload
-	query := `
-		SELECT id, name_uz, name_ru, name_en, description_uz, description_ru, description_en, text_uz, text_ru, text_en, image, banner, created_at FROM products ORDER BY created_at
-	`
-	rows, err := s.db.Query(query)
+	var count int
+	countQuery := `SELECT COUNT(*) FROM products`
+	err := s.db.QueryRow(countQuery).Scan(&count)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
+	}
+	query := `
+		SELECT 
+			id, name_uz, name_ru, name_en, description_uz, description_ru, description_en, text_uz, text_ru, text_en, image, banner, created_at
+		FROM products
+		ORDER BY created_at 
+		DESC LIMIT $1 OFFSET $2
+	`
+	rows, err := s.db.Query(query, limit, offset)
+	if err != nil {
+		return nil, 0,  err
 	}
 	for rows.Next() {
 		var product types_product.ProductListPayload
@@ -143,11 +153,11 @@ func (s *Store) ListProduct() ([]*types_product.ProductListPayload, error) {
 			&product.DescriptionEn, &product.TextUz, &product.TextRu, &product.TextEn, &product.Image, &product.Banner, &product.CreatedAt,
 		)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		products = append(products, &product)
 	}
-	return products, nil
+	return products, count, nil
 }
 
 func (s *Store) GetProduct(id string) (*types_product.ProductListPayload, error) {
@@ -263,21 +273,28 @@ func (s *Store) CreateProductMedia(payload types_product.ProductMediaPayload) (*
 	return &productMedia, nil
 }
 
-func (s *Store) ListProductMedia() ([]*types_product.ProductMediaListPayload, error) {
+func (s *Store) ListProductMedia(limit, offset int) ([]*types_product.ProductMediaListPayload, int, error) {
 	var medias []*types_product.ProductMediaListPayload
-	query := `SELECT id, image, created_at FROM product_medis ORDER BY created_at`
-	rows, err := s.db.Query(query)
+	var count int
+	countQuery := `SELECT COUNT(*) FROM product_medias`
+	err := s.db.QueryRow(countQuery).Scan(&count)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
+	}
+
+	query := `SELECT id, image, created_at FROM product_medias ORDER BY created_at DESC LIMIT $1 OFFSET $2	`
+	rows, err := s.db.Query(query, limit, offset)
+	if err != nil {
+		return nil, 0, err
 	}
 	for rows.Next() {
 		var productMedia types_product.ProductMediaListPayload
 		if err := rows.Scan(&productMedia.Id, &productMedia.Image, &productMedia.CreatedAt); err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		medias = append(medias, &productMedia)
 	}
-	return medias, nil
+	return medias, count, nil
 }
 
 func (s *Store) GetProductMedia(id string) (*types_product.ProductMediaListPayload, error) {
@@ -295,7 +312,7 @@ func (s *Store) GetProductMedia(id string) (*types_product.ProductMediaListPaylo
 
 func (s *Store) DeleteProductMedia(id string) error {
 	query := `DELETE FROM product_medias WHERE id = $1`
-	_, err := s.db.Exec(query)
+	_, err := s.db.Exec(query, id)
 	if err != nil {
 		return err
 	}
@@ -308,7 +325,7 @@ func (s *Store) UpdateProductMedia(id string, payload types_product.ProductMedia
 	args := []interface{}{}
 	index := 1
 	if payload.Image != "" {
-		query += fmt.Sprint("image = $%d, ", index)
+		query += fmt.Sprintf("image = $%d, ", index)
 		args = append(args, payload.Image)
 		index++
 	}

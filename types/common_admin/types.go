@@ -36,7 +36,7 @@ type CommonStore interface {
 	GetNews(id string) (*NewsListPayload, error)
 	UpdateNews(id string, n *NewsPayload) (*NewsListPayload, error)
 	DeleteNews(id string) error
-	ListNews(limit, offset int) ([]*NewsListPayload, error)
+	ListNews(limit, offset int) ([]*NewsListPayload, int, error)
 	CreateCertificate(payload *CertificatePayload) (*CertificateListPayload, error)
 	GetCertificate(id string) (*CertificateListPayload, error)
 	UpdateCertificate(id string, payload *CertificatePayload) (*CertificateListPayload, error)

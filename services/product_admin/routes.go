@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/XoliqberdiyevBehruz/wtc_backend/services/auth"
 	types_product "github.com/XoliqberdiyevBehruz/wtc_backend/types/product"
@@ -36,11 +37,11 @@ func (h *Handler) RegsiterRoutes(r chi.Router) {
 	r.Delete("/admin/product/product/{id}/delete", auth.AuthWithJWT(h.handleDeleteProduct, h.userStore))
 	r.Put("/admin/product/product/{id}/update", auth.AuthWithJWT(h.handleUpdateProduct, h.userStore))
 	// product media
-	// r.Post("/admin/product/product_media/create", auth.AuthWithJWT(h.handleCreateProductMedia, h.userStore))
-	// r.Get("/admin/product/product_media/list", auth.AuthWithJWT(h.handleListProductMedia, h.userStore))
-	// r.Get("/admin/product/product_media/{id}", auth.AuthWithJWT(h.handleGetProductMedia, h.userStore))
-	// r.Delete("/admin/product/product_media/{id}/delete", auth.AuthWithJWT(h.handleDeleteProductMedia, h.userStore))
-	// r.Put("/admin/product/product_media/{id}/update", auth.AuthWithJWT(h.handleUpdateProductMedia, h.userStore))
+	r.Post("/admin/product/product_media/create", auth.AuthWithJWT(h.handleCreateProductMedia, h.userStore))
+	r.Get("/admin/product/product_media/list", auth.AuthWithJWT(h.handleListProductMedia, h.userStore))
+	r.Get("/admin/product/product_media/{id}", auth.AuthWithJWT(h.handleGetProductMedia, h.userStore))
+	r.Delete("/admin/product/product_media/{id}/delete", auth.AuthWithJWT(h.handleDeleteProductMedia, h.userStore))
+	r.Put("/admin/product/product_media/{id}/update", auth.AuthWithJWT(h.handleUpdateProductMedia, h.userStore))
 }
 
 // @Summary create category
@@ -415,15 +416,39 @@ func (h *Handler) handleCreateProduct(w http.ResponseWriter, r *http.Request) {
 // @Tags product-admin
 // @Accept json
 // @Produce json
+// @Param limit query string false "limit"
+// @Param page query string false "page"
 // @Router /admin/product/product/list [get]
 // @Security BearerAuth
 func (h *Handler) handleListProduct(w http.ResponseWriter, r *http.Request) {
-	list, err := h.store.ListProduct()
+	var limit int = 10
+	var offset int = 0
+
+	query := r.URL.Query()
+	if query.Get("limit") != "" {
+		parsedLimit, err := strconv.Atoi(query.Get("limit"))
+		if err == nil && parsedLimit > 0 {
+			limit = parsedLimit
+		}
+	}
+	if query.Get("page") != "" {
+		parsedPage, err := strconv.Atoi(query.Get("page"))
+		if err == nil && parsedPage > 0 {
+			offset = (parsedPage - 1) * limit
+		}
+	}
+
+	list, count, err := h.store.ListProduct(offset, limit)
 	if err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return
 	}
-	utils.WriteJson(w, http.StatusOK, list)
+	utils.WriteJson(w, http.StatusOK, map[string]interface{}{
+		"page":   offset/limit + 1,
+		"limit":  limit,
+		"count":  count,
+		"result": list,
+	})
 }
 
 // @Summary get product
@@ -626,6 +651,254 @@ func (h *Handler) handleUpdateProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result, err := h.store.UpdateProduct(product.Id, &payload)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, result)
+}
+
+// @Summary create product media
+// @Description create product media
+// @Tags product-admin
+// @Accept multipart/data
+// @Produce json
+// @Param productId formData string true "product id"
+// @Param image formData file true "image"
+// @Router /admin/product/product_media/create [post]
+// @Security BearerAuth
+func (h *Handler) handleCreateProductMedia(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseMultipartForm(50)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	productId := r.FormValue("productId")
+	product, err := h.store.GetProduct(productId)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+	if product == nil {
+		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("not found"))
+		return
+	}
+
+	image, imageHeader, err := r.FormFile("image")
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	defer image.Close()
+
+	imagePath := "uploads/product_medias/images/" + imageHeader.Filename
+
+	outImage, err := os.Create(imagePath)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+	defer outImage.Close()
+
+	_, err = io.Copy(outImage, image)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	payload := types_product.ProductMediaPayload{
+		ProductId: product.Id,
+		Image:     imagePath,
+	}
+
+	result, err := h.store.CreateProductMedia(payload)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusCreated, result)
+}
+
+// @Summary list product medias
+// @Description list product medias
+// @Tags product-admin
+// @Accept json
+// @Produce json
+// @Param limit query string false "limit"
+// @Param page query string false "page"
+// @Router /admin/product/product_media/list [get]
+// @Security BearerAuth
+func (h *Handler) handleListProductMedia(w http.ResponseWriter, r *http.Request) {
+	var limit int = 10
+	var offset int = 0
+
+	query := r.URL.Query()
+	if query.Get("limit") != "" {
+		parsedLimit, err := strconv.Atoi(query.Get("limit"))
+		if err == nil && parsedLimit > 0 {
+			limit = parsedLimit
+		}
+	}
+
+	if query.Get("page") != "" {
+		parsedPage, err := strconv.Atoi(query.Get("page"))
+		if err == nil && parsedPage > 0 {
+			offset = (parsedPage - 1) * limit
+		}
+	}
+
+	list, count, err := h.store.ListProductMedia(limit, offset)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, map[string]interface{}{
+		"page":   offset/limit + 1,
+		"limit":  limit,
+		"count":  count,
+		"result": list,
+	})
+}
+
+// @Summary get product media
+// @Descriotion get produce media
+// @Tags product-admin
+// @Accept json
+// @Produce json
+// @Param id path string true "id"
+// @Router /admin/product/product_media/{id} [get]
+// @Security BearerAuth
+func (h *Handler) handleGetProductMedia(w http.ResponseWriter, r *http.Request) {
+	var id = r.PathValue("id")
+	product, err := h.store.GetProductMedia(id)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if product == nil {
+		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("not found"))
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, product)
+}
+
+// @Summary delete product_media
+// @Description delete product media
+// @Tags product-admin
+// @Accept json
+// @Produce json
+// @Param id path string true "id"
+// @Router /admin/product/product_media/{id}/delete [delete]
+// @Security BearerAuth
+func (h *Handler) handleDeleteProductMedia(w http.ResponseWriter, r *http.Request) {
+	var id = r.PathValue("id")
+	productMedia, err := h.store.GetProductMedia(id)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if productMedia == nil {
+		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("not found"))
+		return
+	}
+
+	err = h.store.DeleteProductMedia(productMedia.Id)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusNoContent, map[string]string{"message": "deleted"})
+}
+
+// @Summary update product media
+// @Description update product media
+// @Tags product-admin
+// @Accept multipart/data
+// @Produce json
+// @Param id path string true "id"
+// @Param productId formData string false "product id"
+// @Param image formData file false "image"
+// @Router /admin/product/product_media/{id}/update [put]
+// @Security BearerAuth
+func (h *Handler) handleUpdateProductMedia(w http.ResponseWriter, r *http.Request) {
+	var id = r.PathValue("id")
+	productMedia, err := h.store.GetProductMedia(id)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if productMedia == nil {
+		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("not found"))
+		return
+	}
+	err = r.ParseMultipartForm(50)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	productId := r.FormValue("productId")
+
+	if productId != "" {
+		product, err := h.store.GetProduct(productId)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
+		if product == nil {
+			utils.WriteError(w, http.StatusNotFound, fmt.Errorf("not found"))
+			return
+		}
+	}
+	image, imageHeader, err := r.FormFile("image")
+	if err != nil {
+		if err == http.ErrMissingFile {
+			image = nil
+			imageHeader = nil
+		} else {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
+	}
+	if image != nil {
+		defer image.Close()
+	}
+	var imagePath string
+	if imageHeader != nil {
+		imagePath = "uploads/product_medias/images/" + imageHeader.Filename
+	} else {
+		imagePath = ""
+	}
+	if imagePath != "" {
+		outImage, err := os.Create(imagePath)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
+		defer outImage.Close()
+
+		_, err = io.Copy(outImage, image)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
+	}
+	payload := types_product.ProductMediaPayload{
+		Image:     imagePath,
+		ProductId: productId,
+	}
+
+	result, err := h.store.UpdateProductMedia(productMedia.Id, payload)
 	if err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return

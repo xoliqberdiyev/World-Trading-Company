@@ -509,23 +509,30 @@ func (s *Store) DeleteNews(id string) error {
 	return nil
 }
 
-func (s *Store) ListNews(limit, offset int) ([]*types_common_admin.NewsListPayload, error) {
+func (s *Store) ListNews(limit, offset int) ([]*types_common_admin.NewsListPayload, int, error) {
 	var news []*types_common_admin.NewsListPayload
+	var count int
+	contQuery := `SELECT COUNT(*) FROM news`
+	err := s.db.QueryRow(contQuery).Scan(&count)
+	if err != nil {
+		return nil, 0, err
+	}
+
 	query := `SELECT * FROM news ORDER BY created_at DESC LIMIT $1 OFFSET $2`
 	rows, err := s.db.Query(query, limit, offset)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer rows.Close()
 
 	for rows.Next() {
 		var new types_common_admin.NewsListPayload
 		if err := rows.Scan(&new.Id, &new.TitleUz, &new.TitleRu, &new.TitleEn, &new.DescriptionUz, &new.DescriptionRu, &new.DescriptionEn, &new.Image, &new.Link, &new.CreatedAt); err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		news = append(news, &new)
 	}
-	return news, nil
+	return news, count, nil
 }
 
 func (s *Store) CreateCertificate(payload *types_common_admin.CertificatePayload) (*types_common_admin.CertificateListPayload, error) {
@@ -596,7 +603,7 @@ func (s *Store) UpdateCertificate(id string, payload *types_common_admin.Certifi
 	query = query[:len(query)-2] + fmt.Sprintf(" WHERE id = $%d RETURNING id, name_uz, name_ru, name_en, text_uz, text_ru, text_en, image, created_at", argsIndex)
 	args = append(args, id)
 	err := s.db.QueryRow(query, args...).Scan(
-		&certificate.Id, &certificate.NameUz, &certificate.NameRu, &certificate.NameEn, &certificate.TextUz, &certificate.TextRu, &certificate.TextEn, &certificate.Image,  &certificate.CreatedAt,
+		&certificate.Id, &certificate.NameUz, &certificate.NameRu, &certificate.NameEn, &certificate.TextUz, &certificate.TextRu, &certificate.TextEn, &certificate.Image, &certificate.CreatedAt,
 	)
 	if err != nil {
 		return nil, err

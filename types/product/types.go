@@ -9,12 +9,15 @@ type ProductStore interface {
 	DeleteCategory(id string) error
 	ListCategory() ([]*CategoryListPayload, error)
 	CreateProduct(payload *ProductPayload) (*ProductListPayload, error)
-	ListProduct() ([]*ProductListPayload, error)
+	ListProduct(offset, limit int) ([]*ProductListPayload, int, error)
 	GetProduct(id string) (*ProductListPayload, error)
 	DeleteProduct(id string) error
 	UpdateProduct(id string, payload *ProductPayload) (*ProductListPayload, error)
 	CreateProductMedia(payload ProductMediaPayload) (*ProductMediaListPayload, error)
-	ListProductMedia() ([]*ProductMediaListPayload, error)
+	ListProductMedia(limit, offset int) ([]*ProductMediaListPayload, int, error)
+	GetProductMedia(id string) (*ProductMediaListPayload, error)
+	DeleteProductMedia(id string) error
+	UpdateProductMedia(id string, payload ProductMediaPayload) (*ProductMediaListPayload, error)
 }
 
 type CategoryPayload struct {
@@ -32,6 +35,26 @@ type CategoryListPayload struct {
 	NameEn    string    `json:"nameEn"`
 	Image     string    `json:"image"`
 	Icon      string    `json:"icon"`
+	CreatedAt time.Time `json:"createdAt"`
+}
+
+type CategoryDetailPayload struct {
+	Id        string                       `json:"id"`
+	NameUz    string                       `json:"nameUz"`
+	NameRu    string                       `json:"nameRu"`
+	NameEn    string                       `json:"nameEn"`
+	Image     string                       `json:"image"`
+	Icon      string                       `json:"icon"`
+	CreatedAt time.Time                    `json:"createdAt"`
+	Products  []CategoryProductListPayload `json:"products"`
+}
+
+type CategoryProductListPayload struct {
+	Id        string    `json:"id"`
+	NameUz    string    `json:"nameUz"`
+	NameRu    string    `json:"nameRu"`
+	NameEn    string    `json:"nameEn"`
+	Image     string    `json:"image"`
 	CreatedAt time.Time `json:"createdAt"`
 }
 
