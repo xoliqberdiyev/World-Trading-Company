@@ -821,7 +821,7 @@ const docTemplate = `{
             }
         },
         "/admin/common/media/{mediaId}/update": {
-            "patch": {
+            "put": {
                 "security": [
                     {
                         "BearerAuth": []
@@ -850,8 +850,7 @@ const docTemplate = `{
                         "type": "file",
                         "description": "file uz",
                         "name": "fileUz",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "file",

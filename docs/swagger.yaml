@@ -628,7 +628,7 @@ paths:
       tags:
       - common-admin
   /admin/common/media/{mediaId}/update:
-    patch:
+    put:
       consumes:
       - multipart/data
       description: update media
@@ -641,7 +641,6 @@ paths:
       - description: file uz
         in: formData
         name: fileUz
-        required: true
         type: file
       - description: file ru
         in: formData
