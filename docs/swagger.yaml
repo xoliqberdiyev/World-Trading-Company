@@ -119,6 +119,77 @@ definitions:
     - firstPhone
     - secondPhone
     type: object
+  types_product.ChemicalPropertyPayload:
+    properties:
+      max:
+        type: number
+      min:
+        type: number
+      nameEn:
+        type: string
+      nameRu:
+        type: string
+      nameUz:
+        type: string
+      productId:
+        type: string
+      result:
+        type: number
+      unit:
+        type: string
+    type: object
+  types_product.ImpactPropertyPayload:
+    properties:
+      materialEn:
+        type: string
+      materialRu:
+        type: string
+      materialUz:
+        type: string
+      max:
+        type: number
+      productId:
+        type: string
+      result:
+        type: number
+      unit:
+        type: string
+    type: object
+  types_product.ProductAdventagePayload:
+    properties:
+      productId:
+        type: string
+      textEn:
+        type: string
+      textRu:
+        type: string
+      textUz:
+        type: string
+    type: object
+  types_product.ProductFeaturePayload:
+    properties:
+      productId:
+        type: string
+      textEn:
+        type: string
+      textRu:
+        type: string
+      textUz:
+        type: string
+    type: object
+  types_product.ProductSpesificationPayload:
+    properties:
+      brands:
+        type: string
+      nameEn:
+        type: string
+      nameRu:
+        type: string
+      nameUz:
+        type: string
+      productId:
+        type: string
+    type: object
   types_user_admin.UserCreatePayload:
     properties:
       firstName:
@@ -1533,6 +1604,102 @@ paths:
       summary: list why_us
       tags:
       - company-admin
+  /admin/product/adventage/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get feature
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: get feature
+      tags:
+      - product-admin
+  /admin/product/adventage/{id}/delete:
+    delete:
+      consumes:
+      - application/json
+      description: delete featrue
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: delete feature
+      tags:
+      - product-admin
+  /admin/product/adventage/{id}/update:
+    put:
+      consumes:
+      - application/json
+      description: update feature
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types_product.ProductAdventagePayload'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: update feature
+      tags:
+      - product-admin
+  /admin/product/adventage/create:
+    post:
+      consumes:
+      - application/json
+      description: create product feature
+      parameters:
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types_product.ProductAdventagePayload'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: create product feature
+      tags:
+      - product-admin
+  /admin/product/adventage/list:
+    get:
+      consumes:
+      - application/json
+      description: list product feature
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: list product feature
+      tags:
+      - product-admin
   /admin/product/category/{categoryId}:
     get:
       description: get category
@@ -1621,6 +1788,102 @@ paths:
       summary: list category
       tags:
       - product-admin
+  /admin/product/chemistry/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get chemistry
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: get chemistry
+      tags:
+      - product-admin
+  /admin/product/chemistry/{id}/delete:
+    delete:
+      consumes:
+      - application/json
+      description: delete chemistry
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: delete chemistry
+      tags:
+      - product-admin
+  /admin/product/chemistry/{id}/update:
+    put:
+      consumes:
+      - application/json
+      description: update chemistry
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types_product.ChemicalPropertyPayload'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: update chemistry
+      tags:
+      - product-admin
+  /admin/product/chemistry/create:
+    post:
+      consumes:
+      - application/json
+      description: create product chemistry
+      parameters:
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types_product.ChemicalPropertyPayload'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: create product chemistry
+      tags:
+      - product-admin
+  /admin/product/chemistry/list:
+    get:
+      consumes:
+      - application/json
+      description: list product chemistry
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: list product chemistry
+      tags:
+      - product-admin
   /admin/product/crategory/{categoryId}/update:
     put:
       consumes:
@@ -1657,6 +1920,300 @@ paths:
       security:
       - BearerAuth: []
       summary: update category
+      tags:
+      - product-admin
+  /admin/product/feature/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get feature
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: get feature
+      tags:
+      - product-admin
+  /admin/product/feature/{id}/delete:
+    delete:
+      consumes:
+      - application/json
+      description: delete featrue
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: delete feature
+      tags:
+      - product-admin
+  /admin/product/feature/{id}/update:
+    put:
+      consumes:
+      - application/json
+      description: update feature
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types_product.ProductFeaturePayload'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: update feature
+      tags:
+      - product-admin
+  /admin/product/feature/create:
+    post:
+      consumes:
+      - application/json
+      description: create product feature
+      parameters:
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types_product.ProductFeaturePayload'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: create product feature
+      tags:
+      - product-admin
+  /admin/product/feature/list:
+    get:
+      consumes:
+      - application/json
+      description: list product feature
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: list product feature
+      tags:
+      - product-admin
+  /admin/product/file/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get product file
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: get product file
+      tags:
+      - product-admin
+  /admin/product/file/{id}/delete:
+    delete:
+      consumes:
+      - application/json
+      description: delete product file
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: delete product file
+      tags:
+      - product-admin
+  /admin/product/file/{id}/update:
+    put:
+      consumes:
+      - multipart/data
+      description: update product file
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: product id
+        in: formData
+        name: productId
+        type: string
+      - description: file
+        in: formData
+        name: file
+        type: file
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: update product file
+      tags:
+      - product-admin
+  /admin/product/file/create:
+    post:
+      consumes:
+      - multipart/data
+      description: create product file
+      parameters:
+      - description: product id
+        in: formData
+        name: productId
+        required: true
+        type: string
+      - description: file
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: create product file
+      tags:
+      - product-admin
+  /admin/product/file/list:
+    get:
+      consumes:
+      - application/json
+      description: list product file
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: list product file
+      tags:
+      - product-admin
+  /admin/product/impact/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get impact
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: get impact
+      tags:
+      - product-admin
+  /admin/product/impact/{id}/delete:
+    delete:
+      consumes:
+      - application/json
+      description: delete impact
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: delete impact
+      tags:
+      - product-admin
+  /admin/product/impact/{id}/update:
+    put:
+      consumes:
+      - application/json
+      description: update impact
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types_product.ImpactPropertyPayload'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: update impact
+      tags:
+      - product-admin
+  /admin/product/impact/create:
+    post:
+      consumes:
+      - application/json
+      description: create product impact
+      parameters:
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types_product.ImpactPropertyPayload'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: create product impact
+      tags:
+      - product-admin
+  /admin/product/impact/list:
+    get:
+      consumes:
+      - application/json
+      description: list product impact
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: list product impact
       tags:
       - product-admin
   /admin/product/product/{id}:
@@ -1968,6 +2525,101 @@ paths:
       summary: list product medias
       tags:
       - product-admin
+  /admin/product/spesification/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get data
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: get data
+      tags:
+      - product-admin
+  /admin/product/spesification/{id}/delete:
+    delete:
+      consumes:
+      - application/json
+      description: delete data
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: delete data
+      tags:
+      - product-admin
+  /admin/product/spesification/{id}/update:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types_product.ProductSpesificationPayload'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: update data
+      tags:
+      - product-admin
+  /admin/product/spesification/create:
+    post:
+      consumes:
+      - application/json
+      description: create product spesification
+      parameters:
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types_product.ProductSpesificationPayload'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: create product spesification
+      tags:
+      - product-admin
+  /admin/product/spesification/list:
+    get:
+      consumes:
+      - application/json
+      description: list product spesification
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: list product spesification
+      tags:
+      - product-admin
   /banner/list:
     get:
       consumes:
@@ -2122,6 +2774,23 @@ paths:
       - application/json
       responses: {}
       summary: list partner
+      tags:
+      - common
+  /product/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get product
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: get product
       tags:
       - common
   /settings:

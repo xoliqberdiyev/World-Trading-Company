@@ -18,6 +18,36 @@ type ProductStore interface {
 	GetProductMedia(id string) (*ProductMediaListPayload, error)
 	DeleteProductMedia(id string) error
 	UpdateProductMedia(id string, payload ProductMediaPayload) (*ProductMediaListPayload, error)
+	CreateProductSpesification(payload ProductSpesificationPayload) error
+	ListProductSpesification() ([]*ProductListSpesificationPayload, error)
+	GetProductSpesification(id string) (*ProductListSpesificationPayload, error)
+	DeleteProductSpesification(id string) error
+	UpdateProductSpesification(id string, payload ProductSpesificationPayload) error
+	CreateProductFeature(payload ProductFeaturePayload) error
+	ListProductFeature() ([]*ProductFeatureListPayload, error)
+	GetProductFeature(id string) (*ProductFeatureListPayload, error)
+	DeleteProductFeature(id string) error
+	UpdateProductFeature(id string, payload ProductFeaturePayload) error
+	CreateProductAdvantage(payload ProductAdventagePayload) error
+	ListProductAdventage() ([]*ProductAdventageListPayload, error)
+	GetProductAdventage(id string) (*ProductAdventageListPayload, error)
+	DeleteProductAdventage(id string) error
+	UpdateProductAdventage(id string, payload ProductAdventagePayload) error
+	CreateChemistry(payload ChemicalPropertyPayload) error
+	ListChemistry() ([]*ChemicalPropertyListPayload, error)
+	GetChemistry(id string) (*ChemicalPropertyListPayload, error)
+	DeleteChemistry(id string) error
+	UpdateChemistry(id string, payload ChemicalPropertyPayload) error
+	CreateImpact(payload ImpactPropertyPayload) error
+	ListImpact() ([]*ImapctPropertyListPayload, error)
+	GetImpact(id string) (*ImapctPropertyListPayload, error)
+	DeleteImpact(id string) error
+	UpdateImpact(id string, payload ImpactPropertyPayload) error
+	CreateProductFile(payload ProductFilePayload) error
+	ListProductFile() ([]*ProductFileListPayload, error)
+	GetProductFile(id string) (*ProductFileListPayload, error)
+	DeleteProductFile(id string) error
+	UpdateProductFile(id string, payload ProductFilePayload) error
 }
 
 type CategoryPayload struct {
@@ -99,3 +129,110 @@ type ProductMediaListPayload struct {
 	Image     string    `json:"image"`
 	CreatedAt time.Time `json:"createdAt"`
 }
+
+type ProductSpesificationPayload struct {
+	NameUz    string `json:"nameUz"`
+	NameRu    string `json:"nameRu"`
+	NameEn    string `json:"nameEn"`
+	Brands    string `json:"brands"`
+	ProductId string `json:"productId"`
+}
+
+type ProductListSpesificationPayload struct {
+	Id        string    `json:"id"`
+	NameUz    string    `json:"nameUz"`
+	NameRu    string    `json:"nameRu"`
+	NameEn    string    `json:"nameEn"`
+	Brands    string    `json:"brands"`
+	ProductId string    `json:"productId"`
+	CreatedAt time.Time `json:"createdAt"`
+}
+
+type ProductFeaturePayload struct {
+	TextUz    string `json:"textUz"`
+	TextRu    string `json:"textRu"`
+	TextEn    string `json:"textEn"`
+	ProductId string `json:"productId"`
+}
+
+type ProductFeatureListPayload struct {
+	Id        string    `json:"id"`
+	TextUz    string    `json:"textUz"`
+	TextRu    string    `json:"textRu"`
+	TextEn    string    `json:"textEn"`
+	ProductId string    `json:"productId"`
+	CreatedAt time.Time `json:"createdAt"`
+}
+
+type ProductAdventagePayload struct {
+	TextUz    string `json:"textUz"`
+	TextRu    string `json:"textRu"`
+	TextEn    string `json:"textEn"`
+	ProductId string `json:"productId"`
+}
+
+type ProductAdventageListPayload struct {
+	Id        string    `json:"id"`
+	TextUz    string    `json:"textUz"`
+	TextRu    string    `json:"textRu"`
+	TextEn    string    `json:"textEn"`
+	ProductId string    `json:"productId"`
+	CreatedAt time.Time `json:"createdAt"`
+}
+
+type ChemicalPropertyPayload struct {
+	ProductId string  `json:"productId"`
+	NameUz    string  `json:"nameUz"`
+	NameRu    string  `json:"nameRu"`
+	NameEn    string  `json:"nameEn"`
+	Unit      string  `json:"unit"`
+	Min       float32 `json:"min"`
+	Max       float32 `json:"max"`
+	Result    float32 `json:"result"`
+}
+
+type ChemicalPropertyListPayload struct {
+	Id        string  `json:"id"`
+	ProductId string  `json:"productId"`
+	NameUz    string  `json:"nameUz"`
+	NameRu    string  `json:"nameRu"`
+	NameEn    string  `json:"nameEn"`
+	Unit      string  `json:"unit"`
+	Min       float32 `json:"min"`
+	Max       float32 `json:"max"`
+	Result    float32 `json:"result"`
+}
+
+type ImpactPropertyPayload struct {
+	ProductId  string  `json:"productId"`
+	MaterialUz string  `json:"materialUz"`
+	MaterialRu string  `json:"materialRu"`
+	MaterialEn string  `json:"materialEn"`
+	Unit       string  `json:"unit"`
+	Max        float32 `json:"max"`
+	Result     float32 `json:"result"`
+}
+
+type ImapctPropertyListPayload struct {
+	Id         string  `json:"id"`
+	ProductId  string  `json:"productId"`
+	MaterialUz string  `json:"materialUz"`
+	MaterialRu string  `json:"materialRu"`
+	MaterialEn string  `json:"materialEn"`
+	Unit       string  `json:"unit"`
+	Max        float32 `json:"max"`
+	Result     float32 `json:"result"`
+}
+
+type ProductFilePayload struct {
+	File      string `json:"file"`
+	ProductId string `json:"productId"`
+}
+
+type ProductFileListPayload struct {
+	Id        string    `json:"id"`
+	File      string    `json:"file"`
+	ProductId string    `json:"productId"`
+	CreatedAt time.Time `json:"createdAt"`
+}
+

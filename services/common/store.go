@@ -288,3 +288,137 @@ func (s *Store) GetCategory(id string) (*types_product.CategoryListPayload, erro
 	}
 	return &category, nil
 }
+
+// func fetchProductMedia(s *Store, id string, product *types_common.ProductDeatilPayload, wg *sync.WaitGroup, errChan chan error) {
+// 	defer wg.Done()
+
+// 	query := `SELECT id, image, product_id, created_at FROM product_medias WHERE product_id = $1`
+// 	rows, err := s.db.Query(query, id)
+// 	if err != nil {
+// 		errChan <- err
+// 		return
+// 	}
+// 	defer rows.Close()
+
+// 	for rows.Next() {
+// 		var media types_common.ProductMedia
+// 		if err := rows.Scan(&media.Id, &media.Image, &media.ProductId, &media.CreatedAt); err != nil {
+// 			errChan <- err
+// 			return
+// 		}
+// 		product.ProductMedias = append(product.ProductMedias, media)
+// 	}
+
+// 	errChan <- nil
+// }
+
+// func (s *Store) GetProductById(id string) (*types_common.ProductDeatilPayload, error) {
+// 	var product types_common.ProductDeatilPayload
+// 	errChan := make(chan error, 6)
+
+// 	queryProduct := `SELECT * FROM products WHERE id = $1`
+// 	err := s.db.QueryRow(queryProduct, id).Scan(&product.Id, &product.NameUz, &product.NameRu, &product.NameEn, &product.DescriptionUz, &product.DescriptionRu, &product.DescriptionEn, &product.TextUz, &product.TextRu, &product.TextEn, &product.Image, &product.Banner, &product.CreatedAt)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	wg.Add()
+// 	go s.fetchProductMedia(&s, id, &product, &wg, errChan)
+// 	wg.Wait()
+
+// }
+
+func (s *Store) GetProductById(id string) (*types_common.ProductDeatilPayload, error) {
+	var product types_common.ProductDeatilPayload
+
+	queryProduct := `SELECT id, name_uz, name_ru, name_en, description_uz, description_ru, description_en, 
+	text_uz, text_ru, text_en, image, banner, created_at FROM products WHERE id = $1`
+	err := s.db.QueryRow(queryProduct, id).Scan(
+		&product.Id, &product.NameUz, &product.NameRu, &product.NameEn,
+		&product.DescriptionUz, &product.DescriptionRu, &product.DescriptionEn,
+		&product.TextUz, &product.TextRu, &product.TextEn,
+		&product.Image, &product.Banner, &product.CreatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	queries := map[string]string{
+		"media":         `SELECT * FROM product_medias WHERE product_id = $1`,
+		"specification": `SELECT * FROM product_specification WHERE product_id = $1`,
+		"feature":       `SELECT * FROM product_features WHERE product_id = $1`,
+		"adventage":     `SELECT * FROM product_adventage WHERE product_id = $1`,
+		"chemical":      `SELECT * FROM chemical_property WHERE product_id = $1`,
+		"impact":        `SELECT * FROM corrosion_impact WHERE product_id = $1`,
+		"files":         `SELECT * FROM product_files WHERE product_id = $1`,
+	}
+
+	for key, query := range queries {
+		rows, err := s.db.Query(query, id)
+		if err != nil {
+			return nil, err
+		}
+		defer rows.Close()
+
+		switch key {
+		case "media":
+			for rows.Next() {
+				var media types_common.ProductMedia
+				if err := rows.Scan(&media.Id, &media.Image, &media.ProductId, &media.CreatedAt); err != nil {
+					return nil, err
+				}
+				product.ProductMedias = append(product.ProductMedias, media)
+			}
+		case "specification":
+			for rows.Next() {
+				var spec types_common.ProductSpesification
+				if err := rows.Scan(&spec.Id, &spec.NameUz, &spec.NameRu, &spec.NameEn, &spec.Brands, &spec.ProductId, &spec.CreatedAt); err != nil {
+					return nil, err
+				}
+				product.ProductSpesification = append(product.ProductSpesification, spec)
+			}
+		case "feature":
+			for rows.Next() {
+				var feature types_common.ProductFeature
+				if err := rows.Scan(&feature.Id, &feature.TextUz, &feature.TextRu, &feature.TextEn, &feature.ProductId, &feature.CreatedAt); err != nil {
+					return nil, err
+				}
+				product.ProductFeature = append(product.ProductFeature, feature)
+			}
+		case "adventage":
+			for rows.Next() {
+				var adv types_common.ProductAdventage
+				if err := rows.Scan(&adv.Id, &adv.TextUz, &adv.TextRu, &adv.TextEn, &adv.ProductId, &adv.CreatedAt); err != nil {
+					return nil, err
+				}
+				product.ProductAdventage = append(product.ProductAdventage, adv)
+			}
+		case "chemical":
+			for rows.Next() {
+				var chem types_common.ChemicalProperty
+				if err := rows.Scan(&chem.Id, &chem.ProductId, &chem.NameUz, &chem.NameRu, &chem.NameEn, &chem.Unit, &chem.Min, &chem.Max, &chem.Result); err != nil {
+					return nil, err
+				}
+				product.ChemicalProperty = append(product.ChemicalProperty, chem)
+			}
+		case "impact":
+			for rows.Next() {
+				var impact types_common.ImapctProperty
+				if err := rows.Scan(&impact.Id, &impact.ProductId, &impact.MaterialUz, &impact.MaterialRu, &impact.MaterialEn, &impact.Unit, &impact.Max, &impact.Result); err != nil {
+					return nil, err
+				}
+				product.ImapctProperty = append(product.ImapctProperty, impact)
+			}
+		case "files":
+			for rows.Next() {
+				var file types_common.ProductFile
+				if err := rows.Scan(&file.Id, &file.File, &file.ProductId, &file.CreatedAt); err != nil {
+					return nil, err
+				}
+				product.ProductFile = append(product.ProductFile, file)
+			}
+		}
+	}
+
+	return &product, nil
+}

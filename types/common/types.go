@@ -24,6 +24,7 @@ type CommonStore interface {
 	ListCapasity() ([]*types_about_company.CapasityListPayload, error)
 	GetProductsByCategoryId(categoryId string) (*types_product.CategoryDetailPayload, error)
 	GetCategory(id string) (*types_product.CategoryListPayload, error)
+	GetProductById(id string) (*ProductDeatilPayload, error)
 }
 
 type ContactCreatePayload struct {
@@ -97,5 +98,93 @@ type CertificateListPayload struct {
 	TextRu    string    `json:"textRu"`
 	TextEn    string    `json:"textEn"`
 	Image     string    `json:"image"`
+	CreatedAt time.Time `json:"createdAt"`
+}
+
+type ProductDeatilPayload struct {
+	Id                   string                 `json:"id"`
+	NameUz               string                 `json:"nameUz"`
+	NameRu               string                 `json:"nameRu"`
+	NameEn               string                 `json:"nameEn"`
+	DescriptionUz        string                 `json:"descriptionUz"`
+	DescriptionRu        string                 `json:"descriptionRu"`
+	DescriptionEn        string                 `json:"descriptionEn"`
+	TextUz               string                 `json:"textUz"`
+	TextRu               string                 `json:"textRu"`
+	TextEn               string                 `json:"textEn"`
+	Image                string                 `json:"image"`
+	Banner               string                 `json:"banner"`
+	CreatedAt            time.Time              `json:"createdAt"`
+	ProductMedias        []ProductMedia         `json:"productMedias"`
+	ProductSpesification []ProductSpesification `json:"productSpesification"`
+	ProductFeature       []ProductFeature       `json:"productFeature"`
+	ProductAdventage     []ProductAdventage     `json:"productAdventage"`
+	ChemicalProperty     []ChemicalProperty     `json:"productChemical"`
+	ImapctProperty       []ImapctProperty       `json:"productImpact"`
+	ProductFile          []ProductFile          `json:"productFile"`
+}
+
+type ProductMedia struct {
+	Id        string    `json:"id"`
+	Image     string    `json:"image"`
+	ProductId string    `json:"productId"`
+	CreatedAt time.Time `json:"createdAt"`
+}
+
+type ProductSpesification struct {
+	Id        string    `json:"id"`
+	NameUz    string    `json:"nameUz"`
+	NameRu    string    `json:"nameRu"`
+	NameEn    string    `json:"nameEn"`
+	Brands    string    `json:"brands"`
+	ProductId string    `json:"productId"`
+	CreatedAt time.Time `json:"createdAt"`
+}
+
+type ProductFeature struct {
+	Id        string    `json:"id"`
+	TextUz    string    `json:"textUz"`
+	TextRu    string    `json:"textRu"`
+	TextEn    string    `json:"textEn"`
+	ProductId string    `json:"productId"`
+	CreatedAt time.Time `json:"createdAt"`
+}
+
+type ProductAdventage struct {
+	Id        string    `json:"id"`
+	TextUz    string    `json:"textUz"`
+	TextRu    string    `json:"textRu"`
+	TextEn    string    `json:"textEn"`
+	ProductId string    `json:"productId"`
+	CreatedAt time.Time `json:"createdAt"`
+}
+
+type ChemicalProperty struct {
+	Id        string  `json:"id"`
+	ProductId string  `json:"productId"`
+	NameUz    string  `json:"nameUz"`
+	NameRu    string  `json:"nameRu"`
+	NameEn    string  `json:"nameEn"`
+	Unit      string  `json:"unit"`
+	Min       float32 `json:"min"`
+	Max       float32 `json:"max"`
+	Result    float32 `json:"result"`
+}
+
+type ImapctProperty struct {
+	Id         string  `json:"id"`
+	ProductId  string  `json:"productId"`
+	MaterialUz string  `json:"materialUz"`
+	MaterialRu string  `json:"materialRu"`
+	MaterialEn string  `json:"materialEn"`
+	Unit       string  `json:"unit"`
+	Max        float32 `json:"max"`
+	Result     float32 `json:"result"`
+}
+
+type ProductFile struct {
+	Id        string    `json:"id"`
+	File      string    `json:"file"`
+	ProductId string    `json:"productId"`
 	CreatedAt time.Time `json:"createdAt"`
 }

@@ -35,6 +35,7 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 	r.Get("/why_us/list", h.handleListWhyUs)
 	r.Get("/about_us/list", h.handleListAboutUs)
 	r.Get("/capasity/list", h.handleListCapasity)
+	r.Get("/product/{id}", h.handleGetProductById)
 }
 
 // @Summary create contact us
@@ -354,4 +355,22 @@ func (h *Handler) handleListCapasity(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.WriteJson(w, http.StatusOK, list)
+}
+
+// @Summary get product
+// @Description get product
+// @Tags common
+// @Accept json
+// @Produce json
+// @Param id path string true "id"
+// @Router /product/{id} [get]
+func (h *Handler) handleGetProductById(w http.ResponseWriter, r *http.Request) {
+	var id = r.PathValue("id")
+	product, err := h.store.GetProductById(id)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, product)
 }

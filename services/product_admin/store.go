@@ -144,7 +144,7 @@ func (s *Store) ListProduct(offset, limit int) ([]*types_product.ProductListPayl
 	`
 	rows, err := s.db.Query(query, limit, offset)
 	if err != nil {
-		return nil, 0,  err
+		return nil, 0, err
 	}
 	for rows.Next() {
 		var product types_product.ProductListPayload
@@ -341,4 +341,369 @@ func (s *Store) UpdateProductMedia(id string, payload types_product.ProductMedia
 		return nil, err
 	}
 	return &productMedia, nil
+}
+
+func (s *Store) CreateProductSpesification(payload types_product.ProductSpesificationPayload) error {
+	query := `
+		INSERT INTO 
+			product_specification(name_uz, name_ru, name_en, brands, product_id) 
+		VALUES($1, $2, $3, $4, $5) 
+	`
+	_, err := s.db.Exec(query, payload.NameUz, payload.NameRu, payload.NameEn, payload.Brands, payload.ProductId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) ListProductSpesification() ([]*types_product.ProductListSpesificationPayload, error) {
+	var list []*types_product.ProductListSpesificationPayload
+	query := `SELECT * FROM product_specification`
+	rows, err := s.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var item types_product.ProductListSpesificationPayload
+		if err := rows.Scan(&item.Id, &item.NameUz, &item.NameRu, &item.NameEn, &item.Brands, &item.ProductId, &item.CreatedAt); err != nil {
+			return nil, err
+		}
+		list = append(list, &item)
+	}
+	return list, nil
+}
+
+func (s *Store) GetProductSpesification(id string) (*types_product.ProductListSpesificationPayload, error) {
+	var data types_product.ProductListSpesificationPayload
+	query := `SELECT * FROM product_specification WHERE id = $1`
+	err := s.db.QueryRow(query, id).Scan(&data.Id, &data.NameUz, &data.NameRu, &data.NameEn, &data.Brands, &data.ProductId, &data.CreatedAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &data, nil
+}
+
+func (s *Store) DeleteProductSpesification(id string) error {
+	query := `DELETE FROM product_specification WHERE id = $1`
+	_, err := s.db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) UpdateProductSpesification(id string, payload types_product.ProductSpesificationPayload) error {
+	query := `UPDATE product_specification SET name_uz = $2, name_ru = $3, name_en = $4, brands = $5, product_id = $6 WHERE id = $1`
+	_, err := s.db.Exec(query, id, payload.NameUz, payload.NameRu, payload.NameEn, payload.Brands, payload.ProductId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) CreateProductFeature(payload types_product.ProductFeaturePayload) error {
+	query := `INSERT INTO product_features(text_uz, text_ru, text_en, product_id) VALUES($1, $2, $3, $4)`
+	_, err := s.db.Exec(query, payload.TextUz, payload.TextRu, payload.TextEn, payload.ProductId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) ListProductFeature() ([]*types_product.ProductFeatureListPayload, error) {
+	var list []*types_product.ProductFeatureListPayload
+	query := `SELECT * FROM product_features ORDER BY created_at`
+	rows, err := s.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var item types_product.ProductFeatureListPayload
+		if err := rows.Scan(&item.Id, &item.TextUz, &item.TextRu, &item.TextEn, &item.ProductId, &item.CreatedAt); err != nil {
+			return nil, err
+		}
+		list = append(list, &item)
+	}
+	return list, nil
+}
+
+func (s *Store) GetProductFeature(id string) (*types_product.ProductFeatureListPayload, error) {
+	var feature types_product.ProductFeatureListPayload
+	query := `SELECT * FROM product_features WHERE id = $1`
+	err := s.db.QueryRow(query, id).Scan(&feature.Id, &feature.TextUz, &feature.TextRu, &feature.TextEn, &feature.ProductId, &feature.CreatedAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		} else {
+			return nil, err
+		}
+	}
+	return &feature, nil
+}
+
+func (s *Store) DeleteProductFeature(id string) error {
+	query := `DELETE FROM product_features WHERE id = $1`
+	_, err := s.db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) UpdateProductFeature(id string, payload types_product.ProductFeaturePayload) error {
+	query := `UPDATE product_features SET text_uz = $2, text_ru = $3, text_en = $4, product_id = $5 WHERE id = $1`
+	_, err := s.db.Exec(query, id, payload.TextUz, payload.TextRu, payload.TextEn, payload.ProductId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) CreateProductAdvantage(payload types_product.ProductAdventagePayload) error {
+	query := `INSERT INTO product_adventage(text_uz, text_ru, text_en, product_id) VALUES($1, $2, $3, $4)`
+	_, err := s.db.Exec(query, payload.TextUz, payload.TextRu, payload.TextEn, payload.ProductId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) ListProductAdventage() ([]*types_product.ProductAdventageListPayload, error) {
+	var list []*types_product.ProductAdventageListPayload
+	query := `SELECT * FROM product_adventage ORDER BY created_at`
+	rows, err := s.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var item types_product.ProductAdventageListPayload
+		if err := rows.Scan(&item.Id, &item.TextUz, &item.TextRu, &item.TextEn, &item.ProductId, &item.CreatedAt); err != nil {
+			return nil, err
+		}
+		list = append(list, &item)
+	}
+	return list, nil
+}
+
+func (s *Store) GetProductAdventage(id string) (*types_product.ProductAdventageListPayload, error) {
+	var feature types_product.ProductAdventageListPayload
+	query := `SELECT * FROM product_adventage WHERE id = $1`
+	err := s.db.QueryRow(query, id).Scan(&feature.Id, &feature.TextUz, &feature.TextRu, &feature.TextEn, &feature.ProductId, &feature.CreatedAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		} else {
+			return nil, err
+		}
+	}
+	return &feature, nil
+}
+
+func (s *Store) DeleteProductAdventage(id string) error {
+	query := `DELETE FROM product_adventage WHERE id = $1`
+	_, err := s.db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) UpdateProductAdventage(id string, payload types_product.ProductAdventagePayload) error {
+	query := `UPDATE product_adventage SET text_uz = $2, text_ru = $3, text_en = $4, product_id = $5 WHERE id = $1`
+	_, err := s.db.Exec(query, id, payload.TextUz, payload.TextRu, payload.TextEn, payload.ProductId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) CreateChemistry(payload types_product.ChemicalPropertyPayload) error {
+	query := `INSERT INTO chemical_property(product_id, name_uz, name_ru, name_en, unit, standard_min, standard_max, analysis_result) VALUES($1, $2, $3, $4, $5, $6, $7, $8)`
+	_, err := s.db.Exec(query, payload.ProductId, payload.NameUz, payload.NameRu, payload.NameEn, payload.Unit, payload.Min, payload.Max, payload.Result)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) ListChemistry() ([]*types_product.ChemicalPropertyListPayload, error) {
+	var list []*types_product.ChemicalPropertyListPayload
+	query := `SELECT * FROM chemical_property`
+	rows, err := s.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var item types_product.ChemicalPropertyListPayload
+		if err := rows.Scan(&item.Id, &item.ProductId, &item.NameUz, &item.NameRu, &item.NameEn, &item.Unit, &item.Min, &item.Max, &item.Result); err != nil {
+			return nil, err
+		}
+		list = append(list, &item)
+	}
+	return list, nil
+}
+
+func (s *Store) GetChemistry(id string) (*types_product.ChemicalPropertyListPayload, error) {
+	var data types_product.ChemicalPropertyListPayload
+	query := `SELECT * FROM chemical_property WHERE id = $1`
+	err := s.db.QueryRow(query, id).Scan(&data.Id, &data.ProductId, &data.NameUz, &data.NameRu, &data.NameEn, &data.Unit, &data.Min, &data.Max, &data.Result)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		} else {
+			return nil, err
+		}
+	}
+	return &data, nil
+}
+
+func (s *Store) DeleteChemistry(id string) error {
+	query := `DELETE FROM chemical_property WHERE id = $1`
+	_, err := s.db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) UpdateChemistry(id string, payload types_product.ChemicalPropertyPayload) error {
+	query := `UPDATE chemical_property SET product_id = $2, name_uz = $3, name_ru = $4, name_en = $5, unit = $6, standard_min = $7, standard_max = $8, analysis_result = $9 WHERE id = $1`
+	_, err := s.db.Exec(query, id, payload.ProductId, payload.NameUz, payload.NameRu, payload.NameEn, payload.Unit, payload.Min, payload.Max, payload.Result)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) CreateImpact(payload types_product.ImpactPropertyPayload) error {
+	query := `INSERT INTO corrosion_impact(product_id, material_uz, material_ru, material_en, unit, max_limit, analysis_result) VALUES($1, $2, $3, $4, $5, $6, $7)`
+	_, err := s.db.Exec(query, payload.ProductId, payload.MaterialUz, payload.MaterialRu, payload.MaterialEn, payload.Unit, payload.Max, payload.Result)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) ListImpact() ([]*types_product.ImapctPropertyListPayload, error) {
+	var list []*types_product.ImapctPropertyListPayload
+	query := `SELECT * FROM corrosion_impact`
+	rows, err := s.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var item types_product.ImapctPropertyListPayload
+		if err := rows.Scan(&item.Id, &item.ProductId, &item.MaterialUz, &item.MaterialRu, &item.MaterialEn, &item.Unit, &item.Max, &item.Result); err != nil {
+			return nil, err
+		}
+		list = append(list, &item)
+	}
+	return list, nil
+}
+
+func (s *Store) GetImpact(id string) (*types_product.ImapctPropertyListPayload, error) {
+	var data types_product.ImapctPropertyListPayload
+	query := `SELECT * FROM corrosion_impact WHERE id = $1`
+	err := s.db.QueryRow(query, id).Scan(&data.Id, &data.ProductId, &data.MaterialUz, &data.MaterialRu, &data.MaterialEn, &data.Unit, &data.Max, &data.Result)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		} else {
+			return nil, err
+		}
+	}
+	return &data, nil
+}
+
+func (s *Store) DeleteImpact(id string) error {
+	query := `DELETE FROM corrosion_impact WHERE id = $1`
+	_, err := s.db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) UpdateImpact(id string, payload types_product.ImpactPropertyPayload) error {
+	query := `UPDATE corrosion_impact SET product_id = $2, material_uz = $3, material_ru = $4, material_en = $5, unit = $6, max_limit = $7, analysis_result = $8 WHERE id = $1`
+	_, err := s.db.Exec(query, id, payload.ProductId, payload.MaterialUz, payload.MaterialRu, payload.MaterialEn, payload.Unit, payload.Max, payload.Result)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) CreateProductFile(payload types_product.ProductFilePayload) error {
+	query := `INSERT INTO product_files(file, product_id) VALUES($1, $2)`
+	_, err := s.db.Exec(query, payload.File, payload.ProductId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) ListProductFile() ([]*types_product.ProductFileListPayload, error) {
+	var list []*types_product.ProductFileListPayload
+	query := `SELECT * FROM product_files`
+	rows, err := s.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var item types_product.ProductFileListPayload
+		if err := rows.Scan(&item.Id, &item.File, &item.ProductId, &item.CreatedAt); err != nil {
+			return nil, err
+		}
+		list = append(list, &item)
+	}
+	return list, nil
+}
+
+func (s *Store) GetProductFile(id string) (*types_product.ProductFileListPayload, error) {
+	var file types_product.ProductFileListPayload
+	query := `SELECT * FROM product_files WHERE id = $1`
+	err := s.db.QueryRow(query, id).Scan(&file.Id, &file.File, &file.ProductId, &file.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
+
+	return &file, nil
+}
+
+func (s *Store) DeleteProductFile(id string) error {
+	query := `DELETE FROM product_files WHERE id = $1`
+	_, err := s.db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) UpdateProductFile(id string, payload types_product.ProductFilePayload) error {
+	query := `UPDATE product_files SET `
+	args := []interface{}{}
+	index := 1
+	if payload.File != "" {
+		query += fmt.Sprintf("file = $%d, ", index)
+		args = append(args, payload.File)
+		index++
+	}
+	if payload.ProductId != "" {
+		query += fmt.Sprintf("product_id = $%d, ", index)
+		args = append(args, payload.ProductId)
+		index++
+	}
+	query = query[:len(query)-2] + fmt.Sprintf(" WHERE id = $%d", index)
+	args = append(args, id)
+
+	_, err := s.db.Exec(query, args...)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -37,3 +37,4 @@ createfiles:
 	@mkdir uploads/about_us && mkdir uploads/about_us/images/
 	@mkdir uploads/product/ && mkdir uploads/product/images && mkdir uploads/product/banners
 	@mkdir uploads/product_medias && mkdir uploads/product_medias/images
+	@mkdir uploads/product_file && mkdir uploads/product_file/files
