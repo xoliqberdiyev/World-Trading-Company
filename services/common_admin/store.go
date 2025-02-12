@@ -465,7 +465,7 @@ func (s *Store) UpdateNews(id string, n *types_common_admin.NewsPayload) (*types
 		argsIndex++
 	}
 	if n.DescriptionRu != "" {
-		query += fmt.Sprintf("desription_ru = $%d, ", argsIndex)
+		query += fmt.Sprintf("description_ru = $%d, ", argsIndex)
 		args = append(args, n.DescriptionRu)
 		argsIndex++
 	}
