@@ -656,7 +656,7 @@ func (h *Handler) handleUpdateMedia(w http.ResponseWriter, r *http.Request) {
 	var fileEnPath string
 	var fileUzPath string
 
-	if fileUzPath != "" {
+	if fileHeader != nil {
 		fileUzPath = "uploads/medias/files/" + fileHeader.Filename
 	} else {
 		fileUzPath = ""
@@ -722,7 +722,7 @@ func (h *Handler) handleUpdateMedia(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	link := r.FormValue("link")
-
+	fmt.Println(fileUzPath)
 	changed_media := types_common_admin.MediaPayload{
 		FileUz: fileUzPath,
 		FileRu: fileRuPath,
