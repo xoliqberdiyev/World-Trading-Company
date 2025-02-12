@@ -600,6 +600,12 @@ func (s *Store) UpdateCertificate(id string, payload *types_common_admin.Certifi
 		args = append(args, payload.TextEn)
 		argsIndex++
 	}
+	if payload.Image != "" {
+		query += fmt.Sprintf("image = $%d, ", argsIndex)
+		args = append(args, payload.Image)
+		argsIndex++
+	}
+	
 	query = query[:len(query)-2] + fmt.Sprintf(" WHERE id = $%d RETURNING id, name_uz, name_ru, name_en, text_uz, text_ru, text_en, image, created_at", argsIndex)
 	args = append(args, id)
 	err := s.db.QueryRow(query, args...).Scan(

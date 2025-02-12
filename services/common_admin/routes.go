@@ -45,7 +45,7 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 	r.Post("/admin/common/media/create", auth.AuthWithJWT(h.handleCreateMedia, h.userStore))
 	r.Get("/admin/common/media/list", auth.AuthWithJWT(h.handleGetAllMedia, h.userStore))
 	r.Delete("/admin/common/media/{mediaId}/delete", auth.AuthWithJWT(h.handleDeleteMedia, h.userStore))
-	r.Patch("/admin/common/media/{mediaId}/update", auth.AuthWithJWT(h.handleUpdateMedia, h.userStore))
+	r.Put("/admin/common/media/{mediaId}/update", auth.AuthWithJWT(h.handleUpdateMedia, h.userStore))
 	r.Get("/admin/common/media/{mediaId}", auth.AuthWithJWT(h.handleGetMedia, h.userStore))
 	//partner
 	r.Post("/admin/common/partner/create", auth.AuthWithJWT(h.handleCreatePartner, h.userStore))
@@ -590,11 +590,11 @@ func (h *Handler) handleDeleteMedia(w http.ResponseWriter, r *http.Request) {
 // @Accept multipart/data
 // @Produce json
 // @Param mediaId path string true "media id"
-// @Param fileUz formData file true "file uz"
+// @Param fileUz formData file false "file uz"
 // @Param fileRu formData file false "file ru"
 // @Param fileEn formData file false "file en"
 // @Param link formData string false "link"
-// @Router /admin/common/media/{mediaId}/update [patch]
+// @Router /admin/common/media/{mediaId}/update [put]
 // @Security BearerAuth
 func (h *Handler) handleUpdateMedia(w http.ResponseWriter, r *http.Request) {
 	var mediaId = r.PathValue("mediaId")
@@ -611,10 +611,17 @@ func (h *Handler) handleUpdateMedia(w http.ResponseWriter, r *http.Request) {
 	}
 	fileUz, fileHeader, err := r.FormFile("fileUz")
 	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to read file_uz"))
-		return
+		if err == http.ErrMissingFile {
+			fileUz = nil
+			fileHeader = nil
+		} else {
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to read file_uz"))
+			return
+		}
 	}
-	defer fileUz.Close()
+	if fileUz != nil {
+		defer fileUz.Close()
+	}
 
 	fileRu, fileRuHeader, err := r.FormFile("fileRu")
 	if err != nil {
@@ -647,8 +654,13 @@ func (h *Handler) handleUpdateMedia(w http.ResponseWriter, r *http.Request) {
 
 	var fileRuPath string
 	var fileEnPath string
+	var fileUzPath string
 
-	fileUzPath := "uploads/medias/files/" + fileHeader.Filename
+	if fileUzPath != "" {
+		fileUzPath = "uploads/medias/files/" + fileHeader.Filename
+	} else {
+		fileUzPath = ""
+	}
 	if fileRuHeader != nil {
 		fileRuPath = "uploads/medias/files/" + fileRuHeader.Filename
 	} else {
@@ -660,12 +672,19 @@ func (h *Handler) handleUpdateMedia(w http.ResponseWriter, r *http.Request) {
 		fileEnPath = ""
 	}
 
-	outFileUz, err := os.Create(fileUzPath)
-	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to save file_uz"))
-		return
+	if fileUzPath != "" {
+		outFileUz, err := os.Create(fileUzPath)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to save file_uz"))
+			return
+		}
+		defer outFileUz.Close()
+		_, err = io.Copy(outFileUz, fileUz)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write file_uz"))
+			return
+		}
 	}
-	defer outFileUz.Close()
 
 	var outFileRu *os.File
 	if fileRuPath != "" {
@@ -685,12 +704,6 @@ func (h *Handler) handleUpdateMedia(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		defer outFileEn.Close()
-	}
-
-	_, err = io.Copy(outFileUz, fileUz)
-	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write file_uz"))
-		return
 	}
 
 	if fileRuPath != "" {
@@ -1332,10 +1345,10 @@ func (h *Handler) handleListNews(w http.ResponseWriter, r *http.Request) {
 		utils.WriteError(w, http.StatusBadRequest, err)
 	}
 	utils.WriteJson(w, http.StatusOK, map[string]interface{}{
-		"page":  offset/limit + 1,
-		"limit": limit,
-		"count": count,
-		"result":  list,
+		"page":   offset/limit + 1,
+		"limit":  limit,
+		"count":  count,
+		"result": list,
 	})
 }
 
