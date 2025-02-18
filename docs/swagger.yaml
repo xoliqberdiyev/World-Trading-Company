@@ -1736,6 +1736,40 @@ paths:
       summary: delete category
       tags:
       - product-admin
+  /admin/product/category/{categoryId}/update:
+    put:
+      consumes:
+      - multipart/data
+      parameters:
+      - description: category id
+        in: path
+        name: categoryId
+        required: true
+        type: string
+      - description: name uz
+        in: formData
+        name: nameUz
+        type: string
+      - description: name ru
+        in: formData
+        name: nameRu
+        type: string
+      - description: name en
+        in: formData
+        name: nameEn
+        type: string
+      - description: icon
+        in: formData
+        name: icon
+        type: file
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: update category
+      tags:
+      - product-admin
   /admin/product/category/create:
     post:
       consumes:
@@ -1757,11 +1791,6 @@ paths:
         name: nameEn
         required: true
         type: string
-      - description: image
-        in: formData
-        name: image
-        required: true
-        type: file
       - description: icon
         in: formData
         name: icon
@@ -1882,44 +1911,6 @@ paths:
       security:
       - BearerAuth: []
       summary: list product chemistry
-      tags:
-      - product-admin
-  /admin/product/crategory/{categoryId}/update:
-    put:
-      consumes:
-      - multipart/data
-      parameters:
-      - description: category id
-        in: path
-        name: categoryId
-        required: true
-        type: string
-      - description: name uz
-        in: formData
-        name: nameUz
-        type: string
-      - description: name ru
-        in: formData
-        name: nameRu
-        type: string
-      - description: name en
-        in: formData
-        name: nameEn
-        type: string
-      - description: image
-        in: formData
-        name: image
-        type: file
-      - description: icon
-        in: formData
-        name: icon
-        type: file
-      produces:
-      - application/json
-      responses: {}
-      security:
-      - BearerAuth: []
-      summary: update category
       tags:
       - product-admin
   /admin/product/feature/{id}:
@@ -2297,21 +2288,21 @@ paths:
         in: formData
         name: textRu
         type: string
-      - description: text uz
+      - description: text en
         in: formData
-        name: textUz
+        name: textEn
         type: string
       - description: category id
         in: formData
         name: categoryId
         type: string
+      - description: sub category id
+        in: formData
+        name: subCategoryId
+        type: string
       - description: image
         in: formData
         name: image
-        type: file
-      - description: banner
-        in: formData
-        name: banner
         type: file
       produces:
       - application/json
@@ -2365,9 +2356,9 @@ paths:
         name: textRu
         required: true
         type: string
-      - description: text uz
+      - description: text en
         in: formData
-        name: textUz
+        name: textEn
         required: true
         type: string
       - description: category id
@@ -2375,14 +2366,13 @@ paths:
         name: categoryId
         required: true
         type: string
+      - description: sub category id
+        in: formData
+        name: subCategoryId
+        type: string
       - description: image
         in: formData
         name: image
-        required: true
-        type: file
-      - description: banner
-        in: formData
-        name: banner
         required: true
         type: file
       produces:
@@ -2618,6 +2608,135 @@ paths:
       security:
       - BearerAuth: []
       summary: list product spesification
+      tags:
+      - product-admin
+  /admin/product/sub_category/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get sub category
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: get sub category
+      tags:
+      - product-admin
+  /admin/product/sub_category/{id}/delete:
+    delete:
+      consumes:
+      - application/json
+      description: delete sub category
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: delete sub category
+      tags:
+      - product-admin
+  /admin/product/sub_category/{id}/update:
+    put:
+      consumes:
+      - multipart/data
+      description: create sub category
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: name uz
+        in: formData
+        name: nameUz
+        type: string
+      - description: name ru
+        in: formData
+        name: nameRu
+        type: string
+      - description: name en
+        in: formData
+        name: nameEn
+        type: string
+      - description: icon
+        in: formData
+        name: icon
+        type: file
+      - description: cateogry id
+        in: formData
+        name: categoryId
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: create sub category
+      tags:
+      - product-admin
+  /admin/product/sub_category/create:
+    post:
+      consumes:
+      - multipart/data
+      description: create sub category
+      parameters:
+      - description: name uz
+        in: formData
+        name: nameUz
+        required: true
+        type: string
+      - description: name ru
+        in: formData
+        name: nameRu
+        required: true
+        type: string
+      - description: name en
+        in: formData
+        name: nameEn
+        required: true
+        type: string
+      - description: icon
+        in: formData
+        name: icon
+        required: true
+        type: file
+      - description: cateogry id
+        in: formData
+        name: categoryId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: create sub category
+      tags:
+      - product-admin
+  /admin/product/sub_category/list:
+    get:
+      consumes:
+      - application/json
+      description: list sub category
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: list sub category
       tags:
       - product-admin
   /banner/list:

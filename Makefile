@@ -38,3 +38,4 @@ createfiles:
 	@mkdir uploads/product/ && mkdir uploads/product/images && mkdir uploads/product/banners
 	@mkdir uploads/product_medias && mkdir uploads/product_medias/images
 	@mkdir uploads/product_file && mkdir uploads/product_file/files
+	@mkdir uploads/sub_category/ && mkdir uploads/sub_category/icon

@@ -28,7 +28,7 @@ func (h *Handler) RegsiterRoutes(r chi.Router) {
 	// category
 	r.Get("/admin/product/category/list", auth.AuthWithJWT(h.handleListCategory, h.userStore))
 	r.Post("/admin/product/category/create", auth.AuthWithJWT(h.handleCreateCategory, h.userStore))
-	r.Put("/admin/product/crategory/{categoryId}/update", auth.AuthWithJWT(h.handleUpdateCategory, h.userStore))
+	r.Put("/admin/product/category/{categoryId}/update", auth.AuthWithJWT(h.handleUpdateCategory, h.userStore))
 	r.Delete("/admin/product/category/{categoryId}/delete", auth.AuthWithJWT(h.handleDeleteCategory, h.userStore))
 	r.Get("/admin/product/category/{categoryId}", auth.AuthWithJWT(h.handleGetCategory, h.userStore))
 	// product
@@ -79,6 +79,12 @@ func (h *Handler) RegsiterRoutes(r chi.Router) {
 	r.Get("/admin/product/file/{id}", auth.AuthWithJWT(h.handleGetProductFile, h.userStore))
 	r.Delete("/admin/product/file/{id}/delete", auth.AuthWithJWT(h.handleDeleteProductFile, h.userStore))
 	r.Put("/admin/product/file/{id}/update", auth.AuthWithJWT(h.handleUpdateProductFile, h.userStore))
+	// sub category
+	r.Post("/admin/product/sub_category/create", auth.AuthWithJWT(h.handleCreateSubCategory, h.userStore))
+	r.Get("/admin/product/sub_category/list", auth.AuthWithJWT(h.handleListSubCategory, h.userStore))
+	r.Get("/admin/product/sub_category/{id}", auth.AuthWithJWT(h.handleGetSubCategory, h.userStore))
+	r.Delete("/admin/product/sub_category/{id}/delete", auth.AuthWithJWT(h.handleDeleteSubCategory, h.userStore))
+	r.Put("/admin/product/sub_category/{id}/update", auth.AuthWithJWT(h.handleUpdateSubCategory, h.userStore))
 }
 
 // @Summary create category
@@ -89,7 +95,6 @@ func (h *Handler) RegsiterRoutes(r chi.Router) {
 // @Param nameUz formData string true "name uz"
 // @Param nameRu formData string true "name ru"
 // @Param nameEn formData string true "name en"
-// @Param image formData file true "image"
 // @Param icon formData file true "icon"
 // @Router /admin/product/category/create [post]
 // @Security BearerAuth
@@ -104,35 +109,17 @@ func (h *Handler) handleCreateCategory(w http.ResponseWriter, r *http.Request) {
 	nameRu := r.FormValue("nameRu")
 	nameEn := r.FormValue("nameEn")
 
-	image, imageHeader, err := r.FormFile("image")
-	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to read image: %v", err))
-		return
-	}
-
 	icon, iconHeader, err := r.FormFile("icon")
 	if err != nil {
 		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to read icon: %v", err))
 		return
 	}
 
-	imagePath := "uploads/categories/images/" + imageHeader.Filename
 	iconPath := "uploads/categories/icons/" + iconHeader.Filename
 
-	outImage, err := os.Create(imagePath)
-	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to copy image: %v", err))
-		return
-	}
 	outIcon, err := os.Create(iconPath)
 	if err != nil {
 		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to copy icon: %v", err))
-		return
-	}
-
-	_, err = io.Copy(outImage, image)
-	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image: %v", err))
 		return
 	}
 
@@ -146,7 +133,6 @@ func (h *Handler) handleCreateCategory(w http.ResponseWriter, r *http.Request) {
 		NameUz: nameUz,
 		NameRu: nameRu,
 		NameEn: nameEn,
-		Image:  imagePath,
 		Icon:   iconPath,
 	}
 
@@ -185,9 +171,8 @@ func (h *Handler) handleListCategory(w http.ResponseWriter, r *http.Request) {
 // @Param nameUz formData string false "name uz"
 // @Param nameRu formData string false "name ru"
 // @Param nameEn formData string false "name en"
-// @Param image formData file false "image"
 // @Param icon formData file false "icon"
-// @Router /admin/product/crategory/{categoryId}/update [put]
+// @Router /admin/product/category/{categoryId}/update [put]
 // @Security BearerAuth
 func (h *Handler) handleUpdateCategory(w http.ResponseWriter, r *http.Request) {
 	var categoryId = r.PathValue("categoryId")
@@ -212,19 +197,6 @@ func (h *Handler) handleUpdateCategory(w http.ResponseWriter, r *http.Request) {
 	nameRu := r.FormValue("nameRu")
 	nameEn := r.FormValue("nameEn")
 
-	image, imageHeader, err := r.FormFile("image")
-	if err != nil {
-		if err == http.ErrMissingFile {
-			image = nil
-			imageHeader = nil
-		} else {
-			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to read image: %v", err))
-			return
-		}
-	}
-	if image != nil {
-		defer image.Close()
-	}
 	icon, iconHeader, err := r.FormFile("icon")
 	if err != nil {
 		if err == http.ErrMissingFile {
@@ -238,28 +210,11 @@ func (h *Handler) handleUpdateCategory(w http.ResponseWriter, r *http.Request) {
 	if icon != nil {
 		defer icon.Close()
 	}
-	var imagePath string
 	var iconPath string
-	if imageHeader != nil {
-		imagePath = "uploads/categories/images/" + imageHeader.Filename
-	}
 	if iconHeader != nil {
 		iconPath = "uploads/categories/icons/" + iconHeader.Filename
 	}
-	if imagePath != "" {
-		outImage, err := os.Create(imagePath)
-		if err != nil {
-			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to copy image: %v", err))
-			return
-		}
-		defer outImage.Close()
 
-		_, err = io.Copy(outImage, image)
-		if err != nil {
-			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image: %v", err))
-			return
-		}
-	}
 	if iconPath != "" {
 		outIcon, err := os.Create(iconPath)
 		if err != nil {
@@ -278,7 +233,6 @@ func (h *Handler) handleUpdateCategory(w http.ResponseWriter, r *http.Request) {
 		NameUz: nameUz,
 		NameRu: nameRu,
 		NameEn: nameEn,
-		Image:  imagePath,
 		Icon:   iconPath,
 	}
 
@@ -349,8 +303,8 @@ func (h *Handler) handleGetCategory(w http.ResponseWriter, r *http.Request) {
 // @Param textRu formData string true "text ru"
 // @Param textEn formData string true "text en"
 // @Param categoryId formData string true "category id"
+// @Param subCategoryId formData string false "sub category id"
 // @Param image formData file true "image"
-// @Param banner formData file true "banner"
 // @Router /admin/product/product/create [post]
 // @Security BearerAuth
 func (h *Handler) handleCreateProduct(w http.ResponseWriter, r *http.Request) {
@@ -382,6 +336,16 @@ func (h *Handler) handleCreateProduct(w http.ResponseWriter, r *http.Request) {
 		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("category not found"))
 		return
 	}
+	subCategoryId := r.FormValue("subCategoryId")
+	subCategory, err := h.store.GetSubCategory(subCategoryId)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+	if subCategory == nil {
+		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("sub category not found"))
+		return
+	}
 
 	image, imageHeader, err := r.FormFile("image")
 	if err != nil {
@@ -403,26 +367,6 @@ func (h *Handler) handleCreateProduct(w http.ResponseWriter, r *http.Request) {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return
 	}
-	banner, bannerHeader, err := r.FormFile("banner")
-	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, err)
-		return
-	}
-	defer banner.Close()
-	bannerPath := "uploads/product/banners/" + bannerHeader.Filename
-
-	outBanner, err := os.Create(bannerPath)
-	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, err)
-		return
-	}
-	defer outBanner.Close()
-
-	_, err = io.Copy(outBanner, banner)
-	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, err)
-		return
-	}
 
 	payload := types_product.ProductPayload{
 		NameUz:        nameUz,
@@ -436,7 +380,7 @@ func (h *Handler) handleCreateProduct(w http.ResponseWriter, r *http.Request) {
 		TextEn:        textEn,
 		CategoryId:    category.Id,
 		Image:         imagePath,
-		Banner:        bannerPath,
+		SubCategoryId: subCategory.Id,
 	}
 
 	result, err := h.store.CreateProduct(&payload)
@@ -556,8 +500,8 @@ func (h *Handler) handleDeleteProduct(w http.ResponseWriter, r *http.Request) {
 // @Param textRu formData string false "text ru"
 // @Param textEn formData string false "text en"
 // @Param categoryId formData string false "category id"
+// @Param subCategoryId formData string false "sub category id"
 // @Param image formData file false "image"
-// @Param banner formData file false "banner"
 // @Router /admin/product/product/{id}/update [put]
 // @Security BearerAuth
 func (h *Handler) handleUpdateProduct(w http.ResponseWriter, r *http.Request) {
@@ -603,6 +547,19 @@ func (h *Handler) handleUpdateProduct(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	subCategoryId := r.FormValue("subCategoryId")
+	if subCategoryId != "" {
+		subCategory, err := h.store.GetSubCategory(subCategoryId)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
+		if subCategory == nil {
+			utils.WriteError(w, http.StatusNotFound, fmt.Errorf("sub category not found"))
+			return
+		}
+	}
+
 	image, imageHeader, err := r.FormFile("image")
 	if err != nil {
 		if err == http.ErrMissingFile {
@@ -638,40 +595,6 @@ func (h *Handler) handleUpdateProduct(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	banner, bannerHeader, err := r.FormFile("banner")
-	if err != nil {
-		if err == http.ErrMissingFile {
-			banner = nil
-			bannerHeader = nil
-		} else {
-			utils.WriteError(w, http.StatusBadRequest, err)
-			return
-		}
-	}
-	if banner != nil {
-		defer banner.Close()
-	}
-	var bannerPath string
-	if bannerHeader != nil {
-		bannerPath = "uploads/product/banners/" + bannerHeader.Filename
-	} else {
-		bannerPath = ""
-	}
-	if bannerPath != "" {
-		outBanner, err := os.Create(bannerPath)
-		if err != nil {
-			utils.WriteError(w, http.StatusBadRequest, err)
-			return
-		}
-		defer outBanner.Close()
-
-		_, err = io.Copy(outBanner, banner)
-		if err != nil {
-			utils.WriteError(w, http.StatusBadRequest, err)
-			return
-		}
-	}
-
 	payload := types_product.ProductPayload{
 		NameUz:        nameUz,
 		NameRu:        nameRu,
@@ -684,7 +607,7 @@ func (h *Handler) handleUpdateProduct(w http.ResponseWriter, r *http.Request) {
 		TextEn:        textEn,
 		CategoryId:    categoryId,
 		Image:         imagePath,
-		Banner:        bannerPath,
+		SubCategoryId: subCategoryId,
 	}
 
 	result, err := h.store.UpdateProduct(product.Id, &payload)
@@ -2052,4 +1975,248 @@ func (h *Handler) handleUpdateProductFile(w http.ResponseWriter, r *http.Request
 	}
 
 	utils.WriteJson(w, http.StatusCreated, map[string]string{"message": "updated"})
+}
+
+// @Summary create sub category
+// @Description create sub category
+// @Tags product-admin
+// @Accept multipart/data
+// @Produce json
+// @Param nameUz formData string true "name uz"
+// @Param nameRu formData string true "name ru"
+// @Param nameEn formData string true "name en"
+// @Param icon formData file true "icon"
+// @Param categoryId formData string true "cateogry id"
+// @Router /admin/product/sub_category/create [post]
+// @Security BearerAuth
+func (h *Handler) handleCreateSubCategory(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseMultipartForm(50)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	nameUz := r.FormValue("nameUz")
+	nameRu := r.FormValue("nameRu")
+	nameEn := r.FormValue("nameEn")
+	categoryId := r.FormValue("categoryId")
+	category, err := h.store.GetCategory(categoryId)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if category == nil {
+		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("not found "))
+		return
+	}
+	icon, iconHeader, err := r.FormFile("icon")
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+	defer icon.Close()
+	iconPath := "uploads/sub_category/icon/" + iconHeader.Filename
+	outIcon, err := os.Create(iconPath)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	defer outIcon.Close()
+
+	_, err = io.Copy(outIcon, icon)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	payload := types_product.SubCategroryPayload{
+		NameUz:     nameUz,
+		NameRu:     nameRu,
+		NameEn:     nameEn,
+		Icon:       iconPath,
+		CategoryId: category.Id,
+	}
+
+	err = h.store.CreateSubCategory(payload)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusCreated, map[string]string{"message": "created!"})
+}
+
+// @Summary list sub category
+// @Description list sub category
+// @Tags product-admin
+// @Accept json
+// @Produce json
+// @Router /admin/product/sub_category/list [get]
+// @Security BearerAuth
+func (h *Handler) handleListSubCategory(w http.ResponseWriter, r *http.Request) {
+	list, err := h.store.ListSubCategory()
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, list)
+}
+
+// @Summary get sub category
+// @Description get sub category
+// @Tags product-admin
+// @Accept json
+// @Produce json
+// @Param id path string true "id"
+// @Router /admin/product/sub_category/{id} [get]
+// @Security BearerAuth
+func (h *Handler) handleGetSubCategory(w http.ResponseWriter, r *http.Request) {
+	var id = r.PathValue("id")
+	sub_category, err := h.store.GetSubCategory(id)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if sub_category == nil {
+		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("not found"))
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, sub_category)
+}
+
+// @Summary delete sub category
+// @Description delete sub category
+// @Tags product-admin
+// @Accept json
+// @Produce json
+// @Param id path string true "id"
+// @Router /admin/product/sub_category/{id}/delete [delete]
+// @Security BearerAuth
+func (h *Handler) handleDeleteSubCategory(w http.ResponseWriter, r *http.Request) {
+	var id = r.PathValue("id")
+	data, err := h.store.GetSubCategory(id)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if data == nil {
+		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("not found"))
+		return
+	}
+
+	err = h.store.DeleteSubCategory(data.Id)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusNoContent, map[string]string{"message": "deleted"})
+}
+
+// @Summary create sub category
+// @Description create sub category
+// @Tags product-admin
+// @Accept multipart/data
+// @Produce json
+// @Param id path string true "id"
+// @Param nameUz formData string false "name uz"
+// @Param nameRu formData string false "name ru"
+// @Param nameEn formData string false "name en"
+// @Param icon formData file false "icon"
+// @Param categoryId formData string false "cateogry id"
+// @Router /admin/product/sub_category/{id}/update [put]
+// @Security BearerAuth
+func (h *Handler) handleUpdateSubCategory(w http.ResponseWriter, r *http.Request) {
+	var id = r.PathValue("id")
+	data, err := h.store.GetSubCategory(id)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if data == nil {
+		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("not found"))
+		return
+	}
+
+	err = r.ParseMultipartForm(50)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	nameUz := r.FormValue("nameUz")
+	nameRu := r.FormValue("nameRu")
+	nameEn := r.FormValue("nameEn")
+	categoryId := r.FormValue("categoryId")
+	if categoryId != "" {
+		category, err := h.store.GetCategory(categoryId)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
+
+		if category == nil {
+			utils.WriteError(w, http.StatusNotFound, fmt.Errorf("not found "))
+			return
+		}
+	}
+
+	icon, iconHeader, err := r.FormFile("icon")
+	if err != nil {
+		if err == http.ErrMissingFile {
+			icon = nil
+			iconHeader = nil
+		} else {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
+	}
+
+	if icon != nil {
+		defer icon.Close()
+	}
+
+	var iconPath string
+	if iconHeader != nil {
+		iconPath = "uploads/sub_category/icon/" + iconHeader.Filename
+	} else {
+		iconPath = ""
+	}
+
+	if iconPath != "" {
+		outIcon, err := os.Create(iconPath)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
+		defer outIcon.Close()
+
+		_, err = io.Copy(outIcon, icon)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
+	}
+
+	payload := types_product.SubCategroryPayload{
+		NameUz:     nameUz,
+		NameRu:     nameRu,
+		NameEn:     nameEn,
+		Icon:       iconPath,
+		CategoryId: categoryId,
+	}
+	err = h.store.UpdateSubCategory(data.Id, payload)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, map[string]string{"message": "updated"})
 }

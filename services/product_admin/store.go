@@ -16,8 +16,8 @@ func NewStore(db *sql.DB) *Store {
 }
 
 func (s *Store) CreateCategory(payload *types_product.CategoryPayload) error {
-	query := `INSERT INTO categories(name_uz, name_ru, name_en, image, icon) VALUES($1, $2, $3, $4, $5)`
-	_, err := s.db.Exec(query, &payload.NameUz, &payload.NameRu, &payload.NameEn, &payload.Image, &payload.Icon)
+	query := `INSERT INTO categories(name_uz, name_ru, name_en, icon) VALUES($1, $2, $3, $4)`
+	_, err := s.db.Exec(query, &payload.NameUz, &payload.NameRu, &payload.NameEn, &payload.Icon)
 	if err != nil {
 		return err
 	}
@@ -27,7 +27,7 @@ func (s *Store) CreateCategory(payload *types_product.CategoryPayload) error {
 func (s *Store) GetCategory(id string) (*types_product.CategoryListPayload, error) {
 	var category types_product.CategoryListPayload
 	query := `SELECT * FROM categories WHERE id = $1`
-	err := s.db.QueryRow(query, id).Scan(&category.Id, &category.NameUz, &category.NameRu, &category.NameEn, &category.Image, &category.Icon, &category.CreatedAt)
+	err := s.db.QueryRow(query, id).Scan(&category.Id, &category.NameUz, &category.NameRu, &category.NameEn, &category.Icon, &category.CreatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -56,12 +56,6 @@ func (s *Store) UpdateCategory(id string, payload *types_product.CategoryPayload
 	if payload.NameEn != "" {
 		query += fmt.Sprintf("name_en = $%d, ", argsIndex)
 		args = append(args, payload.NameEn)
-		argsIndex++
-	}
-
-	if payload.Image != "" {
-		query += fmt.Sprintf("image = $%d, ", argsIndex)
-		args = append(args, payload.Image)
 		argsIndex++
 	}
 
@@ -98,7 +92,7 @@ func (s *Store) ListCategory() ([]*types_product.CategoryListPayload, error) {
 
 	for rows.Next() {
 		var category types_product.CategoryListPayload
-		if err := rows.Scan(&category.Id, &category.NameUz, &category.NameRu, &category.NameEn, &category.Image, &category.Icon, &category.CreatedAt); err != nil {
+		if err := rows.Scan(&category.Id, &category.NameUz, &category.NameRu, &category.NameEn, &category.Icon, &category.CreatedAt); err != nil {
 			return nil, err
 		}
 		categories = append(categories, &category)
@@ -110,16 +104,16 @@ func (s *Store) CreateProduct(payload *types_product.ProductPayload) (*types_pro
 	var product types_product.ProductListPayload
 	query := `
 		INSERT INTO
-			products(name_uz, name_ru, name_en, description_uz, description_ru, description_en, text_uz, text_ru, text_en, category_id, image, banner)
+			products(name_uz, name_ru, name_en, description_uz, description_ru, description_en, text_uz, text_ru, text_en, category_id, image, sub_category_id)
 		VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-		RETURNING id, name_uz, name_ru, name_en, description_uz, description_ru, description_en, text_uz, text_ru, text_en, image, banner, created_at
+		RETURNING id, name_uz, name_ru, name_en, description_uz, description_ru, description_en, text_uz, text_ru, text_en, image, created_at, sub_category_id
 	`
 	err := s.db.QueryRow(
 		query, payload.NameUz, payload.NameRu, payload.NameEn, payload.DescriptionUz, payload.DescriptionRu, payload.DescriptionEn,
-		payload.TextUz, payload.TextRu, payload.TextEn, payload.CategoryId, payload.Image, payload.Banner,
+		payload.TextUz, payload.TextRu, payload.TextEn, payload.CategoryId, payload.Image, payload.SubCategoryId,
 	).Scan(
 		&product.Id, &product.NameUz, &product.NameRu, &product.NameEn, &product.DescriptionUz, &product.DescriptionRu, &product.DescriptionEn,
-		&product.TextUz, &product.TextRu, &product.TextEn, &product.Image, &payload.Banner, &product.CreatedAt,
+		&product.TextUz, &product.TextRu, &product.TextEn, &product.Image, &product.CreatedAt, &product.SubCategoryId,
 	)
 	if err != nil {
 		return nil, err
@@ -137,7 +131,7 @@ func (s *Store) ListProduct(offset, limit int) ([]*types_product.ProductListPayl
 	}
 	query := `
 		SELECT 
-			id, name_uz, name_ru, name_en, description_uz, description_ru, description_en, text_uz, text_ru, text_en, image, banner, created_at
+			id, name_uz, name_ru, name_en, description_uz, description_ru, description_en, text_uz, text_ru, text_en, image, created_at, sub_category_id
 		FROM products
 		ORDER BY created_at 
 		DESC LIMIT $1 OFFSET $2
@@ -150,7 +144,7 @@ func (s *Store) ListProduct(offset, limit int) ([]*types_product.ProductListPayl
 		var product types_product.ProductListPayload
 		err := rows.Scan(
 			&product.Id, &product.NameUz, &product.NameRu, &product.NameEn, &product.DescriptionUz, &product.DescriptionRu,
-			&product.DescriptionEn, &product.TextUz, &product.TextRu, &product.TextEn, &product.Image, &product.Banner, &product.CreatedAt,
+			&product.DescriptionEn, &product.TextUz, &product.TextRu, &product.TextEn, &product.Image, &product.CreatedAt, &product.SubCategoryId,
 		)
 		if err != nil {
 			return nil, 0, err
@@ -162,10 +156,10 @@ func (s *Store) ListProduct(offset, limit int) ([]*types_product.ProductListPayl
 
 func (s *Store) GetProduct(id string) (*types_product.ProductListPayload, error) {
 	var product types_product.ProductListPayload
-	query := `SELECT id, name_uz, name_ru, name_en, description_uz, description_ru, description_en, text_uz, text_ru, text_en, image, banner, created_at FROM products WHERE id = $1`
+	query := `SELECT id, name_uz, name_ru, name_en, description_uz, description_ru, description_en, text_uz, text_ru, text_en, image, created_at, sub_category_id FROM products WHERE id = $1`
 	err := s.db.QueryRow(query, id).Scan(
 		&product.Id, &product.NameUz, &product.NameRu, &product.NameEn, &product.DescriptionUz, &product.DescriptionRu, &product.DescriptionEn,
-		&product.TextUz, &product.TextRu, &product.TextEn, &product.Image, &product.Banner, &product.CreatedAt,
+		&product.TextUz, &product.TextRu, &product.TextEn, &product.Image, &product.CreatedAt, &product.SubCategoryId,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -246,16 +240,16 @@ func (s *Store) UpdateProduct(id string, payload *types_product.ProductPayload) 
 		args = append(args, payload.Image)
 		index++
 	}
-	if payload.Banner != "" {
-		query += fmt.Sprintf("banner = $%d, ", index)
-		args = append(args, payload.Banner)
+	if payload.SubCategoryId != "" {
+		query += fmt.Sprintf("sub_category_id = $%d, ", index)
+		args = append(args, payload.SubCategoryId)
 		index++
 	}
-	query = query[:len(query)-2] + fmt.Sprintf(" WHERE id = $%d RETURNING id, name_uz, name_ru, name_en, description_uz, description_ru, description_en, text_uz, text_ru, text_en, image, banner, created_at", index)
+	query = query[:len(query)-2] + fmt.Sprintf(" WHERE id = $%d RETURNING id, name_uz, name_ru, name_en, description_uz, description_ru, description_en, text_uz, text_ru, text_en, image, sub_category_id, created_at", index)
 	args = append(args, id)
 	err := s.db.QueryRow(query, args...).Scan(
 		&product.Id, &product.NameUz, &product.NameRu, &product.NameEn, &product.DescriptionUz, &product.DescriptionRu, &product.DescriptionEn,
-		&product.TextUz, &product.TextRu, &product.TextEn, &product.Image, &product.Banner, &product.CreatedAt,
+		&product.TextUz, &product.TextRu, &product.TextEn, &product.Image, &product.SubCategoryId, &product.CreatedAt,
 	)
 	if err != nil {
 		return nil, err
@@ -705,5 +699,92 @@ func (s *Store) UpdateProductFile(id string, payload types_product.ProductFilePa
 		return err
 	}
 
+	return nil
+}
+
+func (s *Store) CreateSubCategory(payload types_product.SubCategroryPayload) error {
+	query := `INSERT INTO sub_categories(name_uz, name_ru, name_en, icon, category_id) VALUES($1, $2, $3, $4, $5)`
+	_, err := s.db.Exec(query, payload.NameUz, payload.NameRu, payload.NameEn, payload.Icon, payload.CategoryId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) ListSubCategory() ([]*types_product.SubCategoryListPayload, error) {
+	var list []*types_product.SubCategoryListPayload
+	query := `SELECT * FROM sub_categories`
+	rows, err := s.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var category types_product.SubCategoryListPayload
+		if err := rows.Scan(&category.Id, &category.NameUz, &category.NameRu, &category.NameEn, &category.Icon, &category.CategoryId, &category.CreatedAt); err != nil {
+			return nil, err
+		}
+		list = append(list, &category)
+	}
+	return list, nil
+}
+
+func (s *Store) GetSubCategory(id string) (*types_product.SubCategoryListPayload, error) {
+	var category types_product.SubCategoryListPayload
+	query := `SELECT * FROM sub_categories WHERE id = $1`
+	err := s.db.QueryRow(query, id).Scan(&category.Id, &category.NameUz, &category.NameRu, &category.NameEn, &category.Icon, &category.CategoryId, &category.CreatedAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &category, nil
+}
+
+func (s *Store) DeleteSubCategory(id string) error {
+	query := `DELETE FROM sub_categories WHERE id = $1`
+	_, err := s.db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Store) UpdateSubCategory(id string, payload types_product.SubCategroryPayload) error {
+	query := `UPDATE sub_categories SET `
+	args := []interface{}{}
+	index := 1
+	if payload.NameUz != "" {
+		query += fmt.Sprintf("name_uz = $%d, ", index)
+		args = append(args, payload.NameUz)
+		index++
+	}
+	if payload.NameRu != "" {
+		query += fmt.Sprintf("name_ru = $%d, ", index)
+		args = append(args, payload.NameRu)
+		index++
+	}
+	if payload.NameEn != "" {
+		query += fmt.Sprintf("name_en = $%d, ", index)
+		args = append(args, payload.NameEn)
+		index++
+	}
+	if payload.Icon != "" {
+		query += fmt.Sprintf("icon = $%d, ", index)
+		args = append(args, payload.Icon)
+		index++
+	}
+	if payload.CategoryId != "" {
+		query += fmt.Sprintf("category_id = $%d, ", index)
+		args = append(args, payload.CategoryId)
+		index++
+	}
+
+	query = query[:len(query)-2] + fmt.Sprintf(" WHERE id = $%d", index)
+	args = append(args, id)
+	_, err := s.db.Exec(query, args...)
+	if err != nil {
+		return err
+	}
 	return nil
 }

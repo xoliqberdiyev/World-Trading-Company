@@ -2357,13 +2357,6 @@ const docTemplate = `{
                     },
                     {
                         "type": "file",
-                        "description": "image",
-                        "name": "image",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "file",
                         "description": "icon",
                         "name": "icon",
                         "in": "formData",
@@ -2446,6 +2439,59 @@ const docTemplate = `{
                         "name": "categoryId",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/product/category/{categoryId}/update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "multipart/data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "product-admin"
+                ],
+                "summary": "update category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "category id",
+                        "name": "categoryId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name uz",
+                        "name": "nameUz",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "name ru",
+                        "name": "nameRu",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "name en",
+                        "name": "nameEn",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "icon",
+                        "name": "icon",
+                        "in": "formData"
                     }
                 ],
                 "responses": {}
@@ -2598,65 +2644,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/types_product.ChemicalPropertyPayload"
                         }
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/admin/product/crategory/{categoryId}/update": {
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "consumes": [
-                    "multipart/data"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "product-admin"
-                ],
-                "summary": "update category",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "category id",
-                        "name": "categoryId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "name uz",
-                        "name": "nameUz",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "name ru",
-                        "name": "nameRu",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "name en",
-                        "name": "nameEn",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "file",
-                        "description": "image",
-                        "name": "image",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "file",
-                        "description": "icon",
-                        "name": "icon",
-                        "in": "formData"
                     }
                 ],
                 "responses": {}
@@ -3200,8 +3187,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "text uz",
-                        "name": "textUz",
+                        "description": "text en",
+                        "name": "textEn",
                         "in": "formData",
                         "required": true
                     },
@@ -3213,16 +3200,15 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "file",
-                        "description": "image",
-                        "name": "image",
-                        "in": "formData",
-                        "required": true
+                        "type": "string",
+                        "description": "sub category id",
+                        "name": "subCategoryId",
+                        "in": "formData"
                     },
                     {
                         "type": "file",
-                        "description": "banner",
-                        "name": "banner",
+                        "description": "image",
+                        "name": "image",
                         "in": "formData",
                         "required": true
                     }
@@ -3401,8 +3387,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "text uz",
-                        "name": "textUz",
+                        "description": "text en",
+                        "name": "textEn",
                         "in": "formData"
                     },
                     {
@@ -3412,15 +3398,15 @@ const docTemplate = `{
                         "in": "formData"
                     },
                     {
-                        "type": "file",
-                        "description": "image",
-                        "name": "image",
+                        "type": "string",
+                        "description": "sub category id",
+                        "name": "subCategoryId",
                         "in": "formData"
                     },
                     {
                         "type": "file",
-                        "description": "banner",
-                        "name": "banner",
+                        "description": "image",
+                        "name": "image",
                         "in": "formData"
                     }
                 ],
@@ -3746,6 +3732,205 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/types_product.ProductSpesificationPayload"
                         }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/product/sub_category/create": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "create sub category",
+                "consumes": [
+                    "multipart/data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "product-admin"
+                ],
+                "summary": "create sub category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "name uz",
+                        "name": "nameUz",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name ru",
+                        "name": "nameRu",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name en",
+                        "name": "nameEn",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "icon",
+                        "name": "icon",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "cateogry id",
+                        "name": "categoryId",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/product/sub_category/list": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "list sub category",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "product-admin"
+                ],
+                "summary": "list sub category",
+                "responses": {}
+            }
+        },
+        "/admin/product/sub_category/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get sub category",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "product-admin"
+                ],
+                "summary": "get sub category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/product/sub_category/{id}/delete": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "delete sub category",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "product-admin"
+                ],
+                "summary": "delete sub category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/product/sub_category/{id}/update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "create sub category",
+                "consumes": [
+                    "multipart/data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "product-admin"
+                ],
+                "summary": "create sub category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name uz",
+                        "name": "nameUz",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "name ru",
+                        "name": "nameRu",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "name en",
+                        "name": "nameEn",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "icon",
+                        "name": "icon",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "cateogry id",
+                        "name": "categoryId",
+                        "in": "formData"
                     }
                 ],
                 "responses": {}

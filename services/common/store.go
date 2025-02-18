@@ -96,7 +96,7 @@ func (s *Store) ListCategory() ([]*types_product.CategoryListPayload, error) {
 	}
 	for rows.Next() {
 		var category types_product.CategoryListPayload
-		if err := rows.Scan(&category.Id, &category.NameUz, &category.NameRu, &category.NameEn, &category.Image, &category.Icon, &category.CreatedAt); err != nil {
+		if err := rows.Scan(&category.Id, &category.NameUz, &category.NameRu, &category.NameEn, &category.Icon, &category.CreatedAt); err != nil {
 			return nil, err
 		}
 		categories = append(categories, &category)
@@ -254,23 +254,56 @@ func (s *Store) ListCapasity() ([]*types_about_company.CapasityListPayload, erro
 func (s *Store) GetProductsByCategoryId(categoryId string) (*types_product.CategoryDetailPayload, error) {
 	var category types_product.CategoryDetailPayload
 	queryCategory := `SELECT * FROM categories WHERE id = $1`
-	err := s.db.QueryRow(queryCategory, categoryId).Scan(&category.Id, &category.NameUz, &category.NameRu, &category.NameEn, &category.Image, &category.Icon, &category.CreatedAt)
+	err := s.db.QueryRow(queryCategory, categoryId).Scan(&category.Id, &category.NameUz, &category.NameRu, &category.NameEn, &category.Icon, &category.CreatedAt)
 	if err != nil {
 		return nil, err
 	}
-
-	queryProduct := `SELECT id, name_uz, name_ru, name_en, image, created_at FROM products WHERE category_id = $1`
-	rows, err := s.db.Query(queryProduct, category.Id)
+	subCategoryCount := 0
+	querySubCategoryCount := `SELECT COUNT(*) FROM sub_categories WHERE category_id = $1`
+	err = s.db.QueryRow(querySubCategoryCount, category.Id).Scan(&subCategoryCount)
 	if err != nil {
 		return nil, err
 	}
-	for rows.Next() {
-		var product types_product.CategoryProductListPayload
-		err := rows.Scan(&product.Id, &product.NameUz, &product.NameRu, &product.NameEn, &product.Image, &product.CreatedAt)
+	if subCategoryCount != 0 {
+		query := `SELECT id, name_uz, name_ru, name_en, icon, created_at FROM sub_categories WHERE category_id = $1`
+		rows, err := s.db.Query(query, category.Id)
 		if err != nil {
 			return nil, err
 		}
-		category.Products = append(category.Products, product)
+		for rows.Next() {
+			var sub types_product.SubCategoryDetailListPayload
+			if err := rows.Scan(&sub.Id, &sub.NameUz, &sub.NameRu, &sub.NameEn, &sub.Icon, &sub.CreatedAt); err != nil {
+				return nil, err
+			}
+			query := `SELECT id, name_uz, name_ru, name_en, image, created_at FROM products WHERE sub_category_id = $1`
+			rows, err := s.db.Query(query, sub.Id)
+			if err != nil {
+				return nil, err
+			}
+			for rows.Next() {
+				var product types_product.CategoryProductListPayload
+				err := rows.Scan(&product.Id, &product.NameUz, &product.NameRu, &product.NameEn, &product.Image, &product.CreatedAt)
+				if err != nil {
+					return nil, err
+				}
+				sub.Products = append(sub.Products, product)
+			}
+			category.SubCategories = append(category.SubCategories, sub)
+		}
+	} else {
+		queryProduct := `SELECT id, name_uz, name_ru, name_en, image, created_at FROM products WHERE category_id = $1`
+		rows, err := s.db.Query(queryProduct, category.Id)
+		if err != nil {
+			return nil, err
+		}
+		for rows.Next() {
+			var product types_product.CategoryProductListPayload
+			err := rows.Scan(&product.Id, &product.NameUz, &product.NameRu, &product.NameEn, &product.CreatedAt)
+			if err != nil {
+				return nil, err
+			}
+			category.Products = append(category.Products, product)
+		}
 	}
 
 	return &category, nil
@@ -279,7 +312,7 @@ func (s *Store) GetProductsByCategoryId(categoryId string) (*types_product.Categ
 func (s *Store) GetCategory(id string) (*types_product.CategoryListPayload, error) {
 	var category types_product.CategoryListPayload
 	query := `SELECT * FROM categories WHERE id = $1`
-	err := s.db.QueryRow(query, id).Scan(&category.Id, &category.NameUz, &category.NameRu, &category.NameEn, &category.Image, &category.Icon, &category.CreatedAt)
+	err := s.db.QueryRow(query, id).Scan(&category.Id, &category.NameUz, &category.NameRu, &category.NameEn, &category.Icon, &category.CreatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -288,45 +321,6 @@ func (s *Store) GetCategory(id string) (*types_product.CategoryListPayload, erro
 	}
 	return &category, nil
 }
-
-// func fetchProductMedia(s *Store, id string, product *types_common.ProductDeatilPayload, wg *sync.WaitGroup, errChan chan error) {
-// 	defer wg.Done()
-
-// 	query := `SELECT id, image, product_id, created_at FROM product_medias WHERE product_id = $1`
-// 	rows, err := s.db.Query(query, id)
-// 	if err != nil {
-// 		errChan <- err
-// 		return
-// 	}
-// 	defer rows.Close()
-
-// 	for rows.Next() {
-// 		var media types_common.ProductMedia
-// 		if err := rows.Scan(&media.Id, &media.Image, &media.ProductId, &media.CreatedAt); err != nil {
-// 			errChan <- err
-// 			return
-// 		}
-// 		product.ProductMedias = append(product.ProductMedias, media)
-// 	}
-
-// 	errChan <- nil
-// }
-
-// func (s *Store) GetProductById(id string) (*types_common.ProductDeatilPayload, error) {
-// 	var product types_common.ProductDeatilPayload
-// 	errChan := make(chan error, 6)
-
-// 	queryProduct := `SELECT * FROM products WHERE id = $1`
-// 	err := s.db.QueryRow(queryProduct, id).Scan(&product.Id, &product.NameUz, &product.NameRu, &product.NameEn, &product.DescriptionUz, &product.DescriptionRu, &product.DescriptionEn, &product.TextUz, &product.TextRu, &product.TextEn, &product.Image, &product.Banner, &product.CreatedAt)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	wg.Add()
-// 	go s.fetchProductMedia(&s, id, &product, &wg, errChan)
-// 	wg.Wait()
-
-// }
 
 func (s *Store) GetProductById(id string) (*types_common.ProductDeatilPayload, error) {
 	var product types_common.ProductDeatilPayload

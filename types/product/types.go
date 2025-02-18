@@ -48,13 +48,17 @@ type ProductStore interface {
 	GetProductFile(id string) (*ProductFileListPayload, error)
 	DeleteProductFile(id string) error
 	UpdateProductFile(id string, payload ProductFilePayload) error
+	CreateSubCategory(payload SubCategroryPayload) error
+	ListSubCategory() ([]*SubCategoryListPayload, error)
+	GetSubCategory(id string) (*SubCategoryListPayload, error)
+	DeleteSubCategory(id string) error
+	UpdateSubCategory(id string, payload SubCategroryPayload) error
 }
 
 type CategoryPayload struct {
 	NameUz string `json:"nameUz"`
 	NameRu string `json:"nameRu"`
 	NameEn string `json:"nameEn"`
-	Image  string `json:"image"`
 	Icon   string `json:"icon"`
 }
 
@@ -63,20 +67,29 @@ type CategoryListPayload struct {
 	NameUz    string    `json:"nameUz"`
 	NameRu    string    `json:"nameRu"`
 	NameEn    string    `json:"nameEn"`
-	Image     string    `json:"image"`
 	Icon      string    `json:"icon"`
 	CreatedAt time.Time `json:"createdAt"`
 }
 
-type CategoryDetailPayload struct {
+type SubCategoryDetailListPayload struct {
 	Id        string                       `json:"id"`
 	NameUz    string                       `json:"nameUz"`
 	NameRu    string                       `json:"nameRu"`
 	NameEn    string                       `json:"nameEn"`
-	Image     string                       `json:"image"`
 	Icon      string                       `json:"icon"`
 	CreatedAt time.Time                    `json:"createdAt"`
 	Products  []CategoryProductListPayload `json:"products"`
+}
+
+type CategoryDetailPayload struct {
+	Id            string                         `json:"id"`
+	NameUz        string                         `json:"nameUz"`
+	NameRu        string                         `json:"nameRu"`
+	NameEn        string                         `json:"nameEn"`
+	Icon          string                         `json:"icon"`
+	CreatedAt     time.Time                      `json:"createdAt"`
+	SubCategories []SubCategoryDetailListPayload `json:"subCategories"`
+	Products      []CategoryProductListPayload   `json:"products"`
 }
 
 type CategoryProductListPayload struct {
@@ -100,7 +113,7 @@ type ProductPayload struct {
 	TextEn        string `json:"textEn"`
 	CategoryId    string `json:"categoryId"`
 	Image         string `json:"image"`
-	Banner        string `json:"banner"`
+	SubCategoryId string `json:"subCategoryId"`
 }
 
 type ProductListPayload struct {
@@ -115,7 +128,7 @@ type ProductListPayload struct {
 	TextRu        string    `json:"textRu"`
 	TextEn        string    `json:"textEn"`
 	Image         string    `json:"image"`
-	Banner        string    `json:"banner"`
+	SubCategoryId string    `json:"subCategoryId"`
 	CreatedAt     time.Time `json:"createdAt"`
 }
 
@@ -236,3 +249,20 @@ type ProductFileListPayload struct {
 	CreatedAt time.Time `json:"createdAt"`
 }
 
+type SubCategroryPayload struct {
+	NameUz     string `json:"nameUz"`
+	NameRu     string `json:"nameRu"`
+	NameEn     string `json:"nameEn"`
+	Icon       string `json:"icon"`
+	CategoryId string `json:"categoryId"`
+}
+
+type SubCategoryListPayload struct {
+	Id         string    `json:"id"`
+	NameUz     string    `json:"nameUz"`
+	NameRu     string    `json:"nameRu"`
+	NameEn     string    `json:"nameEn"`
+	Icon       string    `json:"icon"`
+	CategoryId string    `json:"categoryId"`
+	CreatedAt  time.Time `json:"createdAt"`
+}
