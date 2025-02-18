@@ -298,7 +298,7 @@ func (s *Store) GetProductsByCategoryId(categoryId string) (*types_product.Categ
 		}
 		for rows.Next() {
 			var product types_product.CategoryProductListPayload
-			err := rows.Scan(&product.Id, &product.NameUz, &product.NameRu, &product.NameEn, &product.CreatedAt)
+			err := rows.Scan(&product.Id, &product.NameUz, &product.NameRu, &product.NameEn, &product.Image, &product.CreatedAt)
 			if err != nil {
 				return nil, err
 			}
