@@ -113,7 +113,6 @@ type ProductDeatilPayload struct {
 	TextRu               string                 `json:"textRu"`
 	TextEn               string                 `json:"textEn"`
 	Image                string                 `json:"image"`
-	Banner               string                 `json:"banner"`
 	CreatedAt            time.Time              `json:"createdAt"`
 	ProductMedias        []ProductMedia         `json:"productMedias"`
 	ProductSpesification []ProductSpesification `json:"productSpesification"`
