@@ -106,14 +106,14 @@ func (s *Store) CreateProduct(payload *types_product.ProductPayload) (*types_pro
 		INSERT INTO
 			products(name_uz, name_ru, name_en, description_uz, description_ru, description_en, text_uz, text_ru, text_en, category_id, image, sub_category_id)
 		VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-		RETURNING id, name_uz, name_ru, name_en, description_uz, description_ru, description_en, text_uz, text_ru, text_en, image, created_at, sub_category_id
+		RETURNING id, name_uz, name_ru, name_en, description_uz, description_ru, description_en, text_uz, text_ru, text_en, image, created_at
 	`
 	err := s.db.QueryRow(
 		query, payload.NameUz, payload.NameRu, payload.NameEn, payload.DescriptionUz, payload.DescriptionRu, payload.DescriptionEn,
 		payload.TextUz, payload.TextRu, payload.TextEn, payload.CategoryId, payload.Image, payload.SubCategoryId,
 	).Scan(
 		&product.Id, &product.NameUz, &product.NameRu, &product.NameEn, &product.DescriptionUz, &product.DescriptionRu, &product.DescriptionEn,
-		&product.TextUz, &product.TextRu, &product.TextEn, &product.Image, &product.CreatedAt, &product.SubCategoryId,
+		&product.TextUz, &product.TextRu, &product.TextEn, &product.Image, &product.CreatedAt,
 	)
 	if err != nil {
 		return nil, err
@@ -131,7 +131,7 @@ func (s *Store) ListProduct(offset, limit int) ([]*types_product.ProductListPayl
 	}
 	query := `
 		SELECT 
-			id, name_uz, name_ru, name_en, description_uz, description_ru, description_en, text_uz, text_ru, text_en, image, created_at, sub_category_id
+			id, name_uz, name_ru, name_en, description_uz, description_ru, description_en, text_uz, text_ru, text_en, image, created_at
 		FROM products
 		ORDER BY created_at 
 		DESC LIMIT $1 OFFSET $2
@@ -144,7 +144,7 @@ func (s *Store) ListProduct(offset, limit int) ([]*types_product.ProductListPayl
 		var product types_product.ProductListPayload
 		err := rows.Scan(
 			&product.Id, &product.NameUz, &product.NameRu, &product.NameEn, &product.DescriptionUz, &product.DescriptionRu,
-			&product.DescriptionEn, &product.TextUz, &product.TextRu, &product.TextEn, &product.Image, &product.CreatedAt, &product.SubCategoryId,
+			&product.DescriptionEn, &product.TextUz, &product.TextRu, &product.TextEn, &product.Image, &product.CreatedAt,
 		)
 		if err != nil {
 			return nil, 0, err
@@ -156,10 +156,10 @@ func (s *Store) ListProduct(offset, limit int) ([]*types_product.ProductListPayl
 
 func (s *Store) GetProduct(id string) (*types_product.ProductListPayload, error) {
 	var product types_product.ProductListPayload
-	query := `SELECT id, name_uz, name_ru, name_en, description_uz, description_ru, description_en, text_uz, text_ru, text_en, image, created_at, sub_category_id FROM products WHERE id = $1`
+	query := `SELECT id, name_uz, name_ru, name_en, description_uz, description_ru, description_en, text_uz, text_ru, text_en, image, created_at FROM products WHERE id = $1`
 	err := s.db.QueryRow(query, id).Scan(
 		&product.Id, &product.NameUz, &product.NameRu, &product.NameEn, &product.DescriptionUz, &product.DescriptionRu, &product.DescriptionEn,
-		&product.TextUz, &product.TextRu, &product.TextEn, &product.Image, &product.CreatedAt, &product.SubCategoryId,
+		&product.TextUz, &product.TextRu, &product.TextEn, &product.Image, &product.CreatedAt,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -245,11 +245,11 @@ func (s *Store) UpdateProduct(id string, payload *types_product.ProductPayload) 
 		args = append(args, payload.SubCategoryId)
 		index++
 	}
-	query = query[:len(query)-2] + fmt.Sprintf(" WHERE id = $%d RETURNING id, name_uz, name_ru, name_en, description_uz, description_ru, description_en, text_uz, text_ru, text_en, image, sub_category_id, created_at", index)
+	query = query[:len(query)-2] + fmt.Sprintf(" WHERE id = $%d RETURNING id, name_uz, name_ru, name_en, description_uz, description_ru, description_en, text_uz, text_ru, text_en, image, created_at", index)
 	args = append(args, id)
 	err := s.db.QueryRow(query, args...).Scan(
 		&product.Id, &product.NameUz, &product.NameRu, &product.NameEn, &product.DescriptionUz, &product.DescriptionRu, &product.DescriptionEn,
-		&product.TextUz, &product.TextRu, &product.TextEn, &product.Image, &product.SubCategoryId, &product.CreatedAt,
+		&product.TextUz, &product.TextRu, &product.TextEn, &product.Image, &product.CreatedAt,
 	)
 	if err != nil {
 		return nil, err

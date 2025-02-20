@@ -128,7 +128,6 @@ type ProductListPayload struct {
 	TextRu        string    `json:"textRu"`
 	TextEn        string    `json:"textEn"`
 	Image         string    `json:"image"`
-	SubCategoryId string    `json:"subCategoryId"`
 	CreatedAt     time.Time `json:"createdAt"`
 }
 
