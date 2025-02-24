@@ -1144,10 +1144,42 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "file",
-                        "description": "image",
-                        "name": "image",
+                        "description": "logo",
+                        "name": "logo",
                         "in": "formData",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "flag",
+                        "name": "flag",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "partnerName",
+                        "name": "partnerName",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "email",
+                        "name": "email",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "phoneNumber",
+                        "name": "phoneNumber",
+                        "in": "formData"
                     }
                 ],
                 "responses": {}
@@ -1260,10 +1292,39 @@ const docTemplate = `{
                     },
                     {
                         "type": "file",
-                        "description": "image",
-                        "name": "image",
-                        "in": "formData",
-                        "required": true
+                        "description": "logo",
+                        "name": "logo",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "flag",
+                        "name": "flag",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "partnerName",
+                        "name": "partnerName",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "email",
+                        "name": "email",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "phoneNumber",
+                        "name": "phoneNumber",
+                        "in": "formData"
                     }
                 ],
                 "responses": {}

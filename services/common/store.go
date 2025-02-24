@@ -72,14 +72,14 @@ func (s *Store) GetAllMedia() ([]*types_common.MediaPayload, error) {
 func (s *Store) ListPartner() ([]*types_common.PartnerListPayload, error) {
 	var partners []*types_common.PartnerListPayload
 
-	query := `SELECT * FROM partners`
+	query := `SELECT * FROM partners ORDER BY created_at`
 	rows, err := s.db.Query(query)
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
 		var partner types_common.PartnerListPayload
-		if err := rows.Scan(&partner.Id, &partner.Image); err != nil {
+		if err := rows.Scan(&partner.Id, &partner.Logo, &partner.Name, &partner.Flag, &partner.PartnerName, &partner.Email, &partner.PhoneNumber, &partner.CreatedAt); err != nil {
 			return nil, err
 		}
 		partners = append(partners, &partner)

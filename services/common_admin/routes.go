@@ -762,7 +762,12 @@ func (h *Handler) handleGetMedia(w http.ResponseWriter, r *http.Request) {
 // @Tags common-admin
 // @Accept multipart/data
 // @Produce json
-// @Param image formData file true "image"
+// @Param logo formData file true "logo"
+// @Param name formData string true "name"
+// @Param flag formData file true "flag"
+// @Param partnerName formData string false "partnerName"
+// @Param email formData string false "email"
+// @Param phoneNumber formData string false "phoneNumber"
 // @Router /admin/common/partner/create [post]
 // @Security BearerAuth
 func (h *Handler) handleCreatePartner(w http.ResponseWriter, r *http.Request) {
@@ -771,8 +776,12 @@ func (h *Handler) handleCreatePartner(w http.ResponseWriter, r *http.Request) {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return
 	}
+	name := r.FormValue("name")
+	partnerName := r.FormValue("partnerName")
+	email := r.FormValue("email")
+	phoneNumber := r.FormValue("phoneNumber")
 
-	image, imageHeader, err := r.FormFile("image")
+	image, imageHeader, err := r.FormFile("logo")
 	if err != nil {
 		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to read file"))
 		return
@@ -794,8 +803,35 @@ func (h *Handler) handleCreatePartner(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	flag, flagHeader, err := r.FormFile("flag")
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to read file"))
+		return
+	}
+	defer flag.Close()
+
+	flagPath := "uploads/partners/images/" + flagHeader.Filename
+
+	outFlag, err := os.Create(flagPath)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to save file"))
+		return
+	}
+	defer outFlag.Close()
+
+	_, err = io.Copy(outFlag, flag)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image: %v", err))
+		return
+	}
+
 	partner := types_common_admin.PartnersPayload{
-		Image: imagePath,
+		Logo:        imagePath,
+		Name:        name,
+		Email:       email,
+		PartnerName: partnerName,
+		PhoneNumber: phoneNumber,
+		Flag:        flagPath,
 	}
 
 	err = h.store.CreatePartner(&partner)
@@ -830,7 +866,12 @@ func (h *Handler) handleListPartner(w http.ResponseWriter, r *http.Request) {
 // @Accept multipart/json
 // @Produce json
 // @Param partnerId path string true "partner id"
-// @Param image formData file true "image"
+// @Param logo formData file false "logo"
+// @Param name formData string false "name"
+// @Param flag formData file false "flag"
+// @Param partnerName formData string false "partnerName"
+// @Param email formData string false "email"
+// @Param phoneNumber formData string false "phoneNumber"
 // @Router /admin/common/partner/{partnerId}/update [put]
 // @Security BearerAuth
 func (h *Handler) handleUpdatePartner(w http.ResponseWriter, r *http.Request) {
@@ -848,32 +889,83 @@ func (h *Handler) handleUpdatePartner(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	image, imageHeader, err := r.FormFile("image")
+	name := r.FormValue("name")
+	partnerName := r.FormValue("partnerName")
+	email := r.FormValue("email")
+	phoneNumber := r.FormValue("phoneNumber")
+
+	image, imageHeader, err := r.FormFile("logo")
 	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to read image"))
-		return
+		if err == http.ErrMissingFile {
+			image = nil
+			imageHeader = nil
+		} else {
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to read file"))
+			return
+		}
 	}
-	defer image.Close()
-
-	imagePath := "uploads/partners/images/" + imageHeader.Filename
-
-	outImage, err := os.Create(imagePath)
-	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to save file"))
-		return
+	if image != nil {
+		defer image.Close()
 	}
-	defer outImage.Close()
+	var imagePath string
+	if imageHeader != nil {
+		imagePath = "uploads/partners/images/" + imageHeader.Filename
+		outImage, err := os.Create(imagePath)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to save file"))
+			return
+		}
+		defer outImage.Close()
 
-	_, err = io.Copy(outImage, image)
+		_, err = io.Copy(outImage, image)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image: %v", err))
+			return
+		}
+	} else {
+		imagePath = ""
+	}
+
+	flag, flagHeader, err := r.FormFile("flag")
 	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image"))
-		return
+		if err == http.ErrMissingFile {
+			flag = nil
+			flagHeader = nil
+		} else {
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to read file"))
+			return
+		}
+	}
+	if flag != nil {
+		defer flag.Close()
+	}
+	var flagPath string
+	if flagHeader != nil {
+		flagPath = "uploads/partners/images/" + flagHeader.Filename
+		outFlag, err := os.Create(flagPath)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to save file"))
+			return
+		}
+		defer outFlag.Close()
+
+		_, err = io.Copy(outFlag, flag)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("unable to write image: %v", err))
+			return
+		}
+	} else {
+		flagPath = ""
 	}
 
 	changed_partner := types_common_admin.PartnersPayload{
-		Image: imagePath,
+		Logo:        imagePath,
+		Name:        name,
+		Email:       email,
+		PartnerName: partnerName,
+		PhoneNumber: phoneNumber,
+		Flag:        flagPath,
 	}
-
 	err = h.store.UpdatePartner(partner.Id, &changed_partner)
 	if err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)

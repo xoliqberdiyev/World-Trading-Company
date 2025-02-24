@@ -986,11 +986,30 @@ paths:
         name: partnerId
         required: true
         type: string
-      - description: image
+      - description: logo
         in: formData
-        name: image
-        required: true
+        name: logo
         type: file
+      - description: name
+        in: formData
+        name: name
+        type: string
+      - description: flag
+        in: formData
+        name: flag
+        type: file
+      - description: partnerName
+        in: formData
+        name: partnerName
+        type: string
+      - description: email
+        in: formData
+        name: email
+        type: string
+      - description: phoneNumber
+        in: formData
+        name: phoneNumber
+        type: string
       produces:
       - application/json
       responses: {}
@@ -1004,11 +1023,33 @@ paths:
       - multipart/data
       description: create partner
       parameters:
-      - description: image
+      - description: logo
         in: formData
-        name: image
+        name: logo
         required: true
         type: file
+      - description: name
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: flag
+        in: formData
+        name: flag
+        required: true
+        type: file
+      - description: partnerName
+        in: formData
+        name: partnerName
+        type: string
+      - description: email
+        in: formData
+        name: email
+        type: string
+      - description: phoneNumber
+        in: formData
+        name: phoneNumber
+        type: string
       produces:
       - application/json
       responses: {}

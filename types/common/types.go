@@ -64,8 +64,14 @@ type MediaPayload struct {
 }
 
 type PartnerListPayload struct {
-	Id    string `json:"id"`
-	Image string `json:"image"`
+	Id          string    `json:"id"`
+	Logo        string    `json:"logo"`
+	Name        string    `json:"name"`
+	Flag        string    `json:"flag"`
+	PartnerName string    `json:"partnerName"`
+	Email       string    `json:"email"`
+	PhoneNumber string    `json:"phoneNumber"`
+	CreatedAt   time.Time `json:"createdAt"`
 }
 
 type BannerPayload struct {

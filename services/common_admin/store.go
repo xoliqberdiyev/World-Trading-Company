@@ -268,8 +268,8 @@ func (s *Store) UpdateMedia(id string, media *types_common_admin.MediaPayload) e
 	return nil
 }
 func (s *Store) CreatePartner(partren *types_common_admin.PartnersPayload) error {
-	query := `INSERT INTO partners(image) VALUES($1)`
-	_, err := s.db.Exec(query, &partren.Image)
+	query := `INSERT INTO partners(logo, name, flag, partner_name, email, phone_number) VALUES($1, $2, $3, $4, $5, $6)`
+	_, err := s.db.Exec(query, partren.Logo, partren.Name, partren.Flag, partren.PartnerName, partren.Email, partren.PhoneNumber)
 	if err != nil {
 		return err
 	}
@@ -278,7 +278,41 @@ func (s *Store) CreatePartner(partren *types_common_admin.PartnersPayload) error
 
 func (s *Store) UpdatePartner(id string, partner *types_common_admin.PartnersPayload) error {
 	query := `UPDATE partners SET `
-	_, err := s.db.Query(query, &partner.Image, id)
+	args := []interface{}{}
+	index := 1
+	if partner.Logo != "" {
+		query += fmt.Sprintf("logo = $%d, ", index)
+		args = append(args, partner.Logo)
+		index++
+	}
+	if partner.Name != "" {
+		query += fmt.Sprintf("name = $%d, ", index)
+		args = append(args, partner.Name)
+		index++
+	}
+	if partner.Flag != "" {
+		query += fmt.Sprintf("flag = $%d, ", index)
+		args = append(args, partner.Flag)
+		index++
+	}
+	if partner.PartnerName != "" {
+		query += fmt.Sprintf("partner_name = $%d, ", index)
+		args = append(args, partner.PartnerName)
+		index++
+	}
+	if partner.Email != "" {
+		query += fmt.Sprintf("email = $%d, ", index)
+		args = append(args, partner.Email)
+		index++
+	}
+	if partner.PhoneNumber != "" {
+		query += fmt.Sprintf("phone_number = $%d, ", index)
+		args = append(args, partner.PhoneNumber)
+		index++
+	}
+	query = query[:len(query)-2] + fmt.Sprintf(" WHERE id = $%d", index)
+	args = append(args, id)
+	_, err := s.db.Query(query, args...)
 	if err != nil {
 		return err
 	}
@@ -297,7 +331,7 @@ func (s *Store) DeletePartner(id string) error {
 func (s *Store) GetPartner(id string) (*types_common_admin.PartnersListPayload, error) {
 	var partner types_common_admin.PartnersListPayload
 	query := `SELECT * FROM partners WHERE id = $1`
-	err := s.db.QueryRow(query, id).Scan(&partner.Id, &partner.Image)
+	err := s.db.QueryRow(query, id).Scan(&partner.Id, &partner.Logo, &partner.Name, &partner.Flag, &partner.PartnerName, &partner.Email, &partner.PhoneNumber, &partner.CreatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -316,7 +350,7 @@ func (s *Store) ListPartner() ([]*types_common_admin.PartnersListPayload, error)
 	}
 	for rows.Next() {
 		var partner types_common_admin.PartnersListPayload
-		if err := rows.Scan(&partner.Id, &partner.Image); err != nil {
+		if err := rows.Scan(&partner.Id, &partner.Logo, &partner.Name, &partner.Flag, &partner.PartnerName, &partner.Email, &partner.PhoneNumber, &partner.CreatedAt); err != nil {
 			return nil, err
 		}
 		partners = append(partners, &partner)
@@ -605,7 +639,7 @@ func (s *Store) UpdateCertificate(id string, payload *types_common_admin.Certifi
 		args = append(args, payload.Image)
 		argsIndex++
 	}
-	
+
 	query = query[:len(query)-2] + fmt.Sprintf(" WHERE id = $%d RETURNING id, name_uz, name_ru, name_en, text_uz, text_ru, text_en, image, created_at", argsIndex)
 	args = append(args, id)
 	err := s.db.QueryRow(query, args...).Scan(

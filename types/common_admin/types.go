@@ -132,12 +132,22 @@ type MediaListPayload struct {
 }
 
 type PartnersPayload struct {
-	Image string `json:"image"`
-}
+	Logo        string    `json:"logo"`
+	Name        string    `json:"name"`
+	Flag        string    `json:"flag"`
+	PartnerName string    `json:"partnerName"`
+	Email       string    `json:"email"`
+	PhoneNumber string    `json:"phoneNumber"`}
 
 type PartnersListPayload struct {
-	Id    string `json:"id"`
-	Image string `json:"image"`
+	Id          string    `json:"id"`
+	Logo        string    `json:"logo"`
+	Name        string    `json:"name"`
+	Flag        string    `json:"flag"`
+	PartnerName string    `json:"partnerName"`
+	Email       string    `json:"email"`
+	PhoneNumber string    `json:"phoneNumber"`
+	CreatedAt   time.Time `json:"createdAt"`
 }
 
 type BannerPayload struct {
