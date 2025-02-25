@@ -171,8 +171,7 @@ type ChemicalProperty struct {
 	NameRu    string  `json:"nameRu"`
 	NameEn    string  `json:"nameEn"`
 	Unit      string  `json:"unit"`
-	Min       float32 `json:"min"`
-	Max       float32 `json:"max"`
+	Range     string  `json:"range"`
 	Result    float32 `json:"result"`
 }
 
@@ -183,7 +182,7 @@ type ImapctProperty struct {
 	MaterialRu string  `json:"materialRu"`
 	MaterialEn string  `json:"materialEn"`
 	Unit       string  `json:"unit"`
-	Max        float32 `json:"max"`
+	Max        string `json:"max"`
 	Result     float32 `json:"result"`
 }
 

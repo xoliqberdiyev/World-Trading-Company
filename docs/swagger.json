@@ -4660,12 +4660,6 @@
         "types_product.ChemicalPropertyPayload": {
             "type": "object",
             "properties": {
-                "max": {
-                    "type": "number"
-                },
-                "min": {
-                    "type": "number"
-                },
                 "nameEn": {
                     "type": "string"
                 },
@@ -4676,6 +4670,9 @@
                     "type": "string"
                 },
                 "productId": {
+                    "type": "string"
+                },
+                "range": {
                     "type": "string"
                 },
                 "result": {
@@ -4699,7 +4696,7 @@
                     "type": "string"
                 },
                 "max": {
-                    "type": "number"
+                    "type": "string"
                 },
                 "productId": {
                     "type": "string"

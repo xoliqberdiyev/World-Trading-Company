@@ -9,6 +9,6 @@ CREATE TABLE IF NOT EXISTS "sub_categories"(
     CONSTRAINT fk_category FOREIGN KEY ("category_id") REFERENCES "categories"("id") ON DELETE CASCADE
 );
 
-ALTER TABLE "products" 
-ADD COLUMN "sub_category_id" UUID,
-ADD CONSTRAINT fk_sub_category FOREIGN KEY ("sub_category_id") REFERENCES "sub_categories"("id");
+-- ALTER TABLE "products" 
+-- ADD COLUMN "sub_category_id" UUID,
+-- ADD CONSTRAINT fk_sub_category FOREIGN KEY ("sub_category_id") REFERENCES "sub_categories"("id");

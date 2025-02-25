@@ -1428,8 +1428,7 @@ func (h *Handler) handleCreateChemistry(w http.ResponseWriter, r *http.Request) 
 		NameRu:    payload.NameRu,
 		NameEn:    payload.NameEn,
 		Unit:      payload.Unit,
-		Min:       payload.Min,
-		Max:       payload.Max,
+		Range:     payload.Range,
 		Result:    payload.Result,
 	})
 
@@ -1529,7 +1528,7 @@ func (h *Handler) handleUpdateChemistry(w http.ResponseWriter, r *http.Request) 
 	}
 
 	if data == nil {
-		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("feature not found"))
+		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("chemistry not found"))
 		return
 	}
 
@@ -1560,8 +1559,7 @@ func (h *Handler) handleUpdateChemistry(w http.ResponseWriter, r *http.Request) 
 		NameRu:    payload.NameRu,
 		NameEn:    payload.NameEn,
 		Unit:      payload.Unit,
-		Min:       payload.Min,
-		Max:       payload.Max,
+		Range:     payload.Range,
 		Result:    payload.Result,
 	})
 	if err != nil {

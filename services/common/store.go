@@ -390,7 +390,7 @@ func (s *Store) GetProductById(id string) (*types_common.ProductDeatilPayload, e
 		case "chemical":
 			for rows.Next() {
 				var chem types_common.ChemicalProperty
-				if err := rows.Scan(&chem.Id, &chem.ProductId, &chem.NameUz, &chem.NameRu, &chem.NameEn, &chem.Unit, &chem.Min, &chem.Max, &chem.Result); err != nil {
+				if err := rows.Scan(&chem.Id, &chem.ProductId, &chem.NameUz, &chem.NameRu, &chem.NameEn, &chem.Unit, &chem.Result, &chem.Range); err != nil {
 					return nil, err
 				}
 				product.ChemicalProperty = append(product.ChemicalProperty, chem)

@@ -121,10 +121,6 @@ definitions:
     type: object
   types_product.ChemicalPropertyPayload:
     properties:
-      max:
-        type: number
-      min:
-        type: number
       nameEn:
         type: string
       nameRu:
@@ -132,6 +128,8 @@ definitions:
       nameUz:
         type: string
       productId:
+        type: string
+      range:
         type: string
       result:
         type: number
@@ -147,7 +145,7 @@ definitions:
       materialUz:
         type: string
       max:
-        type: number
+        type: string
       productId:
         type: string
       result:

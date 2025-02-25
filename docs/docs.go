@@ -4667,12 +4667,6 @@ const docTemplate = `{
         "types_product.ChemicalPropertyPayload": {
             "type": "object",
             "properties": {
-                "max": {
-                    "type": "number"
-                },
-                "min": {
-                    "type": "number"
-                },
                 "nameEn": {
                     "type": "string"
                 },
@@ -4683,6 +4677,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "productId": {
+                    "type": "string"
+                },
+                "range": {
                     "type": "string"
                 },
                 "result": {
@@ -4706,7 +4703,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "max": {
-                    "type": "number"
+                    "type": "string"
                 },
                 "productId": {
                     "type": "string"

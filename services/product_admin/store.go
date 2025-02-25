@@ -515,8 +515,8 @@ func (s *Store) UpdateProductAdventage(id string, payload types_product.ProductA
 }
 
 func (s *Store) CreateChemistry(payload types_product.ChemicalPropertyPayload) error {
-	query := `INSERT INTO chemical_property(product_id, name_uz, name_ru, name_en, unit, standard_min, standard_max, analysis_result) VALUES($1, $2, $3, $4, $5, $6, $7, $8)`
-	_, err := s.db.Exec(query, payload.ProductId, payload.NameUz, payload.NameRu, payload.NameEn, payload.Unit, payload.Min, payload.Max, payload.Result)
+	query := `INSERT INTO chemical_property(product_id, name_uz, name_ru, name_en, unit, standard_range, analysis_result) VALUES($1, $2, $3, $4, $5, $6, $7)`
+	_, err := s.db.Exec(query, payload.ProductId, payload.NameUz, payload.NameRu, payload.NameEn, payload.Unit, payload.Range, payload.Result)
 	if err != nil {
 		return err
 	}
@@ -532,7 +532,7 @@ func (s *Store) ListChemistry() ([]*types_product.ChemicalPropertyListPayload, e
 	}
 	for rows.Next() {
 		var item types_product.ChemicalPropertyListPayload
-		if err := rows.Scan(&item.Id, &item.ProductId, &item.NameUz, &item.NameRu, &item.NameEn, &item.Unit, &item.Min, &item.Max, &item.Result); err != nil {
+		if err := rows.Scan(&item.Id, &item.ProductId, &item.NameUz, &item.NameRu, &item.NameEn, &item.Unit, &item.Result, &item.Range); err != nil {
 			return nil, err
 		}
 		list = append(list, &item)
@@ -543,7 +543,7 @@ func (s *Store) ListChemistry() ([]*types_product.ChemicalPropertyListPayload, e
 func (s *Store) GetChemistry(id string) (*types_product.ChemicalPropertyListPayload, error) {
 	var data types_product.ChemicalPropertyListPayload
 	query := `SELECT * FROM chemical_property WHERE id = $1`
-	err := s.db.QueryRow(query, id).Scan(&data.Id, &data.ProductId, &data.NameUz, &data.NameRu, &data.NameEn, &data.Unit, &data.Min, &data.Max, &data.Result)
+	err := s.db.QueryRow(query, id).Scan(&data.Id, &data.ProductId, &data.NameUz, &data.NameRu, &data.NameEn, &data.Unit, &data.Result, &data.Range)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -564,8 +564,8 @@ func (s *Store) DeleteChemistry(id string) error {
 }
 
 func (s *Store) UpdateChemistry(id string, payload types_product.ChemicalPropertyPayload) error {
-	query := `UPDATE chemical_property SET product_id = $2, name_uz = $3, name_ru = $4, name_en = $5, unit = $6, standard_min = $7, standard_max = $8, analysis_result = $9 WHERE id = $1`
-	_, err := s.db.Exec(query, id, payload.ProductId, payload.NameUz, payload.NameRu, payload.NameEn, payload.Unit, payload.Min, payload.Max, payload.Result)
+	query := `UPDATE chemical_property SET product_id = $2, name_uz = $3, name_ru = $4, name_en = $5, unit = $6, analysis_result = $7, standard_range = $8 WHERE id = $1`
+	_, err := s.db.Exec(query, id, payload.ProductId, payload.NameUz, payload.NameRu, payload.NameEn, payload.Unit, payload.Result, payload.Range)
 	if err != nil {
 		return err
 	}
