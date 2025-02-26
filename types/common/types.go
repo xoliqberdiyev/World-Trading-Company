@@ -119,6 +119,8 @@ type ProductDeatilPayload struct {
 	TextRu               string                 `json:"textRu"`
 	TextEn               string                 `json:"textEn"`
 	Image                string                 `json:"image"`
+	CategoryId           string                 `json:"categoryId"`
+	SubCategoryId        string                 `json:"subCategoryId"`
 	CreatedAt            time.Time              `json:"createdAt"`
 	ProductMedias        []ProductMedia         `json:"productMedias"`
 	ProductSpesification []ProductSpesification `json:"productSpesification"`
@@ -182,7 +184,7 @@ type ImapctProperty struct {
 	MaterialRu string  `json:"materialRu"`
 	MaterialEn string  `json:"materialEn"`
 	Unit       string  `json:"unit"`
-	Max        string `json:"max"`
+	Max        string  `json:"max"`
 	Result     float32 `json:"result"`
 }
 

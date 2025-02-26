@@ -325,13 +325,12 @@ func (s *Store) GetCategory(id string) (*types_product.CategoryListPayload, erro
 func (s *Store) GetProductById(id string) (*types_common.ProductDeatilPayload, error) {
 	var product types_common.ProductDeatilPayload
 
-	queryProduct := `SELECT id, name_uz, name_ru, name_en, description_uz, description_ru, description_en, 
-	text_uz, text_ru, text_en, image, created_at FROM products WHERE id = $1`
+	queryProduct := `SELECT * FROM products WHERE id = $1`
 	err := s.db.QueryRow(queryProduct, id).Scan(
 		&product.Id, &product.NameUz, &product.NameRu, &product.NameEn,
 		&product.DescriptionUz, &product.DescriptionRu, &product.DescriptionEn,
-		&product.TextUz, &product.TextRu, &product.TextEn,
-		&product.Image, &product.CreatedAt,
+		&product.TextUz, &product.TextRu, &product.TextEn, &product.CategoryId,
+		&product.Image, &product.CreatedAt, &product.SubCategoryId,
 	)
 	if err != nil {
 		return nil, err
