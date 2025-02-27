@@ -324,17 +324,23 @@ func (s *Store) GetCategory(id string) (*types_product.CategoryListPayload, erro
 
 func (s *Store) GetProductById(id string) (*types_common.ProductDeatilPayload, error) {
 	var product types_common.ProductDeatilPayload
-
+	var subCategoryId *sql.NullString
 	queryProduct := `SELECT * FROM products WHERE id = $1`
 	err := s.db.QueryRow(queryProduct, id).Scan(
 		&product.Id, &product.NameUz, &product.NameRu, &product.NameEn,
 		&product.DescriptionUz, &product.DescriptionRu, &product.DescriptionEn,
 		&product.TextUz, &product.TextRu, &product.TextEn, &product.CategoryId,
-		&product.Image, &product.CreatedAt, &product.SubCategoryId,
+		&product.Image, &product.CreatedAt, &subCategoryId,
 	)
 	if err != nil {
 		return nil, err
 	}
+	if subCategoryId.Valid {
+		product.SubCategoryId = subCategoryId.String
+	} else {
+		product.SubCategoryId = ""
+	}
+
 
 	queries := map[string]string{
 		"media":         `SELECT * FROM product_medias WHERE product_id = $1`,
