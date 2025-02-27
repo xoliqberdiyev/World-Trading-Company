@@ -329,7 +329,7 @@ func (h *Handler) handleCreateProduct(w http.ResponseWriter, r *http.Request) {
 	categoryId := r.FormValue("categoryId")
 	category, err := h.store.GetCategory(categoryId)
 	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, err)
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("category, %v", err))
 		return
 	}
 	if category == nil {
@@ -337,14 +337,16 @@ func (h *Handler) handleCreateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	subCategoryId := r.FormValue("subCategoryId")
-	subCategory, err := h.store.GetSubCategory(subCategoryId)
-	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, err)
-		return
-	}
-	if subCategory == nil {
-		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("sub category not found"))
-		return
+	if subCategoryId != "" {
+		subCategory, err := h.store.GetSubCategory(subCategoryId)
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("sub_category, %v", err))
+			return
+		}
+		if subCategory == nil {
+			utils.WriteError(w, http.StatusNotFound, fmt.Errorf("sub category not found"))
+			return
+		}
 	}
 
 	image, imageHeader, err := r.FormFile("image")
@@ -380,12 +382,12 @@ func (h *Handler) handleCreateProduct(w http.ResponseWriter, r *http.Request) {
 		TextEn:        textEn,
 		CategoryId:    category.Id,
 		Image:         imagePath,
-		SubCategoryId: subCategory.Id,
+		SubCategoryId: subCategoryId,
 	}
 
 	result, err := h.store.CreateProduct(&payload)
 	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, err)
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("creating product, %v", err))
 		return
 	}
 

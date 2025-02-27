@@ -102,6 +102,12 @@ func (s *Store) ListCategory() ([]*types_product.CategoryListPayload, error) {
 
 func (s *Store) CreateProduct(payload *types_product.ProductPayload) (*types_product.ProductListPayload, error) {
 	var product types_product.ProductListPayload
+	var subCategoryId interface{}
+	if payload.SubCategoryId == "" {
+		subCategoryId = nil // Agar bo'sh bo'lsa, NULL yuboriladi
+	} else {
+		subCategoryId = payload.SubCategoryId // Agar qiymat bo'lsa, o'zini yuboradi
+	}
 	query := `
 		INSERT INTO
 			products(name_uz, name_ru, name_en, description_uz, description_ru, description_en, text_uz, text_ru, text_en, category_id, image, sub_category_id)
@@ -110,7 +116,7 @@ func (s *Store) CreateProduct(payload *types_product.ProductPayload) (*types_pro
 	`
 	err := s.db.QueryRow(
 		query, payload.NameUz, payload.NameRu, payload.NameEn, payload.DescriptionUz, payload.DescriptionRu, payload.DescriptionEn,
-		payload.TextUz, payload.TextRu, payload.TextEn, payload.CategoryId, payload.Image, payload.SubCategoryId,
+		payload.TextUz, payload.TextRu, payload.TextEn, payload.CategoryId, payload.Image, subCategoryId,
 	).Scan(
 		&product.Id, &product.NameUz, &product.NameRu, &product.NameEn, &product.DescriptionUz, &product.DescriptionRu, &product.DescriptionEn,
 		&product.TextUz, &product.TextRu, &product.TextEn, &product.Image, &product.CreatedAt,

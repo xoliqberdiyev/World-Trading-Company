@@ -324,7 +324,7 @@ func (s *Store) GetCategory(id string) (*types_product.CategoryListPayload, erro
 
 func (s *Store) GetProductById(id string) (*types_common.ProductDeatilPayload, error) {
 	var product types_common.ProductDeatilPayload
-	var subCategoryId *sql.NullString
+	var subCategoryId sql.NullString
 	queryProduct := `SELECT * FROM products WHERE id = $1`
 	err := s.db.QueryRow(queryProduct, id).Scan(
 		&product.Id, &product.NameUz, &product.NameRu, &product.NameEn,
