@@ -2726,6 +2726,25 @@ paths:
       summary: create sub category
       tags:
       - product-admin
+  /admin/product/sub_category/{sub_category_id}/product:
+    get:
+      consumes:
+      - application/json
+      description: get product by sub category
+      parameters:
+      - description: sub_category_id
+        in: path
+        name: sub_category_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: get product by sub category
+      tags:
+      - product-admin
   /admin/product/sub_category/create:
     post:
       consumes:

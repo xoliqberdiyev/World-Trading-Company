@@ -53,6 +53,7 @@ type ProductStore interface {
 	GetSubCategory(id string) (*SubCategoryListPayload, error)
 	DeleteSubCategory(id string) error
 	UpdateSubCategory(id string, payload SubCategroryPayload) error
+	GetProductsBySubCategoryId(id string) ([]*ProductListPayload, error)
 }
 
 type CategoryPayload struct {

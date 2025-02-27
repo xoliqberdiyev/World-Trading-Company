@@ -85,6 +85,7 @@ func (h *Handler) RegsiterRoutes(r chi.Router) {
 	r.Get("/admin/product/sub_category/{id}", auth.AuthWithJWT(h.handleGetSubCategory, h.userStore))
 	r.Delete("/admin/product/sub_category/{id}/delete", auth.AuthWithJWT(h.handleDeleteSubCategory, h.userStore))
 	r.Put("/admin/product/sub_category/{id}/update", auth.AuthWithJWT(h.handleUpdateSubCategory, h.userStore))
+	r.Get("/admin/product/sub_category/{sub_category_id}/product", auth.AuthWithJWT(h.handleGetProductsBySubCategory, h.userStore))
 }
 
 // @Summary create category
@@ -2219,4 +2220,34 @@ func (h *Handler) handleUpdateSubCategory(w http.ResponseWriter, r *http.Request
 	}
 
 	utils.WriteJson(w, http.StatusOK, map[string]string{"message": "updated"})
+}
+
+// @Summary get product by sub category
+// @Description get product by sub category
+// @Tags product-admin
+// @Accept json
+// @Produce json
+// @Param sub_category_id path string true "sub_category_id"
+// @Router /admin/product/sub_category/{sub_category_id}/product [get]
+// @Security BearerAuth
+func (h *Handler) handleGetProductsBySubCategory(w http.ResponseWriter, r *http.Request) {
+	var id = r.PathValue("sub_category_id")
+	sub_category, err := h.store.GetSubCategory(id)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if sub_category == nil {
+		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("not found"))
+		return
+	}
+
+	list, err := h.store.GetProductsBySubCategoryId(id)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, list)
 }

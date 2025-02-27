@@ -3997,6 +3997,36 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/admin/product/sub_category/{sub_category_id}/product": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get product by sub category",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "product-admin"
+                ],
+                "summary": "get product by sub category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "sub_category_id",
+                        "name": "sub_category_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/banner/list": {
             "get": {
                 "consumes": [

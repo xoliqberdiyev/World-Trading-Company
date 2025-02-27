@@ -794,3 +794,25 @@ func (s *Store) UpdateSubCategory(id string, payload types_product.SubCategroryP
 	}
 	return nil
 }
+
+func (s *Store) GetProductsBySubCategoryId(id string) ([]*types_product.ProductListPayload, error) {
+	var list []*types_product.ProductListPayload
+	query := `SELECT id, name_uz, name_ru, name_en, description_uz, description_ru, description_en, text_uz, text_ru, text_en, image, created_at FROM products WHERE sub_category_id = $1`
+	rows, err := s.db.Query(query, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	for rows.Next() {
+		var product types_product.ProductListPayload
+		if err := rows.Scan(&product.Id, &product.NameUz, &product.NameRu, &product.NameEn, &product.DescriptionUz, &product.DescriptionRu, &product.DescriptionEn, &product.TextUz, &product.TextRu, &product.TextEn, &product.Image, &product.CreatedAt); err != nil {
+			return nil, err
+		}
+		list = append(list, &product)
+	}
+
+	return list, nil
+}
