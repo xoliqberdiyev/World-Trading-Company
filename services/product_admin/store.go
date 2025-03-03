@@ -748,7 +748,7 @@ func (s *Store) GetSubCategory(id string) (*types_product.SubCategoryListPayload
 }
 
 func (s *Store) DeleteSubCategory(id string) error {
-	query := `DELETE FROM sub_categories WHERE id = $1`
+	query := `DELETE FROM sub_categories WHERE id = $1 CASCADE`
 	_, err := s.db.Exec(query, id)
 	if err != nil {
 		return err
