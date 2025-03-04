@@ -2894,6 +2894,13 @@ const docTemplate = `{
                         "name": "file",
                         "in": "formData",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "kilogram",
+                        "name": "kilogram",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -3016,6 +3023,12 @@ const docTemplate = `{
                         "type": "file",
                         "description": "file",
                         "name": "file",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "kilogram",
+                        "name": "kilogram",
                         "in": "formData"
                     }
                 ],

@@ -411,7 +411,7 @@ func (s *Store) GetProductById(id string) (*types_common.ProductDeatilPayload, e
 		case "files":
 			for rows.Next() {
 				var file types_common.ProductFile
-				if err := rows.Scan(&file.Id, &file.File, &file.ProductId, &file.CreatedAt); err != nil {
+				if err := rows.Scan(&file.Id, &file.File, &file.ProductId, &file.CreatedAt, &file.Kilogram); err != nil {
 					return nil, err
 				}
 				product.ProductFile = append(product.ProductFile, file)

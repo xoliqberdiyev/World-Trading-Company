@@ -1759,6 +1759,7 @@ func (h *Handler) handleUpdateImpact(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param productId formData string true "product id"
 // @Param file formData file true "file"
+// @Param kilogram formData string true "kilogram"
 // @Router /admin/product/file/create [post]
 // @Security BearerAuth
 func (h *Handler) handleCreateProductFile(w http.ResponseWriter, r *http.Request) {
@@ -1767,7 +1768,7 @@ func (h *Handler) handleCreateProductFile(w http.ResponseWriter, r *http.Request
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return
 	}
-
+	kilogram := r.FormValue("kilogram")
 	productId := r.FormValue("productId")
 	product, err := h.store.GetProduct(productId)
 	if err != nil {
@@ -1806,6 +1807,7 @@ func (h *Handler) handleCreateProductFile(w http.ResponseWriter, r *http.Request
 	payload := types_product.ProductFilePayload{
 		File:      filePath,
 		ProductId: productId,
+		Kilogram: kilogram,
 	}
 	err = h.store.CreateProductFile(payload)
 	if err != nil {
@@ -1893,6 +1895,7 @@ func (h *Handler) handleDeleteProductFile(w http.ResponseWriter, r *http.Request
 // @Param id path string true "id"
 // @Param productId formData string false "product id"
 // @Param file formData file false "file"
+// @Param kilogram formData string false "kilogram"
 // @Router /admin/product/file/{id}/update [put]
 // @Security BearerAuth
 func (h *Handler) handleUpdateProductFile(w http.ResponseWriter, r *http.Request) {
@@ -1912,7 +1915,7 @@ func (h *Handler) handleUpdateProductFile(w http.ResponseWriter, r *http.Request
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return
 	}
-
+	
 	productId := r.FormValue("productId")
 	if productId != "" {
 		product, err := h.store.GetProduct(productId)
@@ -1925,7 +1928,7 @@ func (h *Handler) handleUpdateProductFile(w http.ResponseWriter, r *http.Request
 			return
 		}
 	}
-
+	
 	file, fileHeader, err := r.FormFile("file")
 	if err != nil {
 		if err == http.ErrMissingFile {
@@ -1967,6 +1970,7 @@ func (h *Handler) handleUpdateProductFile(w http.ResponseWriter, r *http.Request
 	payload := types_product.ProductFilePayload{
 		File:      filePath,
 		ProductId: productId,
+		Kilogram: r.FormValue("kilogram"),
 	}
 
 	err = h.store.UpdateProductFile(id, payload)

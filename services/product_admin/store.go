@@ -84,7 +84,7 @@ func (s *Store) DeleteCategory(id string) error {
 
 func (s *Store) ListCategory() ([]*types_product.CategoryListPayload, error) {
 	var categories []*types_product.CategoryListPayload
-	query := `SELECT * FROM categories`
+	query := `SELECT * FROM categories ORDER BY created_at`
 	rows, err := s.db.Query(query)
 	if err != nil {
 		return nil, err
@@ -637,7 +637,7 @@ func (s *Store) UpdateImpact(id string, payload types_product.ImpactPropertyPayl
 }
 
 func (s *Store) CreateProductFile(payload types_product.ProductFilePayload) error {
-	query := `INSERT INTO product_files(file, product_id) VALUES($1, $2)`
+	query := `INSERT INTO product_files(file, product_id, kilograms) VALUES($1, $2, $3)`
 	_, err := s.db.Exec(query, payload.File, payload.ProductId)
 	if err != nil {
 		return err
@@ -655,7 +655,7 @@ func (s *Store) ListProductFile() ([]*types_product.ProductFileListPayload, erro
 
 	for rows.Next() {
 		var item types_product.ProductFileListPayload
-		if err := rows.Scan(&item.Id, &item.File, &item.ProductId, &item.CreatedAt); err != nil {
+		if err := rows.Scan(&item.Id, &item.File, &item.ProductId, &item.CreatedAt, &item.Kilogram); err != nil {
 			return nil, err
 		}
 		list = append(list, &item)
@@ -666,7 +666,7 @@ func (s *Store) ListProductFile() ([]*types_product.ProductFileListPayload, erro
 func (s *Store) GetProductFile(id string) (*types_product.ProductFileListPayload, error) {
 	var file types_product.ProductFileListPayload
 	query := `SELECT * FROM product_files WHERE id = $1`
-	err := s.db.QueryRow(query, id).Scan(&file.Id, &file.File, &file.ProductId, &file.CreatedAt)
+	err := s.db.QueryRow(query, id).Scan(&file.Id, &file.File, &file.ProductId, &file.CreatedAt, &file.Kilogram)
 	if err != nil {
 		return nil, err
 	}
@@ -695,6 +695,11 @@ func (s *Store) UpdateProductFile(id string, payload types_product.ProductFilePa
 	if payload.ProductId != "" {
 		query += fmt.Sprintf("product_id = $%d, ", index)
 		args = append(args, payload.ProductId)
+		index++
+	}
+	if payload.Kilogram != "" {
+		query += fmt.Sprintf("kilograms = $%d, ", index)
+		args = append(args, payload.Kilogram)
 		index++
 	}
 	query = query[:len(query)-2] + fmt.Sprintf(" WHERE id = $%d", index)
