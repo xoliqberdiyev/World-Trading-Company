@@ -2105,10 +2105,6 @@ paths:
         in: formData
         name: file
         type: file
-      - description: kilogram
-        in: formData
-        name: kilogram
-        type: string
       produces:
       - application/json
       responses: {}
@@ -2133,11 +2129,6 @@ paths:
         name: file
         required: true
         type: file
-      - description: kilogram
-        in: formData
-        name: kilogram
-        required: true
-        type: string
       produces:
       - application/json
       responses: {}
@@ -2509,6 +2500,10 @@ paths:
         in: formData
         name: image
         type: file
+      - description: kilogram
+        in: formData
+        name: kilogram
+        type: file
       produces:
       - application/json
       responses: {}
@@ -2533,6 +2528,11 @@ paths:
         name: image
         required: true
         type: file
+      - description: kilogram
+        in: formData
+        name: kilogram
+        required: true
+        type: string
       produces:
       - application/json
       responses: {}

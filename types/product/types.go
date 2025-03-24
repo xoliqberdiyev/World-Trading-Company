@@ -135,11 +135,13 @@ type ProductListPayload struct {
 type ProductMediaPayload struct {
 	ProductId string `json:"productId"`
 	Image     string `json:"image"`
+	Kilograms string `json:"kilograms"`
 }
 
 type ProductMediaListPayload struct {
 	Id        string    `json:"id"`
 	Image     string    `json:"image"`
+	Kilograms string `json:"kilograms"`
 	CreatedAt time.Time `json:"createdAt"`
 }
 
@@ -237,7 +239,6 @@ type ImapctPropertyListPayload struct {
 
 type ProductFilePayload struct {
 	File      string `json:"file"`
-	Kilogram string `json:"kilogram"`
 	ProductId string `json:"productId"`
 }
 
@@ -245,7 +246,6 @@ type ProductFileListPayload struct {
 	Id        string    `json:"id"`
 	File      string    `json:"file"`
 	ProductId string    `json:"productId"`
-	Kilogram string `json:"kilogram"`
 	CreatedAt time.Time `json:"createdAt"`
 }
 

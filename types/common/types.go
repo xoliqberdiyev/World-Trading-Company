@@ -135,6 +135,7 @@ type ProductMedia struct {
 	Id        string    `json:"id"`
 	Image     string    `json:"image"`
 	ProductId string    `json:"productId"`
+	Kilogram string `json:"kilogram"`
 	CreatedAt time.Time `json:"createdAt"`
 }
 

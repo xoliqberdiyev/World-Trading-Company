@@ -46,7 +46,7 @@ func (s *APIServer) Run() error {
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Timeout(60 * time.Second))
 
-	swaggerUrl := fmt.Sprintf("%v://%v/swagger/doc.json", utils.GetString("SWAGGER_SSL", "http"), utils.GetString("SWAGGER_HOST", "localhost:8000"))
+	swaggerUrl := fmt.Sprintf("%v://%v/swagger/doc.json", utils.GetString("SWAGGER_SSL", "http"), utils.GetString("SWAGGER_HOST", "0.0.0.0:8080"))
 	// swagger
 	r.Get("/swagger/*", httpSwagger.Handler(
 		httpSwagger.URL(swaggerUrl),

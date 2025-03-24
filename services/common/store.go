@@ -363,7 +363,7 @@ func (s *Store) GetProductById(id string) (*types_common.ProductDeatilPayload, e
 		case "media":
 			for rows.Next() {
 				var media types_common.ProductMedia
-				if err := rows.Scan(&media.Id, &media.Image, &media.ProductId, &media.CreatedAt); err != nil {
+				if err := rows.Scan(&media.Id, &media.Image, &media.ProductId, &media.CreatedAt, &media.Kilogram); err != nil {
 					return nil, err
 				}
 				product.ProductMedias = append(product.ProductMedias, media)

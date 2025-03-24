@@ -265,8 +265,8 @@ func (s *Store) UpdateProduct(id string, payload *types_product.ProductPayload) 
 
 func (s *Store) CreateProductMedia(payload types_product.ProductMediaPayload) (*types_product.ProductMediaListPayload, error) {
 	var productMedia types_product.ProductMediaListPayload
-	query := `INSERT INTO product_medias(product_id, image) VALUES($1, $2) RETURNING id, image, created_at`
-	err := s.db.QueryRow(query, payload.ProductId, payload.Image).Scan(&productMedia.Id, &productMedia.Image, &productMedia.CreatedAt)
+	query := `INSERT INTO product_medias(product_id, image, kilograms) VALUES($1, $2) RETURNING id, image, created_at`
+	err := s.db.QueryRow(query, payload.ProductId, payload.Image, payload.Kilograms).Scan(&productMedia.Id, &productMedia.Image, &productMedia.CreatedAt)
 	if err != nil {
 		return nil, err
 	}
@@ -282,14 +282,14 @@ func (s *Store) ListProductMedia(limit, offset int) ([]*types_product.ProductMed
 		return nil, 0, err
 	}
 
-	query := `SELECT id, image, created_at FROM product_medias ORDER BY created_at DESC LIMIT $1 OFFSET $2	`
+	query := `SELECT id, image, kilograms,  created_at FROM product_medias ORDER BY created_at DESC LIMIT $1 OFFSET $2	`
 	rows, err := s.db.Query(query, limit, offset)
 	if err != nil {
 		return nil, 0, err
 	}
 	for rows.Next() {
 		var productMedia types_product.ProductMediaListPayload
-		if err := rows.Scan(&productMedia.Id, &productMedia.Image, &productMedia.CreatedAt); err != nil {
+		if err := rows.Scan(&productMedia.Id, &productMedia.Image, &productMedia.CreatedAt, &productMedia.Kilograms); err != nil {
 			return nil, 0, err
 		}
 		medias = append(medias, &productMedia)
@@ -299,8 +299,8 @@ func (s *Store) ListProductMedia(limit, offset int) ([]*types_product.ProductMed
 
 func (s *Store) GetProductMedia(id string) (*types_product.ProductMediaListPayload, error) {
 	var productMedia types_product.ProductMediaListPayload
-	query := `SELECT id, image, created_at FROM product_medias WHERE id = $1`
-	err := s.db.QueryRow(query, id).Scan(&productMedia.Id, &productMedia.Image, &productMedia.CreatedAt)
+	query := `SELECT id, image, kilograms, created_at FROM product_medias WHERE id = $1`
+	err := s.db.QueryRow(query, id).Scan(&productMedia.Id, &productMedia.Image, &productMedia.CreatedAt, &productMedia.Kilograms)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -332,6 +332,11 @@ func (s *Store) UpdateProductMedia(id string, payload types_product.ProductMedia
 	if payload.ProductId != "" {
 		query += fmt.Sprintf("product_id = $%d, ", index)
 		args = append(args, payload.ProductId)
+		index++
+	}
+	if payload.Kilograms != "" {
+		query += fmt.Sprintf("kilograms = $%d, ", index)
+		args = append(args, payload.Kilograms)
 		index++
 	}
 	query = query[:len(query)-2] + fmt.Sprintf(" WHERE id = $%d RETURNING id, image, created_at", index)
@@ -637,7 +642,7 @@ func (s *Store) UpdateImpact(id string, payload types_product.ImpactPropertyPayl
 }
 
 func (s *Store) CreateProductFile(payload types_product.ProductFilePayload) error {
-	query := `INSERT INTO product_files(file, product_id, kilograms) VALUES($1, $2, $3)`
+	query := `INSERT INTO product_files(file, product_id) VALUES($1, $2)`
 	_, err := s.db.Exec(query, payload.File, payload.ProductId)
 	if err != nil {
 		return err
@@ -655,7 +660,7 @@ func (s *Store) ListProductFile() ([]*types_product.ProductFileListPayload, erro
 
 	for rows.Next() {
 		var item types_product.ProductFileListPayload
-		if err := rows.Scan(&item.Id, &item.File, &item.ProductId, &item.CreatedAt, &item.Kilogram); err != nil {
+		if err := rows.Scan(&item.Id, &item.File, &item.ProductId, &item.CreatedAt); err != nil {
 			return nil, err
 		}
 		list = append(list, &item)
@@ -666,7 +671,7 @@ func (s *Store) ListProductFile() ([]*types_product.ProductFileListPayload, erro
 func (s *Store) GetProductFile(id string) (*types_product.ProductFileListPayload, error) {
 	var file types_product.ProductFileListPayload
 	query := `SELECT * FROM product_files WHERE id = $1`
-	err := s.db.QueryRow(query, id).Scan(&file.Id, &file.File, &file.ProductId, &file.CreatedAt, &file.Kilogram)
+	err := s.db.QueryRow(query, id).Scan(&file.Id, &file.File, &file.ProductId, &file.CreatedAt)
 	if err != nil {
 		return nil, err
 	}
@@ -695,11 +700,6 @@ func (s *Store) UpdateProductFile(id string, payload types_product.ProductFilePa
 	if payload.ProductId != "" {
 		query += fmt.Sprintf("product_id = $%d, ", index)
 		args = append(args, payload.ProductId)
-		index++
-	}
-	if payload.Kilogram != "" {
-		query += fmt.Sprintf("kilograms = $%d, ", index)
-		args = append(args, payload.Kilogram)
 		index++
 	}
 	query = query[:len(query)-2] + fmt.Sprintf(" WHERE id = $%d", index)

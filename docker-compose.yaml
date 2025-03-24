@@ -1,0 +1,47 @@
+services:
+  wtc:  
+    build: 
+      context: .
+      dockerfile: Dockerfile 
+    ports: 
+    - "8080:8080"
+    depends_on:
+      - postgres_db 
+    volumes:
+      - .:/wtc_backend 
+    container_name: wtc 
+    environment:
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=postgres_db 
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - SWAGGER_SSL=${SWAGGER_SSL}
+      - SWAGGER_HOST=${SWAGGER_HOST}
+      - SERVER_PORT=${SERVER_PORT}
+    networks:
+      - wtc_network
+
+  postgres_db:
+    image: postgres:16
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_PORT=${DB_PORT}
+      - POSTGRES_HOST=postgres_db
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    container_name: wtc_database
+    networks:
+      - wtc_network
+    # ports:
+      # - "5433:5432"
+
+networks:
+  wtc_network:
+    driver: bridge
+
+volumes:
+  postgres_data:

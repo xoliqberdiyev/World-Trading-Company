@@ -1,13 +1,12 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 
 	"github.com/XoliqberdiyevBehruz/wtc_backend/api"
 	"github.com/XoliqberdiyevBehruz/wtc_backend/config"
-	"github.com/XoliqberdiyevBehruz/wtc_backend/utils"
-	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 )
 
@@ -35,13 +34,13 @@ func main() {
 	psqlUrl := fmt.Sprintf("host=%v port=%v user=%v password=%v dbname=%v sslmode=disable",
 		cnf.Postgres.Host, cnf.Postgres.Port, cnf.Postgres.User, cnf.Postgres.Password, cnf.Postgres.Databasse,
 	)
-	psqlConn, err := sqlx.Connect("postgres", psqlUrl)
+	psqlConn, err := sql.Open("postgres", psqlUrl)
 	if err != nil {
 		log.Println(err)
 	} else {
 		log.Println("DB: connection successfully")
 	}
-	server := api.NewServer(psqlConn.DB, utils.GetString("SERVER_PORT", ":8080"))
+	server := api.NewServer(psqlConn, "0.0.0.0:8080")
 	if err := server.Run(); err != nil {
 		log.Fatal(err)
 	}

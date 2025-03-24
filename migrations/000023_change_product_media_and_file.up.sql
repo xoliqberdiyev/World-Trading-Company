@@ -1,0 +1,5 @@
+ALTER TABLE "product_files"
+DROP COLUMN IF EXISTS "kilograms";
+
+ALTER TABLE "product_media"
+ADD COLUMN IF NOT EXISTS "kilograms" DOUBLE PRECISION DEFAULT 0;
