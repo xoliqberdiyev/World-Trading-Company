@@ -299,7 +299,7 @@ func (s *Store) ListProductMedia(limit, offset int) ([]*types_product.ProductMed
 
 func (s *Store) GetProductMedia(id string) (*types_product.ProductMediaListPayload, error) {
 	var productMedia types_product.ProductMediaListPayload
-	query := `SELECT id, image, kilograms, created_at FROM product_medias WHERE id = $1`
+	query := `SELECT id, image, created_at, kilograms FROM product_medias WHERE id = $1`
 	err := s.db.QueryRow(query, id).Scan(&productMedia.Id, &productMedia.Image, &productMedia.CreatedAt, &productMedia.Kilograms)
 	if err != nil {
 		if err == sql.ErrNoRows {
