@@ -265,7 +265,7 @@ func (s *Store) UpdateProduct(id string, payload *types_product.ProductPayload) 
 
 func (s *Store) CreateProductMedia(payload types_product.ProductMediaPayload) (*types_product.ProductMediaListPayload, error) {
 	var productMedia types_product.ProductMediaListPayload
-	query := `INSERT INTO product_medias(product_id, image, kilograms) VALUES($1, $2, $3) RETURNING id, image, created_at,, kilograms`
+	query := `INSERT INTO product_medias(product_id, image, kilograms) VALUES($1, $2, $3) RETURNING id, image, created_at,kilograms`
 	err := s.db.QueryRow(query, payload.ProductId, payload.Image, payload.Kilograms).Scan(&productMedia.Id, &productMedia.Image, &productMedia.CreatedAt, &productMedia.Kilograms)
 	if err != nil {
 		return nil, err
